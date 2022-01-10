@@ -1,0 +1,7 @@
+<launch>
+    <arg name = "use_rviz" default = "true" doc = "whether to view the URDF in Rviz"/>
+    <arg name = "use_jsp" default = "false" doc = "whether to use joint state publisher"/>
+
+    
+    <node name="rviz" pkg="rviz" type="rviz"/>
+</launch>
