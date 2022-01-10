@@ -1,19 +1,19 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>nuturtle_description</name>
-  <version>0.0.0</version>
-  <description>The nuturtle_description package</description>
+  <version>0.0.3</version>
+  <description> To adapt the turtlebot3 model for our needs</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
   <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
-  <maintainer email="jason@todo.todo">jason</maintainer>
+  <maintainer email="jiasenzheng2020@u.northwestern.edu">jason</maintainer>
 
 
   <!-- One license tag required, multiple allowed, one license per tag -->
   <!-- Commonly used license strings: -->
   <!--   BSD, MIT, Boost Software License, GPLv2, GPLv3, LGPLv2.1, LGPLv3 -->
-  <license>TODO</license>
+  <license>APLv2</license>
 
 
   <!-- Url tags are optional, but multiple are allowed, one per tag -->
