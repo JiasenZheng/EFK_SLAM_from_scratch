@@ -3,4 +3,4 @@
 * Winter 2022
 # Package List
 This repository consists of several ROS packages
-- <PACKAGE1> - <one sentence description>
+- nuturtle_description - To adapt the model in the `turtlebot3_description` for our needs
