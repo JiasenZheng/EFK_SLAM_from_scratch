@@ -6,6 +6,7 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
+        - /RobotModel1
       Splitter Ratio: 0.5
     Tree Height: 555
   - Class: rviz/Selection
@@ -62,35 +63,35 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
-        base_footprint:
+        blue/base_footprint:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-        base_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        base_scan:
+        blue/base_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        caster_back_link:
+        blue/base_scan:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        imu_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        wheel_left_link:
+        blue/caster_back_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        wheel_right_link:
+        blue/imu_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        blue/wheel_left_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        blue/wheel_right_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -106,19 +107,19 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: true
-        base_footprint:
+        blue/base_footprint:
           Value: true
-        base_link:
+        blue/base_link:
           Value: true
-        base_scan:
+        blue/base_scan:
           Value: true
-        caster_back_link:
+        blue/caster_back_link:
           Value: true
-        imu_link:
+        blue/imu_link:
           Value: true
-        wheel_left_link:
+        blue/wheel_left_link:
           Value: true
-        wheel_right_link:
+        blue/wheel_right_link:
           Value: true
       Marker Alpha: 1
       Marker Scale: 1
@@ -127,17 +128,17 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
-        base_footprint:
-          base_link:
-            base_scan:
+        blue/base_footprint:
+          blue/base_link:
+            blue/base_scan:
               {}
-            caster_back_link:
+            blue/caster_back_link:
               {}
-            imu_link:
+            blue/imu_link:
               {}
-            wheel_left_link:
+            blue/wheel_left_link:
               {}
-            wheel_right_link:
+            blue/wheel_right_link:
               {}
       Update Interval: 0
       Value: true
@@ -145,7 +146,7 @@ Visualization Manager:
   Global Options:
     Background Color: 48; 48; 48
     Default Light: true
-    Fixed Frame: base_footprint
+    Fixed Frame: blue/base_footprint
     Frame Rate: 30
   Name: root
   Tools:
@@ -205,5 +206,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1200
-  X: 2072
-  Y: 159
+  X: 2525
+  Y: 137
