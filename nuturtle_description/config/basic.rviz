@@ -6,11 +6,8 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
-        - /TF1
         - /TF1/Frames1
         - /RobotModel1
-        - /RobotModel3
-        - /RobotModel4
       Splitter Ratio: 0.5
     Tree Height: 555
   - Class: rviz/Selection
@@ -76,50 +73,6 @@ Visualization Manager:
           Value: false
         black/wheel_right_link:
           Value: false
-        blue/base_footprint:
-          Value: false
-        blue/base_link:
-          Value: false
-        blue/base_scan:
-          Value: false
-        blue/caster_back_link:
-          Value: false
-        blue/imu_link:
-          Value: false
-        blue/wheel_left_link:
-          Value: false
-        blue/wheel_right_link:
-          Value: false
-        green/base_footprint:
-          Value: false
-        green/base_link:
-          Value: false
-        green/base_scan:
-          Value: false
-        green/caster_back_link:
-          Value: false
-        green/imu_link:
-          Value: false
-        green/wheel_left_link:
-          Value: false
-        green/wheel_right_link:
-          Value: false
-        red/base_footprint:
-          Value: false
-        red/base_link:
-          Value: false
-        red/base_scan:
-          Value: false
-        red/caster_back_link:
-          Value: false
-        red/imu_link:
-          Value: false
-        red/wheel_left_link:
-          Value: false
-        red/wheel_right_link:
-          Value: false
-        world:
-          Value: true
       Marker Alpha: 1
       Marker Scale: 1
       Name: TF
@@ -127,204 +80,20 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
-        world:
-          black/base_footprint:
-            black/base_link:
-              black/base_scan:
-                {}
-              black/caster_back_link:
-                {}
-              black/imu_link:
-                {}
-              black/wheel_left_link:
-                {}
-              black/wheel_right_link:
-                {}
-          blue/base_footprint:
-            blue/base_link:
-              blue/base_scan:
-                {}
-              blue/caster_back_link:
-                {}
-              blue/imu_link:
-                {}
-              blue/wheel_left_link:
-                {}
-              blue/wheel_right_link:
-                {}
-          green/base_footprint:
-            green/base_link:
-              green/base_scan:
-                {}
-              green/caster_back_link:
-                {}
-              green/imu_link:
-                {}
-              green/wheel_left_link:
-                {}
-              green/wheel_right_link:
-                {}
-          red/base_footprint:
-            red/base_link:
-              red/base_scan:
-                {}
-              red/caster_back_link:
-                {}
-              red/imu_link:
-                {}
-              red/wheel_left_link:
-                {}
-              red/wheel_right_link:
-                {}
+        black/base_footprint:
+          black/base_link:
+            black/base_scan:
+              {}
+            black/caster_back_link:
+              {}
+            black/imu_link:
+              {}
+            black/wheel_left_link:
+              {}
+            black/wheel_right_link:
+              {}
       Update Interval: 0
       Value: true
-    - Alpha: 1
-      Class: rviz/RobotModel
-      Collision Enabled: false
-      Enabled: true
-      Links:
-        All Links Enabled: true
-        Expand Joint Details: false
-        Expand Link Details: false
-        Expand Tree: false
-        Link Tree Style: Links in Alphabetic Order
-        red/base_footprint:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        red/base_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        red/base_scan:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        red/caster_back_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        red/imu_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        red/wheel_left_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        red/wheel_right_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-      Name: RobotModel
-      Robot Description: red/robot_description
-      TF Prefix: ""
-      Update Interval: 0
-      Value: true
-      Visual Enabled: true
-    - Alpha: 1
-      Class: rviz/RobotModel
-      Collision Enabled: false
-      Enabled: true
-      Links:
-        All Links Enabled: true
-        Expand Joint Details: false
-        Expand Link Details: false
-        Expand Tree: false
-        Link Tree Style: Links in Alphabetic Order
-        green/base_footprint:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        green/base_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        green/base_scan:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        green/caster_back_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        green/imu_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        green/wheel_left_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        green/wheel_right_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-      Name: RobotModel
-      Robot Description: green/robot_description
-      TF Prefix: ""
-      Update Interval: 0
-      Value: true
-      Visual Enabled: true
-    - Alpha: 1
-      Class: rviz/RobotModel
-      Collision Enabled: false
-      Enabled: true
-      Links:
-        All Links Enabled: true
-        Expand Joint Details: false
-        Expand Link Details: false
-        Expand Tree: false
-        Link Tree Style: Links in Alphabetic Order
-        blue/base_footprint:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        blue/base_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        blue/base_scan:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        blue/caster_back_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        blue/imu_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        blue/wheel_left_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        blue/wheel_right_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-      Name: RobotModel
-      Robot Description: blue/robot_description
-      TF Prefix: ""
-      Update Interval: 0
-      Value: true
-      Visual Enabled: true
     - Alpha: 1
       Class: rviz/RobotModel
       Collision Enabled: false
@@ -378,7 +147,7 @@ Visualization Manager:
   Global Options:
     Background Color: 48; 48; 48
     Default Light: true
-    Fixed Frame: world
+    Fixed Frame: black/base_footprint
     Frame Rate: 30
   Name: root
   Tools:

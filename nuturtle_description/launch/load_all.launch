@@ -1,7 +1,6 @@
 <launch>
     <arg name = "use_rviz" default = "true" doc = "whether to view the URDF in Rviz"/>
     <arg name = "use_jsp" default = "true" doc = "whether to use joint state publisher"/>
-    <!-- <arg name = "color" default = "black" doc = "determine what color is passed to xacro file, possible options are 'black', 'red', 'green',and 'blue'"/> -->
     <rosparam command="load" file="$(find nuturtle_description)/config/diff_params.yaml" />
     <param name = "red/robot_description" command="$(find xacro)/xacro
     '$(find nuturtle_description)/urdf/turtlebot3_burger.urdf.xacro' color:=red"/>
@@ -37,6 +36,6 @@
         <node pkg="tf" type="static_transform_publisher" name="black_odom" args="0 -1 0 0 0 0 1 world black/base_footprint 100" />
     </group>
 
-    <node name="rviz" pkg="rviz" type="rviz" args = "-d $(find nuturtle_description)/config/basic.rviz" if='$(arg use_rviz)'/>
+    <node name="rviz" pkg="rviz" type="rviz" args = "-d $(find nuturtle_description)/config/basic_all.rviz" if='$(arg use_rviz)'/>
 
 </launch>
