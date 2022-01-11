@@ -1,7 +1,8 @@
 <launch>
     <arg name = "use_rviz" default = "true" doc = "whether to view the URDF in Rviz"/>
     <arg name = "use_jsp" default = "true" doc = "whether to use joint state publisher"/>
-    <arg name = "color" default = "black" doc = "determine what color is passed to xacro file"/>
+    <arg name = "color" default = "black" doc = "determine what color is passed to xacro file,
+    possible options are 'black', 'red', 'green',and 'blue'"/>
 
 
     <param name = "robot_description" command="$(find xacro)/xacro
