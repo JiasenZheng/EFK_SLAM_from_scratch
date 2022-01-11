@@ -10,8 +10,7 @@
 
     <node name="rviz" pkg="rviz" type="rviz" args = "-d $(find nuturtle_description)/config/basic.rviz" if='$(arg use_rviz)' ns = '$(arg color)'/>
     <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" if='$(arg use_jsp)' ns = '$(arg color)' />
-    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" ns = '$(arg color)'>
-        <param name="tf_prefix" value='$(arg color)'/>
-    </node>
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" ns = '$(arg color)'/>
+
 
 </launch>

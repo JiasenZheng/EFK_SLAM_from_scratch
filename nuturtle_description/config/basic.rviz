@@ -6,7 +6,11 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
+        - /TF1
+        - /TF1/Frames1
         - /RobotModel1
+        - /RobotModel3
+        - /RobotModel4
       Splitter Ratio: 0.5
     Tree Height: 555
   - Class: rviz/Selection
@@ -53,6 +57,225 @@ Visualization Manager:
       Plane Cell Count: 10
       Reference Frame: <Fixed Frame>
       Value: true
+    - Class: rviz/TF
+      Enabled: true
+      Frame Timeout: 15
+      Frames:
+        All Enabled: false
+        black/base_footprint:
+          Value: false
+        black/base_link:
+          Value: false
+        black/base_scan:
+          Value: false
+        black/caster_back_link:
+          Value: false
+        black/imu_link:
+          Value: false
+        black/wheel_left_link:
+          Value: false
+        black/wheel_right_link:
+          Value: false
+        blue/base_footprint:
+          Value: false
+        blue/base_link:
+          Value: false
+        blue/base_scan:
+          Value: false
+        blue/caster_back_link:
+          Value: false
+        blue/imu_link:
+          Value: false
+        blue/wheel_left_link:
+          Value: false
+        blue/wheel_right_link:
+          Value: false
+        green/base_footprint:
+          Value: false
+        green/base_link:
+          Value: false
+        green/base_scan:
+          Value: false
+        green/caster_back_link:
+          Value: false
+        green/imu_link:
+          Value: false
+        green/wheel_left_link:
+          Value: false
+        green/wheel_right_link:
+          Value: false
+        red/base_footprint:
+          Value: false
+        red/base_link:
+          Value: false
+        red/base_scan:
+          Value: false
+        red/caster_back_link:
+          Value: false
+        red/imu_link:
+          Value: false
+        red/wheel_left_link:
+          Value: false
+        red/wheel_right_link:
+          Value: false
+        world:
+          Value: true
+      Marker Alpha: 1
+      Marker Scale: 1
+      Name: TF
+      Show Arrows: true
+      Show Axes: true
+      Show Names: true
+      Tree:
+        world:
+          black/base_footprint:
+            black/base_link:
+              black/base_scan:
+                {}
+              black/caster_back_link:
+                {}
+              black/imu_link:
+                {}
+              black/wheel_left_link:
+                {}
+              black/wheel_right_link:
+                {}
+          blue/base_footprint:
+            blue/base_link:
+              blue/base_scan:
+                {}
+              blue/caster_back_link:
+                {}
+              blue/imu_link:
+                {}
+              blue/wheel_left_link:
+                {}
+              blue/wheel_right_link:
+                {}
+          green/base_footprint:
+            green/base_link:
+              green/base_scan:
+                {}
+              green/caster_back_link:
+                {}
+              green/imu_link:
+                {}
+              green/wheel_left_link:
+                {}
+              green/wheel_right_link:
+                {}
+          red/base_footprint:
+            red/base_link:
+              red/base_scan:
+                {}
+              red/caster_back_link:
+                {}
+              red/imu_link:
+                {}
+              red/wheel_left_link:
+                {}
+              red/wheel_right_link:
+                {}
+      Update Interval: 0
+      Value: true
+    - Alpha: 1
+      Class: rviz/RobotModel
+      Collision Enabled: false
+      Enabled: true
+      Links:
+        All Links Enabled: true
+        Expand Joint Details: false
+        Expand Link Details: false
+        Expand Tree: false
+        Link Tree Style: Links in Alphabetic Order
+        red/base_footprint:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        red/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        red/base_scan:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        red/caster_back_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        red/imu_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        red/wheel_left_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        red/wheel_right_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+      Name: RobotModel
+      Robot Description: red/robot_description
+      TF Prefix: ""
+      Update Interval: 0
+      Value: true
+      Visual Enabled: true
+    - Alpha: 1
+      Class: rviz/RobotModel
+      Collision Enabled: false
+      Enabled: true
+      Links:
+        All Links Enabled: true
+        Expand Joint Details: false
+        Expand Link Details: false
+        Expand Tree: false
+        Link Tree Style: Links in Alphabetic Order
+        green/base_footprint:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        green/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        green/base_scan:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        green/caster_back_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        green/imu_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        green/wheel_left_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        green/wheel_right_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+      Name: RobotModel
+      Robot Description: green/robot_description
+      TF Prefix: ""
+      Update Interval: 0
+      Value: true
+      Visual Enabled: true
     - Alpha: 1
       Class: rviz/RobotModel
       Collision Enabled: false
@@ -97,56 +320,65 @@ Visualization Manager:
           Show Trail: false
           Value: true
       Name: RobotModel
-      Robot Description: robot_description
+      Robot Description: blue/robot_description
       TF Prefix: ""
       Update Interval: 0
       Value: true
       Visual Enabled: true
-    - Class: rviz/TF
+    - Alpha: 1
+      Class: rviz/RobotModel
+      Collision Enabled: false
       Enabled: true
-      Frame Timeout: 15
-      Frames:
-        All Enabled: true
-        blue/base_footprint:
+      Links:
+        All Links Enabled: true
+        Expand Joint Details: false
+        Expand Link Details: false
+        Expand Tree: false
+        Link Tree Style: Links in Alphabetic Order
+        black/base_footprint:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        black/base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
           Value: true
-        blue/base_link:
+        black/base_scan:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
           Value: true
-        blue/base_scan:
+        black/caster_back_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
           Value: true
-        blue/caster_back_link:
+        black/imu_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        black/wheel_left_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
           Value: true
-        blue/imu_link:
+        black/wheel_right_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
           Value: true
-        blue/wheel_left_link:
-          Value: true
-        blue/wheel_right_link:
-          Value: true
-      Marker Alpha: 1
-      Marker Scale: 1
-      Name: TF
-      Show Arrows: true
-      Show Axes: true
-      Show Names: true
-      Tree:
-        blue/base_footprint:
-          blue/base_link:
-            blue/base_scan:
-              {}
-            blue/caster_back_link:
-              {}
-            blue/imu_link:
-              {}
-            blue/wheel_left_link:
-              {}
-            blue/wheel_right_link:
-              {}
+      Name: RobotModel
+      Robot Description: black/robot_description
+      TF Prefix: ""
       Update Interval: 0
       Value: true
+      Visual Enabled: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
     Default Light: true
-    Fixed Frame: blue/base_footprint
+    Fixed Frame: world
     Frame Rate: 30
   Name: root
   Tools:
@@ -170,7 +402,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 0.9217096567153931
+      Distance: 4.850669860839844
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -178,17 +410,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: -0.03416068106889725
-        Y: 0.08263024687767029
-        Z: 0.16908414661884308
+        X: -0.015966709703207016
+        Y: 0.13257993757724762
+        Z: -0.2698729634284973
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.575398325920105
+      Pitch: 0.49039822816848755
       Target Frame: <Fixed Frame>
-      Yaw: 0.6653982400894165
+      Yaw: 0.8403980731964111
     Saved: ~
 Window Geometry:
   Displays:
