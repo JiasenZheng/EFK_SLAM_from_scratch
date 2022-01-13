@@ -5,6 +5,7 @@
 
 
 #include<iosfwd> // contains forward definitions for iostream objects
+#include<cmath>  // compute common mathematical operations
 
 namespace turtlelib
 {
@@ -22,6 +23,14 @@ namespace turtlelib
     /// if given a compile-time constant as input
     constexpr bool almost_equal(double d1, double d2, double epsilon=1.0e-12)
     {
+        if (abs(d1-d2)< epsilon)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     /// \brief convert degrees to radians
@@ -29,6 +38,7 @@ namespace turtlelib
     /// \returns radians
     constexpr double deg2rad(double deg)
     {
+        return (deg*PI)/180;
     }
 
     /// \brief convert radians to degrees
@@ -36,6 +46,7 @@ namespace turtlelib
     /// \returns the angle in degrees
     constexpr double rad2deg(double rad)
     {
+        return (rad*180)/PI;
     }
 
     /// static_assertions test compile time assumptions.
@@ -43,12 +54,16 @@ namespace turtlelib
     /// You should also purposely (and temporarily) make one of these tests fail
     /// just to see what happens
     static_assert(almost_equal(0, 0), "is_zero failed");
+    static_assert(almost_equal(0, 1, 0.5), "is_zero failed");
 
     static_assert(almost_equal(deg2rad(0.0), 0.0), "deg2rad failed");
+    static_assert(almost_equal(deg2rad(180.0), PI), "deg2rad failed");
 
     static_assert(almost_equal(rad2deg(0.0), 0.0), "rad2deg failed");
+    static_assert(almost_equal(rad2deg(PI), 180), "rad2deg failed");
 
     static_assert(almost_equal(deg2rad(rad2deg(2.1)), 2.1), "deg2rad failed");
+    static_assert(almost_equal(deg2rad(rad2deg(3.14)), 3.14), "deg2rad failed");
 
     /// \brief A 2-Dimensional Vector
     struct Vector2D
@@ -59,8 +74,6 @@ namespace turtlelib
         /// \brief the y coordinate
         double y = 0.0;
     };
-
-
 
     /// \brief output a 2 dimensional vector as [xcomponent ycomponent]
     /// os - stream to output to
@@ -86,6 +99,30 @@ namespace turtlelib
     /// peek looks at the next unprocessed character in the buffer without removing it
     /// get removes the next unprocessed character from the buffer.
     std::istream & operator>>(std::istream & is, Vector2D & v);
+
+
+    /// \brief A 2-Dimensional Twist
+    struct Twist2D
+    {
+        /// \brief the angular velocity
+        double omega = 0.0;  
+
+        /// \brief the x velocity
+        double x_dot = 0.0;
+
+        /// \brief the y velocity
+        double y_dot = 0.0;
+    };
+
+    /// \brief output a 2 dimensional Twist as [omega x_dot y_dot]
+    /// os - stream to output to
+    /// t - the vector to print
+    std::ostream & operator<<(std::ostream & os, const Vector2D & t);
+
+    /// \brief input a 2 dimensional Twist as [omega x_dot y_dot]
+    /// is - stream to input to
+    /// t - the twist to input
+    std::istream & operator>>(std::istream & is, const Vector2D & t);
 
     /// \brief a rigid body transformation in 2 dimensions
     class Transform2D
