@@ -15,25 +15,25 @@
     <group ns = "red">
         <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" if='$(arg use_jsp)' />
         <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
-        <node pkg="tf" type="static_transform_publisher" name="red_odom" args="1 0 0 0 0 0 1 world red/base_footprint 100" />
+        <node pkg="tf" type="static_transform_publisher" name="red_odom" args="1 0 0 0 0 0 1 world red-base_footprint 100" />
     </group>
 
     <group ns = "green">
         <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" if='$(arg use_jsp)' />
         <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
-        <node pkg="tf" type="static_transform_publisher" name="green_odom" args="0 1 0 0 0 0 1 world green/base_footprint 100" />
+        <node pkg="tf" type="static_transform_publisher" name="green_odom" args="0 1 0 0 0 0 1 world green-base_footprint 100" />
     </group>
 
     <group ns = "blue">
         <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" if='$(arg use_jsp)' />
         <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
-        <node pkg="tf" type="static_transform_publisher" name="blue_odom" args="-1 0 0 0 0 0 1 world blue/base_footprint 100" />
+        <node pkg="tf" type="static_transform_publisher" name="blue_odom" args="-1 0 0 0 0 0 1 world blue-base_footprint 100" />
     </group>
 
     <group ns = "black">
         <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" if='$(arg use_jsp)' />
         <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>
-        <node pkg="tf" type="static_transform_publisher" name="black_odom" args="0 -1 0 0 0 0 1 world black/base_footprint 100" />
+        <node pkg="tf" type="static_transform_publisher" name="black_odom" args="0 -1 0 0 0 0 1 world black-base_footprint 100" />
     </group>
 
     <node name="rviz" pkg="rviz" type="rviz" args = "-d $(find nuturtle_description)/config/basic_all.rviz" if='$(arg use_rviz)'/>

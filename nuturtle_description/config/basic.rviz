@@ -6,6 +6,7 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
+        - /TF1
         - /TF1/Frames1
         - /RobotModel1
       Splitter Ratio: 0.5
@@ -58,21 +59,21 @@ Visualization Manager:
       Enabled: true
       Frame Timeout: 15
       Frames:
-        All Enabled: false
-        black/base_footprint:
-          Value: false
-        black/base_link:
-          Value: false
-        black/base_scan:
-          Value: false
-        black/caster_back_link:
-          Value: false
-        black/imu_link:
-          Value: false
-        black/wheel_left_link:
-          Value: false
-        black/wheel_right_link:
-          Value: false
+        All Enabled: true
+        black_base_footprint:
+          Value: true
+        black_base_link:
+          Value: true
+        black_base_scan:
+          Value: true
+        black_caster_back_link:
+          Value: true
+        black_imu_link:
+          Value: true
+        black_wheel_left_link:
+          Value: true
+        black_wheel_right_link:
+          Value: true
       Marker Alpha: 1
       Marker Scale: 1
       Name: TF
@@ -80,17 +81,17 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
-        black/base_footprint:
-          black/base_link:
-            black/base_scan:
+        black_base_footprint:
+          black_base_link:
+            black_base_scan:
               {}
-            black/caster_back_link:
+            black_caster_back_link:
               {}
-            black/imu_link:
+            black_imu_link:
               {}
-            black/wheel_left_link:
+            black_wheel_left_link:
               {}
-            black/wheel_right_link:
+            black_wheel_right_link:
               {}
       Update Interval: 0
       Value: true
@@ -104,35 +105,35 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
-        black/base_footprint:
+        black_base_footprint:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-        black/base_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        black/base_scan:
+        black_base_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        black/caster_back_link:
+        black_base_scan:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        black/imu_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        black/wheel_left_link:
+        black_caster_back_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        black/wheel_right_link:
+        black_imu_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        black_wheel_left_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        black_wheel_right_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -147,7 +148,7 @@ Visualization Manager:
   Global Options:
     Background Color: 48; 48; 48
     Default Light: true
-    Fixed Frame: black/base_footprint
+    Fixed Frame: black_base_footprint
     Frame Rate: 30
   Name: root
   Tools:
@@ -171,7 +172,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 4.850669860839844
+      Distance: 1.7444682121276855
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -207,5 +208,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1200
-  X: 2525
-  Y: 137
+  X: 2083
+  Y: 246
