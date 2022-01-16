@@ -6,6 +6,7 @@
 
 #include<iosfwd> // contains forward definitions for iostream objects
 #include<cmath>  // compute common mathematical operations
+#include<string> // C++ string library
 
 namespace turtlelib
 {
@@ -54,7 +55,7 @@ namespace turtlelib
     /// You should also purposely (and temporarily) make one of these tests fail
     /// just to see what happens
     static_assert(almost_equal(0, 0), "is_zero failed");
-    static_assert(almost_equal(0, 1, 0.5), "is_zero failed");
+    static_assert(almost_equal(0, 0.5), "is_zero failed");
 
     static_assert(almost_equal(deg2rad(0.0), 0.0), "deg2rad failed");
     static_assert(almost_equal(deg2rad(180.0), PI), "deg2rad failed");
@@ -69,10 +70,16 @@ namespace turtlelib
     struct Vector2D
     {
         /// \brief the x coordinate
+        
         double x = 0.0;
 
         /// \brief the y coordinate
         double y = 0.0;
+
+        /// \brief normalize a 2D vector
+        /// \param v - a input 2D vector
+        /// \return Vector2D - the output normalized vector
+        Vector2D normalize();  
     };
 
     /// \brief output a 2 dimensional vector as [xcomponent ycomponent]
@@ -117,12 +124,12 @@ namespace turtlelib
     /// \brief output a 2 dimensional Twist as [omega x_dot y_dot]
     /// os - stream to output to
     /// t - the vector to print
-    std::ostream & operator<<(std::ostream & os, const Vector2D & t);
+    std::ostream & operator<<(std::ostream & os, const Twist2D & t);
 
     /// \brief input a 2 dimensional Twist as [omega x_dot y_dot]
     /// is - stream to input to
     /// t - the twist to input
-    std::istream & operator>>(std::istream & is, const Vector2D & t);
+    std::istream & operator>>(std::istream & is, Twist2D & t);
 
     /// \brief a rigid body transformation in 2 dimensions
     class Transform2D
@@ -150,6 +157,11 @@ namespace turtlelib
         /// \return a vector in the new coordinate system
         Vector2D operator()(Vector2D v) const;
 
+        /// \brief apply a transformation to a Twist2D
+        /// \param t - the twist to transform
+        /// \return a twist in the new coordinate system
+        Twist2D operator()(Twist2D t) const;
+
 
         /// \brief invert the transformation
         /// \return the inverse transformation. 
@@ -172,6 +184,19 @@ namespace turtlelib
         /// \brief \see operator<<(...) (declared outside this class)
         /// for a description
         friend std::ostream & operator<<(std::ostream & os, const Transform2D & tf);
+
+
+        private:
+            /// \brief x-coordinate
+            double x = 0.0;
+            /// \brief y-coordinate
+            double y = 0.0;
+            /// \brief 2D rotational angle theta
+            double theta = 0.0;
+            /// \brief sin(theta)
+            double sintheta = 0.0;
+            /// \brief cos(theta)
+            double costheta = 1.0;
 
     };
 
