@@ -138,6 +138,31 @@ namespace turtlelib
         return os;
     }
 
+    double Transform2D::get_x() const
+    {
+        return x;
+    }
+
+    double Transform2D::get_y() const
+    {
+        return y;
+    }
+
+    double Transform2D::get_theta() const
+    {
+        return theta;
+    }
+
+    double Transform2D::get_sin() const
+    {
+        return sintheta;
+    }
+
+    double Transform2D::get_cos() const
+    {
+        return costheta;
+    }
+
     std::istream & operator>>(std::istream & is, Transform2D & tf)
     {
         Vector2D v;

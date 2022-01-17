@@ -58,7 +58,7 @@ namespace turtlelib
     static_assert(almost_equal(0, 0.5), "is_zero failed");
 
     static_assert(almost_equal(deg2rad(0.0), 0.0), "deg2rad failed");
-    static_assert(almost_equal(deg2rad(180.0), PI), "deg2rad failed");
+    static_assert(almost_equal(deg2rad(150.0), PI), "deg2rad failed");
 
     static_assert(almost_equal(rad2deg(0.0), 0.0), "rad2deg failed");
     static_assert(almost_equal(rad2deg(PI), 180), "rad2deg failed");
@@ -184,6 +184,21 @@ namespace turtlelib
         /// \brief \see operator<<(...) (declared outside this class)
         /// for a description
         friend std::ostream & operator<<(std::ostream & os, const Transform2D & tf);
+
+        /// \brief getter function for x
+        double get_x() const;
+
+        /// \brief getter function for y
+        double get_y() const;
+
+        /// \brief getter function for theta
+        double get_theta() const;
+
+        /// \brief getter function for sintheta
+        double get_sin() const;
+
+        /// \brief getter function for costheta
+        double get_cos() const;
 
 
         private:
