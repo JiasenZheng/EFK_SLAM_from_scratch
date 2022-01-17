@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../include/turtlelib/rigid2d.hpp
+iosfwd
+-
+cmath
+-
+string
+-
+
+/home/jason/slam_ws/src/turtlelib/src/frame_main.cpp
+turtlelib/rigid2d.hpp
+/home/jason/slam_ws/src/turtlelib/src/turtlelib/rigid2d.hpp
+iostream
+-
+
