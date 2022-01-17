@@ -1,4 +1,4 @@
-#include"../include/rigid2d.hpp"
+#include"turtlelib/rigid2d.hpp"
 #include<iostream>
 
 /// \brief set up namespaces
