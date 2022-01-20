@@ -4,7 +4,7 @@
         <arg name = "use_jsp" value = "false"/>
         <arg name = "color" value = "red"/>
     </include>
-    <!-- <node name = "rviz" pkg = "rviz" type = "rviz" args = "-d $(find nusim)/config/nusim.rviz"/> -->
+    <node name = "rviz" pkg = "rviz" type = "rviz" args = "-d $(find nusim)/config/nusim.rviz"/>
 
     <rosparam command = "load" file = "$(find nusim)/config/basic_world.yaml"/>
     <node name = "nusim" pkg = "nusim" type = "nusim" output = "screen"/>
