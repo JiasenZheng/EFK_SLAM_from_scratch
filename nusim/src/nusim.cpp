@@ -39,6 +39,9 @@ static sensor_msgs::JointState js;
 static double x_0;
 static double y_0;
 static double theta_0;
+static double x;
+static double y;
+static double theta;
 
 
 
@@ -48,6 +51,9 @@ bool reset_callback(std_srvs::Trigger::Request &req,
                     std_srvs::Trigger::Response &res)
 {
     count = 0;
+    x = x_0;
+    y = y_0;
+    theta = theta_0;
     res.success = 1;
     res.message = "Reset successfully!";
     return true;
@@ -58,9 +64,9 @@ bool telep_callback(nusim::Telep::Request &req,
 {
     ROS_INFO("X_coordinate: %f  Y_coordinate: %f  Angle_radians: %f", req.x_coord, req.y_coord, req.radians);
 
-    x_0 = req.x_coord;
-    y_0 = req.y_coord;
-    theta_0 = req.radians;
+    x = req.x_coord;
+    y = req.y_coord;
+    theta = req.radians;
 
     return true;
 }
@@ -81,9 +87,13 @@ int main(int argc, char * argv[])
     js.position.push_back(0);
     js.position.push_back(0);
 
-    nh.param("x0",x_0,0.0);
-    nh.param("y0",y_0,0.0);
-    nh.param("theta0",theta_0,0.0);
+    nh.param("x0",x,0.0);
+    nh.param("y0",y,0.0);
+    nh.param("theta0",theta,0.0);
+
+    x_0 = x;
+    y_0 = y;
+    theta_0 = theta;
 
 
     while (ros::ok())
@@ -95,12 +105,12 @@ int main(int argc, char * argv[])
         trans.child_frame_id = "red-base_footprint";
         trans.header.frame_id = "world";
 
-        trans.transform.translation.x = x_0;
-        trans.transform.translation.y = y_0;
+        trans.transform.translation.x = x;
+        trans.transform.translation.y = y;
         trans.transform.translation.z = 0;
 
         tf2::Quaternion q;
-        q.setRPY(0,0,theta_0);
+        q.setRPY(0,0,theta);
         trans.transform.rotation.x = q.x();
         trans.transform.rotation.y = q.y();
         trans.transform.rotation.z = q.z();
