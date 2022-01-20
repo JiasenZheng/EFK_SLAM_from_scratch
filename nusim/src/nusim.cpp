@@ -8,6 +8,7 @@
 #include <tf2_ros/transform_broadcaster.h>
 #include <geometry_msgs/TransformStamped.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <nusim/Telep.h>
 
 /**
  * @brief to simulate and visualize the turtlebot in Rviz
@@ -33,6 +34,7 @@ static ros::Publisher time_pub;
 static ros::Publisher js_pub;
 static long count;
 static ros::ServiceServer reset_service;
+static ros::ServiceServer telep_service;
 static sensor_msgs::JointState js;
 static double x_0;
 static double y_0;
@@ -46,14 +48,22 @@ bool reset_callback(std_srvs::Trigger::Request &req,
                     std_srvs::Trigger::Response &res)
 {
     count = 0;
-    // timestep.data = 0;
-    ROS_INFO("Timestep reset!");
     res.success = 1;
-    res.message = "Timestep reset!";
+    res.message = "Reset successfully!";
     return true;
 }
 
+bool telep_callback(nusim::Telep::Request &req,
+                    nusim::Telep::Response &res)
+{
+    ROS_INFO("X_coordinate: %f  Y_coordinate: %f  Angle_radians: %f", req.x_coord, req.y_coord, req.radians);
 
+    x_0 = req.x_coord;
+    y_0 = req.y_coord;
+    theta_0 = req.radians;
+
+    return true;
+}
 
 int main(int argc, char * argv[])
 {
@@ -63,6 +73,7 @@ int main(int argc, char * argv[])
     time_pub = nh.advertise<std_msgs::UInt64>("timestep",100);
     js_pub = nh.advertise<sensor_msgs::JointState>("red/joint_states",100);
     reset_service = nh.advertiseService("reset",reset_callback);
+    telep_service = nh.advertiseService("telep",telep_callback);
     ros::Rate loop_rate(rate);
     count = 0;
     js.name.push_back("red-wheel_left_joint");
