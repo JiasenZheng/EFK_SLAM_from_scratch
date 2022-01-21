@@ -18,7 +18,6 @@
  *      js_pub (sensor_msgs::JointState; red/joint_states): simulated joint states
  *      array_pub (visualization_msgs::MarkerArray; obstacles): add cylindrical obstacles to the environment
  *      
- *      
  * BROADCASTERS:
  *      tf: broadcast a transform between the world frame and red::base_footprint
  *      
@@ -27,6 +26,7 @@
  *      telep_service (telep): enable moving the robot to a desired (x,y,theta) pose
  * 
  */
+
 
 static const int rate = 500; 
 static std_msgs::UInt64 timestep;
@@ -47,7 +47,13 @@ static double theta;
 
 
 
-
+/**
+ * @brief The call back function for reset service to rest the timestep and the position of the robot
+ * 
+ * @param req An empty request
+ * @param res An response contains a message and tells if succeed
+ * @return true if the call back implemented successfully
+ */
 bool reset_callback(std_srvs::Trigger::Request &req,
                     std_srvs::Trigger::Response &res)
 {
@@ -60,6 +66,13 @@ bool reset_callback(std_srvs::Trigger::Request &req,
     return true;
 }
 
+/**
+ * @brief The call back function for telep to move the robot to a user-specified position
+ * 
+ * @param req A request contains the position information (x,y coordinates, and rotational angle)
+ * @param res An empty response
+ * @return true if the callback implemented successfully
+ */
 bool telep_callback(nusim::Telep::Request &req,
                     nusim::Telep::Response &res)
 {
@@ -72,6 +85,11 @@ bool telep_callback(nusim::Telep::Request &req,
     return true;
 }
 
+/**
+ * @brief Set the obstacles markers in Rviz 
+ * 
+ * @param nh node handle
+ */
 void set_obs(ros::NodeHandle nh)
 {
     visualization_msgs::MarkerArray obs;
