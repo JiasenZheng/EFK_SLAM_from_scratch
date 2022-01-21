@@ -8,7 +8,7 @@
 #include <tf2_ros/transform_broadcaster.h>
 #include <geometry_msgs/TransformStamped.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
-#include <nusim/Telep.h>
+#include "nusim/Telep.h"
 
 /**
  * @brief to simulate and visualize the turtlebot in Rviz
@@ -129,8 +129,8 @@ void set_obs(ros::NodeHandle nh)
         position.x = v_x[i];
         position.y = v_y[i];
         position.z = h/2;
-        ROS_INFO("pos_x: %f",position.x);
-        ROS_INFO("pos_y: %f",position.y);
+        // ROS_INFO("pos_x: %f",position.x);
+        // ROS_INFO("pos_y: %f",position.y);
 
         marker.pose.position = position;
         marker.pose.orientation = rotation;

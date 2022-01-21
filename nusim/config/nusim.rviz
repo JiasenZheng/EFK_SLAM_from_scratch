@@ -6,7 +6,8 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
-        - /RobotModel1
+        - /TF1
+        - /TF1/Frames1
       Splitter Ratio: 0.5
     Tree Height: 851
   - Class: rviz/Selection
@@ -110,6 +111,49 @@ Visualization Manager:
         "": true
       Queue Size: 100
       Value: true
+    - Class: rviz/TF
+      Enabled: true
+      Frame Timeout: 15
+      Frames:
+        All Enabled: false
+        red-base_footprint:
+          Value: true
+        red-base_link:
+          Value: false
+        red-base_scan:
+          Value: false
+        red-caster_back_link:
+          Value: false
+        red-imu_link:
+          Value: false
+        red-wheel_left_link:
+          Value: false
+        red-wheel_right_link:
+          Value: false
+        world:
+          Value: true
+      Marker Alpha: 1
+      Marker Scale: 1
+      Name: TF
+      Show Arrows: true
+      Show Axes: true
+      Show Names: true
+      Tree:
+        world:
+          red-base_footprint:
+            red-base_link:
+              red-base_scan:
+                {}
+              red-caster_back_link:
+                {}
+              red-imu_link:
+                {}
+              red-wheel_left_link:
+                {}
+              red-wheel_right_link:
+                {}
+      Update Interval: 0
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -138,7 +182,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 1.8979061841964722
+      Distance: 3.822509527206421
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
