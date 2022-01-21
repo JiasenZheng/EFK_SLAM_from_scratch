@@ -32,6 +32,7 @@ static const int rate = 500;
 static std_msgs::UInt64 timestep;
 static ros::Publisher time_pub;
 static ros::Publisher js_pub;
+static ros::Publisher obs_pub;
 static long count;
 static ros::ServiceServer reset_service;
 static ros::ServiceServer telep_service;
@@ -71,6 +72,60 @@ bool telep_callback(nusim::Telep::Request &req,
     return true;
 }
 
+void set_obs(ros::NodeHandle nh)
+{
+    visualization_msgs::MarkerArray obs;
+    std::vector<double> v_x;
+    std::vector<double> v_y;
+    double r;
+    double h;
+
+    geometry_msgs::Quaternion rotation;
+    rotation.x = 0;
+    rotation.y = 0;
+    rotation.z = 0;
+    rotation.w = 1;
+
+    std_msgs::ColorRGBA colour;
+    colour.r = 1;
+    colour.g = 0;
+    colour.b = 0;
+    colour.a = 1;
+
+    nh.getParam("cylinder_xs",v_x);
+    nh.getParam("cylinder_ys",v_y);
+    nh.getParam("cylinder_r",r);
+    nh.getParam("cylinder_h",h);
+    
+    for (int i=0; i<v_x.size();i++)
+    {
+        visualization_msgs::Marker marker;
+        geometry_msgs::Point position;
+
+        marker.type = marker.CYLINDER;
+        marker.color = colour;
+        marker.scale.x = r;
+        marker.scale.y = r;
+        marker.scale.z = h;
+
+        position.x = v_x[i];
+        position.y = v_y[i];
+        position.z = h/2;
+        ROS_INFO("pos_x: %f",position.x);
+        ROS_INFO("pos_y: %f",position.y);
+
+        marker.pose.position = position;
+        marker.pose.orientation = rotation;
+        marker.header.frame_id = "world";
+        marker.header.stamp = ros::Time::now();
+        marker.id = i;
+
+        obs.markers.push_back(marker);
+    }
+    obs_pub.publish(obs);
+
+}
+
 int main(int argc, char * argv[])
 {
     ros::init(argc, argv, "nusim");
@@ -78,6 +133,7 @@ int main(int argc, char * argv[])
     static tf2_ros::TransformBroadcaster br;
     time_pub = nh.advertise<std_msgs::UInt64>("timestep",100);
     js_pub = nh.advertise<sensor_msgs::JointState>("red/joint_states",100);
+    obs_pub = nh.advertise<visualization_msgs::MarkerArray>("obstacles",100);
     reset_service = nh.advertiseService("reset",reset_callback);
     telep_service = nh.advertiseService("telep",telep_callback);
     ros::Rate loop_rate(rate);
@@ -98,6 +154,7 @@ int main(int argc, char * argv[])
 
     while (ros::ok())
     {
+        set_obs(nh);
         // construct a transform
         geometry_msgs::TransformStamped trans;
         

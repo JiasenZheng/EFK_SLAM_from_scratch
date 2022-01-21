@@ -1,3 +1,4 @@
+// #include"../include/turtlelib/rigid2d.hpp"
 #include"turtlelib/rigid2d.hpp"
 #include<iostream>
 
@@ -22,8 +23,14 @@ namespace turtlelib
 
     std::istream & operator>>(std::istream & is, Vector2D & v)
     {
-        is >> v.x;
-        is >> v.y;
+        // char c1;
+        // c1 = is.peek();     
+
+        // if (c1 == '[')
+        // {
+        //     is.get();
+        // }
+        is >> v.x >> v.y;
         return is;
     }
 

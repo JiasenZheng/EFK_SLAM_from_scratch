@@ -24,7 +24,7 @@ namespace turtlelib
     /// if given a compile-time constant as input
     constexpr bool almost_equal(double d1, double d2, double epsilon=1.0e-12)
     {
-        if (abs(d1-d2)< epsilon)
+        if (fabs(d1-d2)< epsilon)
         {
             return true;
         }
@@ -55,10 +55,14 @@ namespace turtlelib
     /// You should also purposely (and temporarily) make one of these tests fail
     /// just to see what happens
     static_assert(almost_equal(0, 0), "is_zero failed");
-    static_assert(almost_equal(0, 0.5), "is_zero failed");
+    // static_assert(almost_equal(1, 1.5, 0.5), "almost_euqal failed");
+    static_assert(almost_equal(1.0, 1.1, 0.5), "almost_euqal failed");
+    // static_assert(false, "almost_euqal failed");
 
     static_assert(almost_equal(deg2rad(0.0), 0.0), "deg2rad failed");
-    static_assert(almost_equal(deg2rad(150.0), PI), "deg2rad failed");
+    static_assert(almost_equal(deg2rad(180.0), PI), "deg2rad failed");
+    // static_assert(1 == 2, "deg2rad failed");
+
 
     static_assert(almost_equal(rad2deg(0.0), 0.0), "rad2deg failed");
     static_assert(almost_equal(rad2deg(PI), 180), "rad2deg failed");
