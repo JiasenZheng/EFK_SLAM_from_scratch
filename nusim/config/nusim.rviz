@@ -103,14 +103,6 @@ Visualization Manager:
       Update Interval: 0
       Value: true
       Visual Enabled: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /obstacles
-      Name: MarkerArray
-      Namespaces:
-        "": true
-      Queue Size: 100
-      Value: true
     - Class: rviz/TF
       Enabled: true
       Frame Timeout: 15
@@ -153,6 +145,14 @@ Visualization Manager:
               red-wheel_right_link:
                 {}
       Update Interval: 0
+      Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /nusim/obstacles
+      Name: MarkerArray
+      Namespaces:
+        "": true
+      Queue Size: 100
       Value: true
   Enabled: true
   Global Options:

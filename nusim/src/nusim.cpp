@@ -151,9 +151,9 @@ int main(int argc, char * argv[])
     static tf2_ros::TransformBroadcaster br;
     time_pub = nh.advertise<std_msgs::UInt64>("timestep",100);
     js_pub = nh.advertise<sensor_msgs::JointState>("red/joint_states",100);
-    obs_pub = nh.advertise<visualization_msgs::MarkerArray>("obstacles",100);
-    reset_service = nh.advertiseService("reset",reset_callback);
-    telep_service = nh.advertiseService("telep",telep_callback);
+    obs_pub = nh.advertise<visualization_msgs::MarkerArray>("nusim/obstacles",100);
+    reset_service = nh.advertiseService("nusim/reset",reset_callback);
+    telep_service = nh.advertiseService("nusim/telep",telep_callback);
     ros::Rate loop_rate(rate);
     count = 0;
     js.name.push_back("red-wheel_left_joint");
