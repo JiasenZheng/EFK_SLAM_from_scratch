@@ -1,2 +1,3 @@
 wheel_radius: 0.033 # radius of the wheels
 track_width: 0.16 # distance between the wheels
+collision_radius: 0.11 # collision radius of base_link
