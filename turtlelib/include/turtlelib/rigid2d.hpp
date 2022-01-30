@@ -80,16 +80,72 @@ namespace turtlelib
         /// \brief the y coordinate
         double y = 0.0;
 
+    
+
         /// \brief normalize a 2D vector
-        /// \param v - a input 2D vector
+        /// \param v - an input 2D vector
         /// \return Vector2D - the output normalized vector
         Vector2D normalize();  
+
+        /// \brief += operator for Vector2D
+        /// \param rhs - an input 2D vector on the righ hand side
+        /// \return Vector2D - the output 2D calculated vector
+        Vector2D & operator+=(const Vector2D & rhs);
+
+        /// \brief -= operator for Vector2D
+        /// \param rhs - an input 2D vector on the righ hand side
+        /// \return Vector2D - the output 2D calculated vector
+        Vector2D & operator-=(const Vector2D & rhs);
+
+        /// \brief *= operator for Vector2D
+        /// \param rhs - an input 2D vector on the righ hand side
+        /// \return Vector2D - the output 2D calculated vector
+        Vector2D & operator*=(const double & rhs);
+
+        /// \brief dot product of two vector
+        /// \param
+        /// \return 
+        double dot(const Vector2D & rhs);
+
+        /// \brief magnitude of the vector
+        /// \return calculated magnitude
+        double mag();
     };
 
     /// \brief output a 2 dimensional vector as [xcomponent ycomponent]
     /// os - stream to output to
     /// v - the vector to print
     std::ostream & operator<<(std::ostream & os, const Vector2D & v);
+
+    /// \brief + operator for Vectpr2D
+    /// 
+    /// \param lhs - an input 2D vector 
+    /// \param rhs - an input 2D vector
+    /// \return Vector2D - the output 2D calculated vector
+    Vector2D operator+(const Vector2D &lhs, const Vector2D &rhs);
+
+    /// \brief - operator for Vectpr2D
+    /// 
+    /// \param lhs - an input 2D vector 
+    /// \param rhs - an input 2D vector
+    /// \return Vector2D - the output 2D calculated vector
+    Vector2D operator-(const Vector2D &lhs, const Vector2D &rhs);
+
+    /// \brief * operator for Vectpr2D
+    /// 
+    /// \param lhs - a scalar
+    /// \param rhs - an input 2D vector
+    /// \return Vector2D - the output 2D calculated vector
+    Vector2D operator*(const double &lhs, const Vector2D &rhs);
+
+    /// \brief * operator for Vectpr2D
+    /// 
+    /// \param lhs - an input 2D vector
+    /// \param rhs - a scalar
+    /// \return Vector2D - the output 2D calculated vector
+    Vector2D operator*(const Vector2D &lhs, const double &rhs);
+
+    double angle(Vector2D &lhs, Vector2D &rhs);
 
     /// \brief input a 2 dimensional vector
     ///   You should be able to read vectors entered as follows:
@@ -237,10 +293,16 @@ namespace turtlelib
     /// \param rhs - the right hand operand
     /// \return the composition of the two transforms
     /// HINT: This function should be implemented in terms of *=
-    Transform2D operator*(Transform2D lhs, const Transform2D & rhs);
+    Transform2D operator*(const Transform2D & lhs, const Transform2D & rhs);
 
+    /// 
+    /// \brief convert angle to equivalent angle angle in the interval (-pi,pi]
+    /// 
+    /// \param rad input angle in radians
+    /// \return output angle in the interval 
+    double normalize_angle(double & rad);
 
-
+    Transform2D integrate_twist( Twist2D twist);
 }
 
 #endif

@@ -10,6 +10,8 @@ using turtlelib::Transform2D;
 using turtlelib::Twist2D;
 using turtlelib::Vector2D;
 using turtlelib::almost_equal;
+using turtlelib::normalize_angle;
+using turtlelib::angle;
 using turtlelib::PI;
 using std::stringstream;
 using std::string;
@@ -211,3 +213,56 @@ TEST_CASE("The '*' operator of the transform", "[transform]")
     REQUIRE(almost_equal(tf_ac.get_theta(), PI));
 }
 
+TEST_CASE("Normalize angle","[transform]")
+{
+    double r1=PI, r2=-PI, r3=0,r4=-PI/4, r5=3*PI/2, r6=-5*PI/2;
+
+    REQUIRE(almost_equal(normalize_angle(r1),PI));
+    REQUIRE(almost_equal(normalize_angle(r2),PI));
+    REQUIRE(almost_equal(normalize_angle(r3),0));
+    REQUIRE(almost_equal(normalize_angle(r4),-PI/4));
+    REQUIRE(almost_equal(normalize_angle(r5),-PI/2));
+    REQUIRE(almost_equal(normalize_angle(r6),-PI/2));
+}
+
+TEST_CASE("Operations in Vector2D","[transform]")
+{
+    Vector2D v1, v2, v3, v4;
+    double i = 2.0;
+    v1.x = 1.0;
+    v1.y = 1.0;
+    v2.x = 2.0;
+    v2.y = 2.0;
+    v4.x = -1.0;
+    v4.y = 1.0;
+
+    v1+=v2;
+    REQUIRE(almost_equal(v1.x,3.0));
+    REQUIRE(almost_equal(v1.y,3.0));
+    v1-=v2;
+    REQUIRE(almost_equal(v1.x,1.0));
+    REQUIRE(almost_equal(v1.y,1.0));
+    v1*=i;
+    REQUIRE(almost_equal(v1.x,2.0));
+    REQUIRE(almost_equal(v1.y,2.0));
+    v3 = v1+v2;
+    REQUIRE(almost_equal(v3.x,4.0));
+    REQUIRE(almost_equal(v3.y,4.0));
+    v3 = v1-v2;
+    REQUIRE(almost_equal(v3.x,0.0));
+    REQUIRE(almost_equal(v3.y,0.0));
+    v3 = i*v2;
+    REQUIRE(almost_equal(v3.x,4.0));
+    REQUIRE(almost_equal(v3.y,4.0));
+    v3 = v2*i;
+    REQUIRE(almost_equal(v3.x,4.0));
+    REQUIRE(almost_equal(v3.y,4.0));
+    i = v1.dot(v2);
+    REQUIRE(almost_equal(i,8.0));
+    i = v2.mag();
+    REQUIRE(almost_equal(i,sqrt(8.0)));
+    i = angle(v2,v4);
+    REQUIRE(almost_equal(i,PI/2));
+    
+
+}
