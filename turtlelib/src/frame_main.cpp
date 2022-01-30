@@ -15,6 +15,7 @@ using std::string;
 int main()
 {
     /// \brief initialize parameters
+    /// rec: better to initialize closer to where used
     Transform2D Tab, Tba, Tbc, Tcb, Tac, Tca;
     Vector2D v_a, v_b, v_c, v_bhat;
     Twist2D t_a, t_b, t_c;

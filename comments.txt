@@ -1,0 +1,65 @@
+catkin_lint -W2 [catkin_lint warnings] -1
+catkin_make
+
+Task A.
+README.md
+   - command
+   - command
+   - Rviz screenshot
+
+roslaunch nuturtle_description load.launch
+[only works for black. You need to pass an argument changing the fixed
+frame in rviz and launch rviz in the correct namespace to make it work for all colors] -1
+
+roslaunch nuturtle_description load_all.launch 
+
+
+Minimal Files To Display Turtlebot:
+meshes/
+   burger_base.stl
+   lds.stl
+   left_tire.stl
+   right_tire.stl
+urdf/
+   common_properties.xacro
+   turtlebot3_burger.urdf.xacro
+   [.gazebo.xacro file is not needed] -1
+   
+config/diff_params.yaml
+   wheel_radius: 0.033
+   wheel_track: 0.160
+
+Task B.
+     [added public members to transform2d] -1
+     static_assertions?
+     unit_tests (enough + passed?)
+[Some of my tests failed, related to IO rather than computation] -1
+/// Test 1
+    stringstream ss2;
+    ss2 << "45 -1 7";
+    ss2 >> tfin;
+    CHECK(tfin.rotation() == Approx(PI/4.0));
+    CHECK(tfin.translation().x == Approx(-1));
+    CHECK(tfin.translation().y == Approx(7));
+// TEST 2
+    const auto v = Vector2D{1.0, 3.0};
+    stringstream ss;
+    ss << v;
+    CHECK(ss.str() == "[1 3]");
+    Vector2D vin{};
+    ss >> vin;
+    CHECK(vin.x == 1.0);
+    CHECK(vin.y == 3.0);
+
+Code works?
+     conceptual questions [Classes and structs are identical.  The geeksforgeeks article you cited is actually incorrect, be careful with that website.
+                           see inline for details.] (No points off, since you cited a source)
+
+Task C.
+   roslaunch nusim.launch
+   clock is published?
+   [ This does not seem to incrementing at each simulation timestep, but rather once a second or something]
+   teleport works? [ it works, but it is called telep instead of teleport] -1 
+   reset works?
+   README
+-6

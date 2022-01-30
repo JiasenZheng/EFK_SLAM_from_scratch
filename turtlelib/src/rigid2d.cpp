@@ -48,7 +48,7 @@ namespace turtlelib
         return is;
     }
 
-    Transform2D::Transform2D()
+    Transform2D::Transform2D() /// rec: constructor initializer, delegating constructors
     {
         x = 0.0;
         y = 0.0;
@@ -190,7 +190,7 @@ namespace turtlelib
 
     Transform2D operator*(Transform2D lhs, const Transform2D & rhs)
     {
-        Transform2D tf;
+        Transform2D tf; /// rec: combine this and the following into one line: auto tf = lhs;
         tf = lhs;
         tf *= rhs;
         return tf;

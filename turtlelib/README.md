@@ -44,7 +44,13 @@ A library for handling transformations in SE(2) and other turtlebot-related math
 * [C++ Core Guidelines](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#S-class) C.4: Make a function a member only if it needs direct access to the representation of a class
 
 2. What is the difference between a class and a struct in C++?<br><br>
-Members of a class are private by default while members of a struct is public by default. As a result, a structure is not secure and cannot hide its implementation details from the end-user.
+Members of a class are private by default while members of a struct is public by default. As a result, a structure is not secure and cannot hide its implementation details from the end-user. 
+[ The first sentence is correct, the second sentence is false (you can make members of a struct private).
+
+geekforgeeks.org sometimes has information explained easily, but it is also not a good source for information
+Unfortunately, in this case, that article has lots of incorrect information (for example, the middle two items in the comparison talbe are incorrect)
+
+See: https://en.cppreference.com/w/cpp/language/class "one of class or struct. The keyowrds are identical except for the default member access and the default base class access"
 
 * Reference: https://www.geeksforgeeks.org/structure-vs-class-in-cpp/
 

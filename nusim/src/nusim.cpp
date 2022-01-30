@@ -9,7 +9,8 @@
 #include <geometry_msgs/TransformStamped.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 #include "nusim/Telep.h"
-
+/// rec: this is just a style recommendation, but I prefer to save C style /**/ comments for when I'm commenting out for debugging,
+/// if you use them in your code then you can't easily comment out large sections if they have /**/ in them since these comments can't be nested
 /**
  * @brief to simulate and visualize the turtlebot in Rviz
  * 
@@ -28,6 +29,7 @@
  */
 
 
+/// rec: make sure you need to be sharing all these variables
 static const int rate = 500; 
 static std_msgs::UInt64 timestep;
 static ros::Publisher time_pub;
@@ -76,6 +78,7 @@ bool reset_callback(std_srvs::Trigger::Request &req,
 bool telep_callback(nusim::Telep::Request &req,
                     nusim::Telep::Response &res)
 {
+    /// rec: prefer ROS_INFO_STREAM to ROS_INFO.  Format specifiers are a source of bugs
     ROS_INFO("X_coordinate: %f  Y_coordinate: %f  Angle_radians: %f", req.x_coord, req.y_coord, req.radians);
 
     x = req.x_coord;
@@ -95,7 +98,7 @@ void set_obs(ros::NodeHandle nh)
     visualization_msgs::MarkerArray obs;
     std::vector<double> v_x;
     std::vector<double> v_y;
-    double r;
+    double r; /// rec: these are unitiialized local variables, very dangerous!
     double h;
 
     geometry_msgs::Quaternion rotation;
@@ -115,7 +118,7 @@ void set_obs(ros::NodeHandle nh)
     nh.getParam("cylinder_r",r);
     nh.getParam("cylinder_h",h);
     
-    for (int i=0; i<v_x.size();i++)
+    for (int i=0; i<v_x.size();i++) /// rec: i should be size_t
     {
         visualization_msgs::Marker marker;
         geometry_msgs::Point position;

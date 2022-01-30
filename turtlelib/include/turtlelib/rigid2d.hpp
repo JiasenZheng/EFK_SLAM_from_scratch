@@ -24,7 +24,7 @@ namespace turtlelib
     /// if given a compile-time constant as input
     constexpr bool almost_equal(double d1, double d2, double epsilon=1.0e-12)
     {
-        if (fabs(d1-d2)< epsilon)
+        if (fabs(d1-d2)< epsilon) /// rec: why not just return fabs(d1-d2) < epsilon?
         {
             return true;
         }
@@ -39,7 +39,7 @@ namespace turtlelib
     /// \returns radians
     constexpr double deg2rad(double deg)
     {
-        return (deg*PI)/180;
+        return (deg*PI)/180; /// rec: use 180.0
     }
 
     /// \brief convert radians to degrees
@@ -189,6 +189,7 @@ namespace turtlelib
             /// for a description
             friend std::ostream & operator<<(std::ostream & os, const Transform2D & tf);
 
+        /// rec: You were not supposed to add any public members to this class.  they are redundant due to translation/rotation
             /// \brief getter function for x
             double get_x() const;
 
