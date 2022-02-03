@@ -1,0 +1,61 @@
+#include "turtlelib/diff_drive.hpp"
+#include "turtlelib/rigid2d.hpp"
+#include <iostream>
+
+namespace turtlelib
+{
+    Velocity::Velocity()
+    {
+        left = 0.0;
+        right = 0.0;
+    }
+    Velocity::Velocity(const double &l, const double &r)
+    {
+        left = l;
+        right = r;
+    }
+    Position::Position()
+    {
+        left = 0.0;
+        right = 0.0;
+    }
+    Position::Position(const double &l, const double &r)
+    {
+        left = l;
+        right = r;
+    }
+
+    DiffDrive::DiffDrive(const double &wr, const double &wt, const Transform2D &tf)
+    {
+        wheel_radius = wr;
+        wheel_track = wt;
+        Twb = tf;
+    }
+
+    Velocity DiffDrive::calculate_wheel_velocity(const Twist2D &t)
+    {
+        Velocity vel;
+        vel.left = (-(wheel_track/2)*t.omega+t.x_dot)/wheel_radius;
+        vel.right = ((wheel_track/2)*t.omega+t.x_dot)/wheel_radius;
+        return vel;     
+    }
+
+    Twist2D DiffDrive::calculate_twist(const Velocity &vel)
+    {
+        Twist2D t;
+
+        t.y_dot = 0.0;
+        t.x_dot = wheel_radius*(vel.right+vel.left)/2;
+        t.omega = wheel_radius*(vel.right-vel.left)/wheel_track;
+        return t;
+    }
+
+    void DiffDrive::update_config(const Position &p)
+    {
+        Velocity vel(p.left,p.right);
+        Twist2D t = calculate_twist(vel);
+        Transform2D Tbb1 = integrate_twist(t);
+        // update configuration in private member
+        Twb*=Tbb1;
+    }
+}

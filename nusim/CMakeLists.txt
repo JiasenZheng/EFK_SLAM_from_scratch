@@ -8,14 +8,14 @@ project(nusim)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+  message_generation  
   roscpp
+  sensor_msgs
+  std_msgs
+  std_srvs
   tf2
   tf2_ros
-  message_generation
-  sensor_msgs
-  std_srvs
   visualization_msgs
-  std_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -109,7 +109,7 @@ generate_messages(
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES nusim
- CATKIN_DEPENDS roscpp std_msgs message_runtime 
+ CATKIN_DEPENDS message_runtime roscpp std_msgs  
 #  DEPENDS system_lib
 )
 

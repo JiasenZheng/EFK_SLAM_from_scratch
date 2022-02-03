@@ -1,5 +1,5 @@
 // #include"../include/turtlelib/rigid2d.hpp"
-#include <turtlelib/rigid2d.hpp>
+#include "turtlelib/rigid2d.hpp"
 #include <iostream>
 
 namespace turtlelib
@@ -162,6 +162,15 @@ namespace turtlelib
         costheta = cos(theta);
     }
 
+    Transform2D::Transform2D(double x_coord, double y_coord, double radians)
+    {
+        x = x_coord;
+        y = y_coord;
+        theta = radians;
+        sintheta = sin(theta);
+        costheta = cos(theta);
+    }
+
     Vector2D Transform2D::operator()(Vector2D v) const
     {
         Vector2D v_trans;
@@ -282,25 +291,24 @@ namespace turtlelib
         return rad;
     }
 
-    Transform2D integrate_twist( Twist2D &t)
+    Transform2D integrate_twist( Twist2D t)
     {
-        Vector2D v1,v2;
         if (almost_equal(t.omega, 0.0))
         {
-            v1.x = t.x_dot;
-            v1.y = t.y_dot;
-            Transform2D Tbb1(v1);
+            Transform2D Tbb1(t.x_dot, t.y_dot, 0.0);
             return Tbb1;
         }
         else
         {
-            double rad = t.omega;
-            t.x_dot = t.x_dot / t.omega;
-            t.y_dot = t.y_dot / t.omega;
-            v2.x = sin(t.omega) * t.x_dot + (cos(t.omega) - 1) * t.y_dot;
-            v2.y = (1 - cos(t.omega)) * t.x_dot + sin(t.omega) * t.y_dot;
+            double xs = t.y_dot/t.omega;
+            double ys = -t.x_dot/t.omega;
+            Transform2D Tsb(xs,ys,0.0);
+            Transform2D Ts1b1 = Tsb;
+            Transform2D Tbs(-xs,-ys,0.0);
+            Transform2D Tss1(t.omega);
+            Transform2D Tbs1 = Tbs*Tss1;
+            Transform2D Tbb1 = Tbs1*Ts1b1;
 
-            Transform2D Tbb1(v2,rad);
             return Tbb1;
         }
     }

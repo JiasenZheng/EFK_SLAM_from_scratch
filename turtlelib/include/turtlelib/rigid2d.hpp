@@ -209,8 +209,15 @@ namespace turtlelib
             /// \brief Create a transformation with a translational and rotational
             /// component
             /// \param trans - the translation
-            /// \param rot - the rotation, in radians
+            /// \param radians - the rotation, in radians
             Transform2D(Vector2D trans, double radians);
+
+            /// \brief Create a transformation with x,y-coordinates and rotational
+            /// component
+            /// \param x_coord - x-coordinate
+            /// \param y_coord - y-coordinate
+            /// \param radians the rotation, in radians
+            Transform2D(double x_coord, double y_coord, double radians);
 
             /// \brief apply a transformation to a Vector2D
             /// \param v - the vector to transform
@@ -302,7 +309,7 @@ namespace turtlelib
     /// \return output angle in the interval 
     double normalize_angle(double & rad);
 
-    Transform2D integrate_twist( Twist2D twist);
+    Transform2D integrate_twist( Twist2D t);
 }
 
 #endif
