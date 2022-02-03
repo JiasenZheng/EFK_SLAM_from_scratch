@@ -1,19 +1,20 @@
 // #define CATCH_CONFIG_MAIN
 #include<catch_ros/catch.hpp>
-// #include"../include/turtlelib/rigid2d.hpp"
-#include<turtlelib/rigid2d.hpp>
+#include"turtlelib/rigid2d.hpp"
+#include"turtlelib/diff_drive.hpp"
 #include<sstream>
 
 
 /// \brief set up namespaces
 using turtlelib::Transform2D;
+using turtlelib::DiffDrive;
 using turtlelib::Twist2D;
 using turtlelib::Vector2D;
+using turtlelib::Velocity;
 using turtlelib::almost_equal;
 using turtlelib::normalize_angle;
 using turtlelib::angle;
 using turtlelib::PI;
-using turtlelib::integrate_twist;
 using std::stringstream;
 using std::string;
 
@@ -292,4 +293,62 @@ TEST_CASE("Integrate Twist","[transform]")
     CHECK(almost_equal(tf3.get_theta(),PI/2));
     CHECK(tf3.get_x()==Approx(0.6366197724));
     CHECK(tf3.get_y()==Approx(1.9098593171));
+}
+
+TEST_CASE("Forward kinematics","[diff-drive]")
+{
+    Velocity v;
+    Twist2D t;
+    DiffDrive dd = DiffDrive();
+    v.left = 1.5;
+    v.right = 1.5;
+    t = dd.forward_kinematics(v);
+    CHECK(t.x_dot==Approx(0.0495));
+    v.left = -1.2;
+    v.right = 1.2;
+    t = dd.forward_kinematics(v);
+    CHECK(t.omega==Approx(0.495));
+    v.left = -1.0606060606;
+    v.right = 1.3636363636;
+    t = dd.forward_kinematics(v);
+    CHECK(t.x_dot==Approx(0.005));
+    CHECK(t.omega==Approx(0.5));
+}
+
+TEST_CASE("Inverse kinematics","[diff-drive]")
+{   
+    Transform2D tf=Transform2D();
+    DiffDrive dd = DiffDrive();
+    Twist2D t;
+    Velocity v;
+    t.y_dot = 0.0;
+    t.x_dot = 0.05;
+    t.omega = 0.0;
+    v = dd.inverse_kinematics(t);
+    CHECK(v.left==Approx(1.5151515152));
+    CHECK(v.right==Approx(1.5151515152));
+    t.x_dot = -0.05;
+    v = dd.inverse_kinematics(t);
+    CHECK(v.left==Approx(-1.5151515152));
+    CHECK(v.right==Approx(-1.5151515152));
+    t.x_dot = 0.0;
+    t.omega = 0.5;
+    v = dd.inverse_kinematics(t);
+    CHECK(v.left==Approx(-1.2121212121));
+    CHECK(v.right==Approx(1.2121212121));
+    t.omega = -0.5;
+    v = dd.inverse_kinematics(t);
+    CHECK(v.left==Approx(1.2121212121));
+    CHECK(v.right==Approx(-1.2121212121));
+    t.x_dot = 0.005;
+    t.omega = 0.5;
+    v = dd.inverse_kinematics(t);
+    CHECK(v.left==Approx(-1.0606060606));
+    CHECK(v.right==Approx(1.3636363636));
+    t.omega = -0.5;
+    v = dd.inverse_kinematics(t);
+    CHECK(v.left==Approx(1.3636363636));
+    CHECK(v.right==Approx(-1.0606060606));
+    t.y_dot = 0.005;
+    CHECK_THROWS(v = dd.inverse_kinematics(t));
 }

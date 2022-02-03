@@ -309,7 +309,7 @@ namespace turtlelib
     /// \return output angle in the interval 
     double normalize_angle(double & rad);
 
-    Transform2D integrate_twist( Twist2D t);
+    Transform2D integrate_twist( const Twist2D &t);
 }
 
 #endif

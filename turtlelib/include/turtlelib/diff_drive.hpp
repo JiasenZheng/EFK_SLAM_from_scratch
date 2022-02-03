@@ -27,13 +27,15 @@ namespace turtlelib
     {
         public:
             
-            DiffDrive(const double &wr, const double &wt,const Transform2D &tf);
+            DiffDrive();
+            
+            DiffDrive( const double &wr,  const double &wt, const Transform2D &tf);
  
-            Velocity calculate_wheel_velocity(const Twist2D &t);
-
-            Twist2D calculate_twist(const Velocity &v);
-
             void update_config(const Position &p);
+
+            Velocity inverse_kinematics(const Twist2D &t);
+
+            Twist2D forward_kinematics(const Velocity &v);
 
 
         private:
@@ -42,6 +44,7 @@ namespace turtlelib
             double wheel_track;
         
     };
+
 }
 
 #endif

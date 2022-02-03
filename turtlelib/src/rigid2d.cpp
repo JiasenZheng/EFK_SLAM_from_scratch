@@ -291,7 +291,7 @@ namespace turtlelib
         return rad;
     }
 
-    Transform2D integrate_twist( Twist2D t)
+    Transform2D integrate_twist(const Twist2D &t)
     {
         if (almost_equal(t.omega, 0.0))
         {

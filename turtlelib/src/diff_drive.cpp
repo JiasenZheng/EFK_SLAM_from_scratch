@@ -25,22 +25,34 @@ namespace turtlelib
         right = r;
     }
 
-    DiffDrive::DiffDrive(const double &wr, const double &wt, const Transform2D &tf)
+    DiffDrive::DiffDrive()
+    {
+        wheel_radius = 0.033;
+        wheel_track = 0.16;
+        Twb = Transform2D();
+    }
+
+    DiffDrive::DiffDrive( const double &wr, const double &wt, const Transform2D &tf)
     {
         wheel_radius = wr;
         wheel_track = wt;
         Twb = tf;
     }
 
-    Velocity DiffDrive::calculate_wheel_velocity(const Twist2D &t)
+
+    Velocity DiffDrive::inverse_kinematics(const Twist2D &t)
     {
+        if (!almost_equal(t.y_dot,0.0))
+        {
+            throw std::logic_error("Y_velocity should be zero.");
+        }
         Velocity vel;
         vel.left = (-(wheel_track/2)*t.omega+t.x_dot)/wheel_radius;
         vel.right = ((wheel_track/2)*t.omega+t.x_dot)/wheel_radius;
-        return vel;     
+        return vel;
     }
 
-    Twist2D DiffDrive::calculate_twist(const Velocity &vel)
+    Twist2D DiffDrive::forward_kinematics(const Velocity &vel)
     {
         Twist2D t;
 
@@ -53,7 +65,7 @@ namespace turtlelib
     void DiffDrive::update_config(const Position &p)
     {
         Velocity vel(p.left,p.right);
-        Twist2D t = calculate_twist(vel);
+        Twist2D t = forward_kinematics(vel);
         Transform2D Tbb1 = integrate_twist(t);
         // update configuration in private member
         Twb*=Tbb1;
