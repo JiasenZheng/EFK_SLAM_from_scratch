@@ -1,0 +1,5 @@
+repositories:
+  src:
+    type: git
+    url: git@github.com:ME495-Navigation/slam-project-JiasenZheng.git
+    version: main

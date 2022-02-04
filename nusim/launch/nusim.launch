@@ -1,7 +1,8 @@
 <launch>
+    <arg name = "use_jsp" default = "true" doc = "whether to view the URDF in Rviz"/>
     <include file = "$(find nuturtle_description)/launch/load.launch">
         <arg name = "use_rviz" value = "false"/>
-        <arg name = "use_jsp" value = "false"/>
+        <arg name = "use_jsp" value = '$(arg use_jsp)'/>
         <arg name = "color" value = "red"/>
     </include>
     <node name = "rviz" pkg = "rviz" type = "rviz" args = "-d $(find nusim)/config/nusim.rviz"/>

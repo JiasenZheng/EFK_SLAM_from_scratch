@@ -15,6 +15,8 @@ find_package(catkin REQUIRED COMPONENTS
   std_srvs
   tf2
   tf2_ros
+  turtlelib
+  nuturtlebot_msgs
   visualization_msgs
 )
 
@@ -61,7 +63,7 @@ find_package(catkin REQUIRED COMPONENTS
 # Generate services in the 'srv' folder
 add_service_files(
   FILES
-  Telep.srv
+  Teleport.srv
 )
 
 ## Generate actions in the 'action' folder
@@ -108,8 +110,8 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES nusim
- CATKIN_DEPENDS message_runtime roscpp std_msgs  
+ LIBRARIES turtlelib
+ CATKIN_DEPENDS message_runtime roscpp std_msgs
 #  DEPENDS system_lib
 )
 
