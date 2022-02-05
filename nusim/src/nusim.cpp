@@ -210,6 +210,10 @@ void set_walls(ros::NodeHandle nh, double x_len, double y_len)
 
 }
 
+void send_transform()
+{
+
+}
 int main(int argc, char * argv[])
 {
     ros::init(argc, argv, "nusim");
@@ -219,7 +223,7 @@ int main(int argc, char * argv[])
     js_pub = nh.advertise<sensor_msgs::JointState>("red/joint_states",100);
     obs_pub = nh.advertise<visualization_msgs::MarkerArray>("nusim/obstacles",100);
     walls_pub = nh.advertise<visualization_msgs::MarkerArray>("nusim/walls",100);
-    wp_pub = nh.advertise<nuturtlebot_msgs::SensorData>("red/sensor_data",100);
+    wp_pub = nh.advertise<nuturtlebot_msgs::SensorData>("/sensor_data",100);
     wc_sub = nh.subscribe("red/wheel_cmd",100,wc_sub_callback);
     reset_service = nh.advertiseService("nusim/reset",reset_callback);
     teleport_service = nh.advertiseService("nusim/teleport",teleport_callback);
@@ -243,6 +247,7 @@ int main(int argc, char * argv[])
     {
         set_obs(nh);
         set_walls(nh,x_length,y_length);
+        count++;
         // construct a transform
         geometry_msgs::TransformStamped trans;
         
@@ -262,7 +267,6 @@ int main(int argc, char * argv[])
         trans.transform.rotation.w = q.w();
         br.sendTransform(trans); 
 
-        count++;
         js.header.stamp = ros::Time::now();
         timestep.data = count/rate;
         time_pub.publish(timestep);
