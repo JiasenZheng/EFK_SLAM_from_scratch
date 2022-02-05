@@ -31,11 +31,11 @@ namespace turtlelib
             
             DiffDrive( const double &wr,  const double &wt, const Transform2D &tf);
  
-            void update_config(const Position &p);
-
             Velocity inverse_kinematics(const Twist2D &t);
 
             Twist2D forward_kinematics(const Velocity &v);
+
+            void update_config(const Position &p);
 
 
         private:

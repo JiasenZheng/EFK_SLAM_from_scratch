@@ -49,7 +49,7 @@ void cmd_callback(const geometry_msgs::TwistConstPtr &twist)
     // convert and store velocity in nuturtlebot::WheelCommands
     nuturtlebot_msgs::WheelCommands wc;
     wc.left_velocity = 256*vel.left*wr/2.2;
-    wc.right_velocity = 245*vel.right*wr/2.2;
+    wc.right_velocity = 256*vel.right*wr/2.2;
     // publishe wheel command 
     wc_pub.publish(wc);
 }

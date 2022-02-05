@@ -36,6 +36,7 @@
 
 
 static const int rate = 500; 
+static long count = 0;
 static std_msgs::UInt64 timestep;
 static ros::Publisher time_pub;
 static ros::Publisher js_pub;
@@ -43,10 +44,10 @@ static ros::Publisher obs_pub;
 static ros::Publisher wp_pub;
 static ros::Publisher walls_pub;
 static ros::Subscriber wc_sub;
-static long count;
 static ros::ServiceServer reset_service;
 static ros::ServiceServer teleport_service;
 static sensor_msgs::JointState js;
+static nuturtlebot_msgs::SensorData;
 static double x_0;
 static double y_0;
 static double theta_0;
@@ -159,6 +160,7 @@ void set_obs(ros::NodeHandle nh)
 
 }
 
+
 void set_walls(ros::NodeHandle nh, double x_len, double y_len)
 {
     visualization_msgs::MarkerArray walls;
@@ -210,10 +212,39 @@ void set_walls(ros::NodeHandle nh, double x_len, double y_len)
 
 }
 
-void send_transform()
+void send_transform(tf2_ros::TransformBroadcaster &br)
 {
+    geometry_msgs::TransformStamped trans;
+        
+    trans.header.stamp = ros::Time::now();
+    trans.child_frame_id = "red-base_footprint";
+    trans.header.frame_id = "world";
 
+    trans.transform.translation.x = x;
+    trans.transform.translation.y = y;
+    trans.transform.translation.z = 0;
+
+    tf2::Quaternion q;
+    q.setRPY(0,0,theta);
+    trans.transform.rotation.x = q.x();
+    trans.transform.rotation.y = q.y();
+    trans.transform.rotation.z = q.z();
+    trans.transform.rotation.w = q.w();
+    br.sendTransform(trans); 
 }
+
+void publish_js()
+{
+    js.header.stamp = ros::Time::now();
+    timestep.data = count/rate;
+    time_pub.publish(timestep);
+    js_pub.publish(js);
+}
+
+void publish_sensor_data()
+{
+}
+
 int main(int argc, char * argv[])
 {
     ros::init(argc, argv, "nusim");
@@ -223,12 +254,11 @@ int main(int argc, char * argv[])
     js_pub = nh.advertise<sensor_msgs::JointState>("red/joint_states",100);
     obs_pub = nh.advertise<visualization_msgs::MarkerArray>("nusim/obstacles",100);
     walls_pub = nh.advertise<visualization_msgs::MarkerArray>("nusim/walls",100);
-    wp_pub = nh.advertise<nuturtlebot_msgs::SensorData>("/sensor_data",100);
+    wp_pub = nh.advertise<nuturtlebot_msgs::SensorData>("/red/sensor_data",100);
     wc_sub = nh.subscribe("red/wheel_cmd",100,wc_sub_callback);
     reset_service = nh.advertiseService("nusim/reset",reset_callback);
     teleport_service = nh.advertiseService("nusim/teleport",teleport_callback);
     ros::Rate loop_rate(rate);
-    count = 0;
     js.name.push_back("red-wheel_left_joint");
     js.name.push_back("red-wheel_right_joint");
     js.position.push_back(0);
@@ -248,29 +278,9 @@ int main(int argc, char * argv[])
         set_obs(nh);
         set_walls(nh,x_length,y_length);
         count++;
-        // construct a transform
-        geometry_msgs::TransformStamped trans;
-        
-        trans.header.stamp = ros::Time::now();
-        trans.child_frame_id = "red-base_footprint";
-        trans.header.frame_id = "world";
+        send_transform(br);
+        publish_js();
 
-        trans.transform.translation.x = x;
-        trans.transform.translation.y = y;
-        trans.transform.translation.z = 0;
-
-        tf2::Quaternion q;
-        q.setRPY(0,0,theta);
-        trans.transform.rotation.x = q.x();
-        trans.transform.rotation.y = q.y();
-        trans.transform.rotation.z = q.z();
-        trans.transform.rotation.w = q.w();
-        br.sendTransform(trans); 
-
-        js.header.stamp = ros::Time::now();
-        timestep.data = count/rate;
-        time_pub.publish(timestep);
-        js_pub.publish(js);
         ros::spinOnce();
         loop_rate.sleep();
     }
