@@ -15,7 +15,7 @@
 #include "turtlelib/diff_drive.hpp"
 
 
-/// @brief to simulate and visualize the turtlebot in Rviz
+/// \brief to simulate and visualize the turtlebot in Rviz
 /// 
 /// PUBLISHERS:
 ///      time_pub (std_msgs::UInt64; timestep): current timestep of the simulation
@@ -39,15 +39,21 @@ static const int rate = 500;
 static long count = 0;
 static std_msgs::UInt64 timestep;
 static ros::Publisher time_pub;
-static ros::Publisher js_pub;
+// static ros::Publisher js_pub;
 static ros::Publisher obs_pub;
 static ros::Publisher wp_pub;
 static ros::Publisher walls_pub;
 static ros::Subscriber wc_sub;
 static ros::ServiceServer reset_service;
 static ros::ServiceServer teleport_service;
-static sensor_msgs::JointState js;
-static nuturtlebot_msgs::SensorData;
+// static sensor_msgs::JointState js;
+static turtlelib::Velocity wheel_vel_cmd = turtlelib::Velocity();
+static turtlelib::DiffDrive dd = turtlelib::DiffDrive();
+static double cmd_to_radsec;
+static double et_to_rad;
+static geometry_msgs::TransformStamped trans;
+
+
 static double x_0;
 static double y_0;
 static double theta_0;
@@ -60,11 +66,11 @@ static double y_length = 3.0;
 
 
 
-/// @brief The call back function for reset service to rest the timestep and the position of the robot
+/// \brief The call back function for reset service to rest the timestep and the position of the robot
 /// 
-/// @param req An empty request
-/// @param res An response contains a message and tells if succeed
-/// @return true if the call back implemented successfully
+/// \param req An empty request
+/// \param res An response contains a message and tells if succeed
+/// \return true if the call back implemented successfully
 
 bool reset_callback(std_srvs::Trigger::Request &req,
                     std_srvs::Trigger::Response &res)
@@ -81,16 +87,18 @@ bool reset_callback(std_srvs::Trigger::Request &req,
 /// \brief 
 /// 
 /// \param wc 
-void wc_sub_callback(const nuturtlebot_msgs::WheelCommands wc)
+void wc_callback(const nuturtlebot_msgs::WheelCommandsConstPtr &wc)
 {
-    ROS_INFO("WC_SUB_Callback");
+    ROS_INFO("WC_Callback");
+    wheel_vel_cmd.left = wc->left_velocity;
+    wheel_vel_cmd.right = wc->right_velocity;
 }
 
-/// @brief The call back function for teleport to move the robot to a user-specified position
+/// \brief The call back function for teleport to move the robot to a user-specified position
 /// 
-/// @param req A request contains the position information (x,y coordinates, and rotational angle)
-/// @param res An empty response
-/// @return true if the callback implemented successfully
+/// \param req A request contains the position information (x,y coordinates, and rotational angle)
+/// \param res An empty response
+/// \return true if the callback implemented successfully
 bool teleport_callback(nusim::Teleport::Request &req,
                     nusim::Teleport::Response &res)
 {
@@ -214,11 +222,8 @@ void set_walls(ros::NodeHandle nh, double x_len, double y_len)
 
 void send_transform(tf2_ros::TransformBroadcaster &br)
 {
-    geometry_msgs::TransformStamped trans;
         
     trans.header.stamp = ros::Time::now();
-    trans.child_frame_id = "red-base_footprint";
-    trans.header.frame_id = "world";
 
     trans.transform.translation.x = x;
     trans.transform.translation.y = y;
@@ -233,16 +238,43 @@ void send_transform(tf2_ros::TransformBroadcaster &br)
     br.sendTransform(trans); 
 }
 
-void publish_js()
+// void publish_js()
+// {
+//     js.header.stamp = ros::Time::now();
+//     timestep.data = count/rate;
+//     time_pub.publish(timestep);
+//     js_pub.publish(js);
+// }
+
+// void publish_sensor_data()
+// {
+//     nuturtlebot_msgs::SensorData;
+    
+// }
+
+void update_wheel_position(turtlelib::DiffDrive &dd, const turtlelib::Position &p)
 {
-    js.header.stamp = ros::Time::now();
-    timestep.data = count/rate;
-    time_pub.publish(timestep);
-    js_pub.publish(js);
+    // convert from radius to encoder tick
+    double left_tick = p.left/et_to_rad;
+    double right_tick = p.left/et_to_rad;
+    dd.update_position_tick(left_tick,right_tick);
+
 }
 
-void publish_sensor_data()
+void publish_wheel_position()
 {
+    nuturtlebot_msgs::SensorData sd;
+    turtlelib::Position p;
+    turtlelib::Velocity vel;
+    p.left = wheel_vel_cmd.left*cmd_to_radsec/rate;
+    p.right = wheel_vel_cmd.right*cmd_to_radsec/rate;
+    update_wheel_position(dd,p);
+    vel.left = wheel_vel_cmd.left*cmd_to_radsec;
+    vel.right = wheel_vel_cmd.right*cmd_to_radsec;
+    dd.update_config(vel);
+    sd.left_encoder = dd.get_wheel_position().left;
+    sd.right_encoder = dd.get_wheel_position().right;
+    wp_pub.publish(sd);
 }
 
 int main(int argc, char * argv[])
@@ -251,19 +283,25 @@ int main(int argc, char * argv[])
     ros::NodeHandle nh;
     static tf2_ros::TransformBroadcaster br;
     time_pub = nh.advertise<std_msgs::UInt64>("timestep",100);
-    js_pub = nh.advertise<sensor_msgs::JointState>("red/joint_states",100);
+    // js_pub = nh.advertise<sensor_msgs::JointState>("red/joint_states",100);
     obs_pub = nh.advertise<visualization_msgs::MarkerArray>("nusim/obstacles",100);
     walls_pub = nh.advertise<visualization_msgs::MarkerArray>("nusim/walls",100);
     wp_pub = nh.advertise<nuturtlebot_msgs::SensorData>("/red/sensor_data",100);
-    wc_sub = nh.subscribe("red/wheel_cmd",100,wc_sub_callback);
+    wc_sub = nh.subscribe("red/wheel_cmd",100,wc_callback);
     reset_service = nh.advertiseService("nusim/reset",reset_callback);
     teleport_service = nh.advertiseService("nusim/teleport",teleport_callback);
     ros::Rate loop_rate(rate);
-    js.name.push_back("red-wheel_left_joint");
-    js.name.push_back("red-wheel_right_joint");
-    js.position.push_back(0);
-    js.position.push_back(0);
+    // js.name.push_back("red-wheel_left_joint");
+    // js.name.push_back("red-wheel_right_joint");
+    // js.position.push_back(0);
+    // js.position.push_back(0);
 
+    // set up tf
+    trans.child_frame_id = "red-base_footprint";
+    trans.header.frame_id = "world";
+
+    nh.getParam("/motor_cmd_to_radsec",cmd_to_radsec);
+    nh.getParam("/encoder_ticks_to_rad",et_to_rad);
     nh.param("x0",x,0.0);
     nh.param("y0",y,0.0);
     nh.param("theta0",theta,0.0);
@@ -275,11 +313,12 @@ int main(int argc, char * argv[])
 
     while (ros::ok())
     {
+        count++;
         set_obs(nh);
         set_walls(nh,x_length,y_length);
-        count++;
         send_transform(br);
-        publish_js();
+        // publish_js();        
+        publish_wheel_position();
 
         ros::spinOnce();
         loop_rate.sleep();

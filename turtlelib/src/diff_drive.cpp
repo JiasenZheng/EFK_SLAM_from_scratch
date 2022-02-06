@@ -2,6 +2,7 @@
 #include "turtlelib/rigid2d.hpp"
 #include <iostream>
 
+
 namespace turtlelib
 {
     Velocity::Velocity()
@@ -30,13 +31,15 @@ namespace turtlelib
         wheel_radius = 0.033;
         wheel_track = 0.16;
         Twb = Transform2D();
+        wheel_position = Position();
     }
 
-    DiffDrive::DiffDrive( const double &wr, const double &wt, const Transform2D &tf)
+    DiffDrive::DiffDrive( const double &wr, const double &wt, const Transform2D &tf, const Position &wp)
     {
         wheel_radius = wr;
         wheel_track = wt;
         Twb = tf;
+        wheel_position = wp;
     }
 
 
@@ -62,12 +65,44 @@ namespace turtlelib
         return t;
     }
 
-    void DiffDrive::update_config(const Position &p)
+
+
+    void DiffDrive::update_position_tick(const double &left_tick, const double &right_tick)
     {
-        Velocity vel(p.left,p.right);
+        wheel_position.left+=left_tick;
+        wheel_position.right+=right_tick;
+        while(wheel_position.left >= 4096)
+        {
+            wheel_position.left-=4096;
+        }
+        while(wheel_position.left < 0)
+        {
+            wheel_position.left+=4096;
+        }
+        while(wheel_position.right >= 4096)
+        {
+            wheel_position.right-=4096;
+        }
+        while(wheel_position.right < 0)
+        {
+            wheel_position.right+=4096;
+        }
+    }
+    void DiffDrive::update_config(const Velocity &vel)
+    {
         Twist2D t = forward_kinematics(vel);
         Transform2D Tbb1 = integrate_twist(t);
         // update configuration in private member
         Twb*=Tbb1;
+    }
+
+    Position DiffDrive::get_wheel_position()
+    {
+        return wheel_position;
+    }
+
+    Transform2D DiffDrive::get_trans()
+    {
+        return Twb;
     }
 }
