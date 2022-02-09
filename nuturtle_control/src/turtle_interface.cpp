@@ -59,8 +59,8 @@ void cmd_callback(const geometry_msgs::TwistConstPtr &twist)
     vel = dd.inverse_kinematics(t);
     // convert to ticks and store velocity in nuturtlebot::WheelCommands
     nuturtlebot_msgs::WheelCommands wc;
-    wc.left_velocity = (int)(vel.left/0.024);
-    wc.right_velocity = (int)(vel.right/0.024);
+    wc.left_velocity =  (vel.left/0.024);
+    wc.right_velocity =  (vel.right/0.024);
     // ROS_INFO("Left vel in rad/sec: %f",vel.left);
     // ROS_INFO("Left vel in tick: %i",wc.left_velocity);
     // ROS_INFO("Right vel in rad/sec: %f",vel.right);

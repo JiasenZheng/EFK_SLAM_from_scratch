@@ -251,8 +251,8 @@ void publish_wheel_position()
     wheel_rotation_tick.right=(wheel_vel_cmd.right*cmd_to_radsec/rate)/et_to_rad;
     // ROS_INFO("right wheel_rotation_tick: %f", wheel_rotation_tick.right);
     // update the wheel position in tick 
-    wheel_position_tick.left = (int)(wheel_position_tick.left + wheel_rotation_tick.left)%4096;
-    wheel_position_tick.right = (int)(wheel_position_tick.right + wheel_rotation_tick.right)%4096;
+    wheel_position_tick.left =  remainder((wheel_position_tick.left + wheel_rotation_tick.left),4096);
+    wheel_position_tick.right =  remainder((wheel_position_tick.right + wheel_rotation_tick.right),4096);
     // publish as SensorData
     sd.left_encoder = wheel_position_tick.left;
     sd.right_encoder = wheel_position_tick.right;
