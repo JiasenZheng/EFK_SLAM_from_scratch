@@ -21,6 +21,7 @@
 #include <nuturtlebot_msgs/SensorData.h>
 #include <geometry_msgs/Twist.h>
 #include <sensor_msgs/JointState.h>
+#include <algorithm>
 
 static const int rate = 500;
 static ros::Publisher wc_pub;
@@ -36,6 +37,7 @@ static sensor_msgs::JointState js;
 static bool first = true;
 static nuturtlebot_msgs::SensorData first_data;
 static nuturtlebot_msgs::SensorData previous_data;
+static nuturtlebot_msgs::SensorData current_data;
 
 
 
@@ -48,13 +50,21 @@ void cmd_callback(const geometry_msgs::TwistConstPtr &twist)
     t.omega = twist->angular.z;
     t.x_dot = twist->linear.x;
     t.y_dot = twist->linear.y;
+    // ROS_INFO("x_dot: %f",t.x_dot);
+    // ROS_INFO("y_dot: %f",t.y_dot);
+    // ROS_INFO("omega: %f",t.omega);
+
     // convert twist to velocity using inverse kinematics
     turtlelib::Velocity vel;
     vel = dd.inverse_kinematics(t);
     // convert to ticks and store velocity in nuturtlebot::WheelCommands
     nuturtlebot_msgs::WheelCommands wc;
-    wc.left_velocity = 256*vel.left*wr/2.2;
-    wc.right_velocity = 256*vel.right*wr/2.2;
+    wc.left_velocity = (int)(vel.left/0.024);
+    wc.right_velocity = (int)(vel.right/0.024);
+    // ROS_INFO("Left vel in rad/sec: %f",vel.left);
+    // ROS_INFO("Left vel in tick: %i",wc.left_velocity);
+    // ROS_INFO("Right vel in rad/sec: %f",vel.right);
+    // ROS_INFO("Right vel in tick: %i",wc.right_velocity);
     // publishe wheel command 
     wc_pub.publish(wc);
 }
@@ -71,18 +81,36 @@ void sensor_callback(const nuturtlebot_msgs::SensorDataConstPtr &sensor_data)
     }
     else
     {
-        // convert tick to radius
-        turtlelib::Position p;
-        p.left = sensor_data->left_encoder*et_to_rad;
-        p.right = sensor_data->right_encoder*et_to_rad;
+        current_data = *sensor_data;
         // compare to the first data to get positions
-        js.position[0] = p.left - first_data.left_encoder*et_to_rad;
-        js.position[1] = p.right - first_data.right_encoder*et_to_rad;
+        js.position[0] = current_data.left_encoder*et_to_rad - first_data.left_encoder*et_to_rad;
+        js.position[1] = current_data.right_encoder*et_to_rad - first_data.right_encoder*et_to_rad;
         // compare to the previous data to compute the velocities
-        js.velocity[0] = (p.left - previous_data.left_encoder*et_to_rad)*rate;
-        js.velocity[1] = (p.right - previous_data.right_encoder*et_to_rad)*rate;
-        previous_data = *sensor_data;
+        js.velocity[0] = (current_data.left_encoder*et_to_rad - previous_data.left_encoder*et_to_rad);
+        js.velocity[1] = (current_data.right_encoder*et_to_rad - previous_data.right_encoder*et_to_rad);
+        previous_data = current_data;
+        if (js.velocity[0] > 3)
+        {
+            js.velocity[0] -= 2*turtlelib::PI;
+        }
+        else if (js.velocity[0] < -3)
+        {
+            js.velocity[0] += 2*turtlelib::PI;
+        }
+
+        if (js.velocity[1] > 3)
+        {
+            js.velocity[1] -= 2*turtlelib::PI;
+        }
+        else if (js.velocity[1] < -3)
+        {
+            js.velocity[1] += 2*turtlelib::PI;
+        }
+        
     }
+    // ROS_INFO("Sensor Data: %d  %d",sensor_data->left_encoder,sensor_data->right_encoder);
+    // ROS_INFO("JS_Position: %f  %f ",js.position[0],js.position[1]);
+    ROS_INFO("JS_Velocity: %f  %f ",js.velocity[0],js.velocity[1]);
     js_pub.publish(js);
 }
 
@@ -103,8 +131,7 @@ int main(int argc, char** argv)
 
     //DiffDrive 
     turtlelib::Transform2D tf = turtlelib::Transform2D();
-    turtlelib::Position wp = turtlelib::Position();
-    dd = turtlelib::DiffDrive(wr,wt,tf,wp);
+    dd = turtlelib::DiffDrive(wr,wt,tf);
 
     // Initialize joint states
     js.name.push_back("red-wheel_left_joint");

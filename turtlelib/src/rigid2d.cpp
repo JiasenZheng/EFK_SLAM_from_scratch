@@ -240,10 +240,7 @@ namespace turtlelib
         return y;
     }
 
-    double Transform2D::get_theta() const
-    {
-        return theta;
-    }
+
 
     double Transform2D::get_sin() const
     {

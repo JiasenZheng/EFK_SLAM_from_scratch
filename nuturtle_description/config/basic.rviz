@@ -9,6 +9,7 @@ Panels:
         - /TF1
         - /TF1/Frames1
         - /RobotModel1
+        - /RobotModel1/Status1
       Splitter Ratio: 0.5
     Tree Height: 851
   - Class: rviz/Selection
@@ -60,19 +61,15 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: true
-        black-base_footprint:
+        red-base_footprint:
           Value: true
-        black-base_link:
+        red-base_link:
           Value: true
-        black-base_scan:
+        red-base_scan:
           Value: true
-        black-caster_back_link:
+        red-caster_back_link:
           Value: true
-        black-imu_link:
-          Value: true
-        black-wheel_left_link:
-          Value: true
-        black-wheel_right_link:
+        red-imu_link:
           Value: true
       Marker Alpha: 1
       Marker Scale: 1
@@ -81,23 +78,19 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
-        black-base_footprint:
-          black-base_link:
-            black-base_scan:
+        red-base_footprint:
+          red-base_link:
+            red-base_scan:
               {}
-            black-caster_back_link:
+            red-caster_back_link:
               {}
-            black-imu_link:
-              {}
-            black-wheel_left_link:
-              {}
-            black-wheel_right_link:
+            red-imu_link:
               {}
       Update Interval: 0
       Value: true
     - Alpha: 1
       Class: rviz/RobotModel
-      Collision Enabled: true
+      Collision Enabled: false
       Enabled: true
       Links:
         All Links Enabled: true
@@ -105,41 +98,41 @@ Visualization Manager:
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
-        black-base_footprint:
+        red-base_footprint:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-        black-base_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        black-base_scan:
+        red-base_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        black-caster_back_link:
+        red-base_scan:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        black-imu_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        black-wheel_left_link:
+        red-caster_back_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
-        black-wheel_right_link:
+        red-imu_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        red-wheel_left_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        red-wheel_right_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
       Name: RobotModel
-      Robot Description: black/robot_description
+      Robot Description: red/robot_description
       TF Prefix: ""
       Update Interval: 0
       Value: true
@@ -148,7 +141,7 @@ Visualization Manager:
   Global Options:
     Background Color: 48; 48; 48
     Default Light: true
-    Fixed Frame: black-base_footprint
+    Fixed Frame: red-base_footprint
     Frame Rate: 30
   Name: root
   Tools:
@@ -180,17 +173,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: -0.015966709703207016
-        Y: 0.13257993757724762
-        Z: -0.2698729634284973
+        X: 0.058832697570323944
+        Y: 0.08910055458545685
+        Z: -0.3591328561306
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.6203983426094055
+      Pitch: 0.6903982758522034
       Target Frame: <Fixed Frame>
-      Yaw: 0.21540528535842896
+      Yaw: 0.22540192306041718
     Saved: ~
 Window Geometry:
   Displays:

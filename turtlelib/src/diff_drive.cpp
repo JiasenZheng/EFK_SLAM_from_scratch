@@ -31,15 +31,13 @@ namespace turtlelib
         wheel_radius = 0.033;
         wheel_track = 0.16;
         Twb = Transform2D();
-        wheel_position = Position();
     }
 
-    DiffDrive::DiffDrive( const double &wr, const double &wt, const Transform2D &tf, const Position &wp)
+    DiffDrive::DiffDrive( const double &wr, const double &wt, const Transform2D &tf)
     {
         wheel_radius = wr;
         wheel_track = wt;
         Twb = tf;
-        wheel_position = wp;
     }
 
 
@@ -67,38 +65,22 @@ namespace turtlelib
 
 
 
-    void DiffDrive::update_position_tick(const double &left_tick, const double &right_tick)
-    {
-        wheel_position.left+=left_tick;
-        wheel_position.right+=right_tick;
-        while(wheel_position.left >= 4096)
-        {
-            wheel_position.left-=4096;
-        }
-        while(wheel_position.left < 0)
-        {
-            wheel_position.left+=4096;
-        }
-        while(wheel_position.right >= 4096)
-        {
-            wheel_position.right-=4096;
-        }
-        while(wheel_position.right < 0)
-        {
-            wheel_position.right+=4096;
-        }
-    }
+
     void DiffDrive::update_config(const Velocity &vel)
     {
         Twist2D t = forward_kinematics(vel);
         Transform2D Tbb1 = integrate_twist(t);
-        // update configuration in private member
-        Twb*=Tbb1;
-    }
-
-    Position DiffDrive::get_wheel_position()
-    {
-        return wheel_position;
+        // define dq 
+        Twist2D dq;
+        dq.x_dot = Tbb1.translation().x;
+        dq.y_dot = Tbb1.translation().y;
+        dq.omega = Twb.rotation()+Tbb1.rotation();
+        // convert from body frame to world frame
+        Vector2D v;
+        v.x = dq.x_dot*Twb.get_cos()-dq.y_dot*Twb.get_sin()+Twb.translation().x;
+        v.y = dq.x_dot*Twb.get_sin()+dq.y_dot*Twb.get_cos()+Twb.translation().y;
+        // update Twb
+        Twb = Transform2D(v,dq.omega);
     }
 
     Transform2D DiffDrive::get_trans()

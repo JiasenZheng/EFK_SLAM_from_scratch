@@ -29,25 +29,20 @@ namespace turtlelib
             
             DiffDrive();
             
-            DiffDrive( const double &wr,  const double &wt, const Transform2D &tf, const Position &wp);
+            DiffDrive( const double &wr,  const double &wt, const Transform2D &tf);
  
             Velocity inverse_kinematics(const Twist2D &t);
 
             Twist2D forward_kinematics(const Velocity &v);
             
-            void update_position_tick(const double &left_tick, const double &right_tick);
-
             void update_config(const Velocity &vel);
-            
-            Position get_wheel_position();
-
+        
             Transform2D get_trans();
 
 
 
 
         private:
-            Position wheel_position;
             Transform2D Twb;
             double wheel_radius;
             double wheel_track;

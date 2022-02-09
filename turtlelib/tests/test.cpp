@@ -24,7 +24,7 @@ TEST_CASE("Default constructor","[transform]")
     
     CHECK(almost_equal(tf.get_x(),0));
     CHECK(almost_equal(tf.get_y(),0));
-    CHECK(almost_equal(tf.get_theta(),0));
+    CHECK(almost_equal(tf.rotation(),0));
     CHECK(almost_equal(tf.get_sin(),0));
     CHECK(almost_equal(tf.get_cos(),1));
 }
@@ -35,7 +35,7 @@ TEST_CASE("Constructor with an angle input","[transform]")
     
     CHECK(almost_equal(tf.get_x(),0));
     CHECK(almost_equal(tf.get_y(),0));
-    CHECK(almost_equal(tf.get_theta(),PI));
+    CHECK(almost_equal(tf.rotation(),PI));
     CHECK(almost_equal(tf.get_sin(),sin(PI)));
     CHECK(almost_equal(tf.get_cos(),cos(PI)));
 }
@@ -49,7 +49,7 @@ TEST_CASE("Constructor with a vector input","[transform]")
     
     CHECK(almost_equal(tf.get_x(),0));
     CHECK(almost_equal(tf.get_y(),1));
-    CHECK(almost_equal(tf.get_theta(),0));
+    CHECK(almost_equal(tf.rotation(),0));
     CHECK(almost_equal(tf.get_sin(),0));
     CHECK(almost_equal(tf.get_cos(),1));
 }
@@ -63,7 +63,7 @@ TEST_CASE("Constructor with a vector input and an angle input","[transform]")
     
     CHECK(almost_equal(tf.get_x(),0));
     CHECK(almost_equal(tf.get_y(),1));
-    CHECK(almost_equal(tf.get_theta(),PI));
+    CHECK(almost_equal(tf.rotation(),PI));
     CHECK(almost_equal(tf.get_sin(),sin(PI)));
     CHECK(almost_equal(tf.get_cos(),cos(PI)));
 }
@@ -107,7 +107,7 @@ TEST_CASE("Inverse method of a transform","[transform]")
 
     CHECK(almost_equal(tf_ba.get_x(),-1));
     CHECK(almost_equal(tf_ba.get_y(), 0));
-    CHECK(almost_equal(tf_ba.get_theta(),-PI/2));
+    CHECK(almost_equal(tf_ba.rotation(),-PI/2));
 
 }
 
@@ -123,7 +123,7 @@ TEST_CASE("The '*=' operator of the transform", "[transform]")
     
     CHECK(almost_equal(tf_ab.get_x(), 0));
     CHECK(almost_equal(tf_ab.get_y(), 2));
-    CHECK(almost_equal(tf_ab.get_theta(), PI));
+    CHECK(almost_equal(tf_ab.rotation(), PI));
 }
 
 TEST_CASE("Getter function for translation part of the transform","[transform]")
@@ -156,7 +156,7 @@ TEST_CASE("Getter functions of the private variables in the transform","[transfo
 
     CHECK(almost_equal(tf.get_x(),1));
     CHECK(almost_equal(tf.get_y(),0));
-    CHECK(almost_equal(tf.get_theta(),PI/2));
+    CHECK(almost_equal(tf.rotation(),PI/2));
     CHECK(almost_equal(tf.get_sin(),sin(PI/2)));
     CHECK(almost_equal(tf.get_cos(),cos(PI/2)));
 }
@@ -197,7 +197,7 @@ TEST_CASE("The '>>' operator of the transform", "[transform]")
 
     CHECK(almost_equal(tf.get_x(),0));
     CHECK(almost_equal(tf.get_y(),1));
-    CHECK(almost_equal(tf.get_theta(),PI/2));
+    CHECK(almost_equal(tf.rotation(),PI/2));
 }
 
 TEST_CASE("The '*' operator of the transform", "[transform]")
@@ -212,7 +212,7 @@ TEST_CASE("The '*' operator of the transform", "[transform]")
     
     CHECK(almost_equal(tf_ac.get_x(), 0));
     CHECK(almost_equal(tf_ac.get_y(), 2));
-    CHECK(almost_equal(tf_ac.get_theta(), PI));
+    CHECK(almost_equal(tf_ac.rotation(), PI));
 }
 
 TEST_CASE("Normalize angle","[transform]")
@@ -274,14 +274,14 @@ TEST_CASE("Integrate Twist","[transform]")
     t.x_dot = 0.0;
     t.y_dot = 0.0;
     Transform2D tf1 = integrate_twist(t);
-    CHECK(almost_equal(tf1.get_theta(),1.5));
+    CHECK(almost_equal(tf1.rotation(),1.5));
     CHECK(almost_equal(tf1.get_x(),0.0));
     CHECK(almost_equal(tf1.get_y(),0.0));
     t.omega = 0.0;
     t.x_dot = 1.0;
     t.y_dot = 2.0;
     Transform2D tf2 = integrate_twist(t);
-    CHECK(almost_equal(tf2.get_theta(),0.0));
+    CHECK(almost_equal(tf2.rotation(),0.0));
     CHECK(almost_equal(tf2.get_x(),1.0));
     CHECK(tf2.get_y()==Approx(2.0));
 
@@ -290,7 +290,7 @@ TEST_CASE("Integrate Twist","[transform]")
     t.x_dot = 2.0;
     t.y_dot = 1.0;
     Transform2D tf3 = integrate_twist(t);
-    CHECK(almost_equal(tf3.get_theta(),PI/2));
+    CHECK(almost_equal(tf3.rotation(),PI/2));
     CHECK(tf3.get_x()==Approx(0.6366197724));
     CHECK(tf3.get_y()==Approx(1.9098593171));
 }

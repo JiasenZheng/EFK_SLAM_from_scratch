@@ -45,9 +45,7 @@ A library for handling transformations in SE(2) and other turtlebot-related math
 * [C++ Core Guidelines](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#S-class) C.4: Make a function a member only if it needs direct access to the representation of a class
 
 2. What is the difference between a class and a struct in C++?<br><br>
-Members of a class are private by default while members of a struct is public by default. As a result, a structure is not secure and cannot hide its implementation details from the end-user.
-
-* Reference: https://www.geeksforgeeks.org/structure-vs-class-in-cpp/
+Members of a class are private by default while members of a struct is public by default. 
 
 
 3. Why is Vector2D a struct and Transform2D a Class (refer to at least 2 specific C++ core guidelines in your answer)?<br><br>

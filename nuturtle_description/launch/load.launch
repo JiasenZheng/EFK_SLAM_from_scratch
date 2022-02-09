@@ -8,7 +8,9 @@
     '$(find nuturtle_description)/urdf/turtlebot3_burger.urdf.xacro' color:=$(arg color)"/>
     <rosparam command="load" file="$(find nuturtle_description)/config/diff_params.yaml" />
 
-    <node name="rviz" pkg="rviz" type="rviz" args = "-d $(find nuturtle_description)/config/basic.rviz" if='$(arg use_rviz)' ns = '$(arg color)'/>
+    <node name="rviz" pkg="rviz" type="rviz" 
+    args = "-d $(find nuturtle_description)/config/basic.rviz -f $(arg color)-base_footprint" 
+    if='$(arg use_rviz)' ns = '$(arg color)'/>
     <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" if='$(arg use_jsp)' ns = '$(arg color)' />
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" ns = '$(arg color)'/>
 

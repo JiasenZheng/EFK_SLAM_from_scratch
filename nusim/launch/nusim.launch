@@ -1,5 +1,5 @@
 <launch>
-    <arg name = "use_jsp" default = "true" doc = "whether to view the URDF in Rviz"/>
+    <arg name = "use_jsp" default = "false" doc = "whether to use joint state publisher"/>
     <include file = "$(find nuturtle_description)/launch/load.launch">
         <arg name = "use_rviz" value = "false"/>
         <arg name = "use_jsp" value = '$(arg use_jsp)'/>

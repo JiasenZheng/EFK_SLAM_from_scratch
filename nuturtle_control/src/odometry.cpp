@@ -43,7 +43,6 @@ static std::string wheel_right;
 static double wt;
 static double wr;
 static turtlelib::Transform2D tf = turtlelib::Transform2D();
-static turtlelib::Position p = turtlelib::Position();
 static turtlelib::DiffDrive dd;
 static sensor_msgs::JointState js;
 static nav_msgs::Odometry odom;
@@ -58,6 +57,7 @@ void js_callback(const sensor_msgs::JointStateConstPtr &js)
     turtlelib::Velocity vel;
     vel.left = js->velocity[0];
     vel.right = js->velocity[1];
+    // ROS_INFO("velocity: %f  %f", vel.left, vel.right);
     // update twists and configurations
     twist = dd.forward_kinematics(vel);
     dd.update_config(vel);
@@ -68,7 +68,7 @@ bool set_pose_callback(nuturtle_control::set_pose::Request &req, nuturtle_contro
     turtlelib::Transform2D tf;
     tf = turtlelib::Transform2D(req.x,req.y,req.theta);
     // update DiffDrive
-    dd = turtlelib::DiffDrive(wr,wt,tf,p);
+    dd = turtlelib::DiffDrive(wr,wt,tf);
     return true;
 }
 
@@ -80,9 +80,10 @@ void publish_odom()
     odom.twist.twist.linear.y = twist.y_dot;
     odom.pose.pose.position.x = dd.get_trans().get_x();
     odom.pose.pose.position.y = dd.get_trans().get_y();
-    q.setRPY( 0, 0, dd.get_trans().get_theta() );
+    q.setRPY( 0, 0, dd.get_trans().rotation() );
     rot = tf2::toMsg(q);
     odom.pose.pose.orientation = rot;
+    odom_pub.publish(odom);
 }
 
 void broadcast_odom()
@@ -109,7 +110,7 @@ int main(int argc, char** argv)
     nh.getParam("/wheel_radius",wr);
     nh.getParam("/track_width",wt);
     odom_id = "odom";                   //
-    body_id = "base_footprint";         // 
+    body_id = "blue-base_footprint";         // 
 
     // initialize publishers, subscribers, services and br
     js_sub = nh.subscribe("/joint_states",100,js_callback);
@@ -118,7 +119,7 @@ int main(int argc, char** argv)
     // static tf2_ros::TransformBroadcaster br;
 
     // DiffDrive
-    dd = turtlelib::DiffDrive(wr,wt,tf,p);
+    dd = turtlelib::DiffDrive(wr,wt,tf);
 
     // set up odom
     odom.header.frame_id = odom_id;
@@ -129,8 +130,8 @@ int main(int argc, char** argv)
     trans.child_frame_id = body_id;
 
     // Initialize joint states
-    js.name.push_back("blue-wheel_left_joint");
-    js.name.push_back("blue-wheel_right_joint");
+    js.name.push_back("red-wheel_left_joint");
+    js.name.push_back("red-wheel_right_joint");
     js.position.push_back(0);
     js.position.push_back(0);
     js.velocity.push_back(0);

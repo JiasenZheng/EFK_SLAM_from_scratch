@@ -258,8 +258,7 @@ namespace turtlelib
             /// \brief getter function for y
             double get_y() const;
 
-            /// \brief getter function for theta
-            double get_theta() const;
+
 
             /// \brief getter function for sintheta
             double get_sin() const;

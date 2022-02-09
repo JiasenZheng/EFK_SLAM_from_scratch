@@ -19,7 +19,6 @@
 /// 
 /// PUBLISHERS:
 ///      time_pub (std_msgs::UInt64; timestep): current timestep of the simulation
-///      js_pub (sensor_msgs::JointState; red/joint_states): simulated joint states
 ///      obs_pub (visualization_msgs::MarkerArray; obstacles): add cylindrical obstacles to the environment
 ///      walls_pub (visualization_msgs::MarkerArray; walls): add walls to the environment
 ///      wp_pub (nuturtlebot_msgs::SeneorData; red/sensor_data): update the wheel positions
@@ -39,19 +38,20 @@ static const int rate = 500;
 static long count = 0;
 static std_msgs::UInt64 timestep;
 static ros::Publisher time_pub;
-// static ros::Publisher js_pub;
 static ros::Publisher obs_pub;
 static ros::Publisher wp_pub;
 static ros::Publisher walls_pub;
 static ros::Subscriber wc_sub;
 static ros::ServiceServer reset_service;
 static ros::ServiceServer teleport_service;
-// static sensor_msgs::JointState js;
 static turtlelib::Velocity wheel_vel_cmd = turtlelib::Velocity();
 static turtlelib::DiffDrive dd = turtlelib::DiffDrive();
 static double cmd_to_radsec;
 static double et_to_rad;
 static geometry_msgs::TransformStamped trans;
+// static turtlelib::Position wheel_position_rad = turtlelib::Position();
+static turtlelib::Position wheel_position_tick = turtlelib::Position();
+static nuturtlebot_msgs::SensorData sd;
 
 
 static double x_0;
@@ -89,9 +89,11 @@ bool reset_callback(std_srvs::Trigger::Request &req,
 /// \param wc 
 void wc_callback(const nuturtlebot_msgs::WheelCommandsConstPtr &wc)
 {
-    ROS_INFO("WC_Callback");
+    // ROS_INFO("WC_Callback");
     wheel_vel_cmd.left = wc->left_velocity;
     wheel_vel_cmd.right = wc->right_velocity;
+    // ROS_INFO("left wheel vel cmd: %f", wheel_vel_cmd.left);
+    // ROS_INFO("right wheel vel cmd: %f", wheel_vel_cmd.right);
 }
 
 /// \brief The call back function for teleport to move the robot to a user-specified position
@@ -225,12 +227,12 @@ void send_transform(tf2_ros::TransformBroadcaster &br)
         
     trans.header.stamp = ros::Time::now();
 
-    trans.transform.translation.x = x;
-    trans.transform.translation.y = y;
+    trans.transform.translation.x = dd.get_trans().get_x();
+    trans.transform.translation.y = dd.get_trans().get_y();
     trans.transform.translation.z = 0;
 
     tf2::Quaternion q;
-    q.setRPY(0,0,theta);
+    q.setRPY(0,0,dd.get_trans().rotation());
     trans.transform.rotation.x = q.x();
     trans.transform.rotation.y = q.y();
     trans.transform.rotation.z = q.z();
@@ -238,43 +240,31 @@ void send_transform(tf2_ros::TransformBroadcaster &br)
     br.sendTransform(trans); 
 }
 
-// void publish_js()
-// {
-//     js.header.stamp = ros::Time::now();
-//     timestep.data = count/rate;
-//     time_pub.publish(timestep);
-//     js_pub.publish(js);
-// }
 
-// void publish_sensor_data()
-// {
-//     nuturtlebot_msgs::SensorData;
-    
-// }
-
-void update_wheel_position(turtlelib::DiffDrive &dd, const turtlelib::Position &p)
-{
-    // convert from radius to encoder tick
-    double left_tick = p.left/et_to_rad;
-    double right_tick = p.left/et_to_rad;
-    dd.update_position_tick(left_tick,right_tick);
-
-}
 
 void publish_wheel_position()
 {
-    nuturtlebot_msgs::SensorData sd;
-    turtlelib::Position p;
-    turtlelib::Velocity vel;
-    p.left = wheel_vel_cmd.left*cmd_to_radsec/rate;
-    p.right = wheel_vel_cmd.right*cmd_to_radsec/rate;
-    update_wheel_position(dd,p);
-    vel.left = wheel_vel_cmd.left*cmd_to_radsec;
-    vel.right = wheel_vel_cmd.right*cmd_to_radsec;
-    dd.update_config(vel);
-    sd.left_encoder = dd.get_wheel_position().left;
-    sd.right_encoder = dd.get_wheel_position().right;
+    // compute wheel rotation in tick from wheel velocity
+    turtlelib::Velocity wheel_rotation_tick;
+    wheel_rotation_tick.left = (wheel_vel_cmd.left*cmd_to_radsec/rate)/et_to_rad;
+    // ROS_INFO("left wheel_rotation_tick: %f", wheel_rotation_tick.left);
+    wheel_rotation_tick.right=(wheel_vel_cmd.right*cmd_to_radsec/rate)/et_to_rad;
+    // ROS_INFO("right wheel_rotation_tick: %f", wheel_rotation_tick.right);
+    // update the wheel position in tick 
+    wheel_position_tick.left = (int)(wheel_position_tick.left + wheel_rotation_tick.left)%4096;
+    wheel_position_tick.right = (int)(wheel_position_tick.right + wheel_rotation_tick.right)%4096;
+    // publish as SensorData
+    sd.left_encoder = wheel_position_tick.left;
+    sd.right_encoder = wheel_position_tick.right;
     wp_pub.publish(sd);
+}
+
+void update_pose()
+{
+    turtlelib::Velocity vel;
+    vel.left = (wheel_vel_cmd.left*cmd_to_radsec)/rate;
+    vel.right = (wheel_vel_cmd.right*cmd_to_radsec)/rate;
+    dd.update_config(vel);
 }
 
 int main(int argc, char * argv[])
@@ -283,7 +273,6 @@ int main(int argc, char * argv[])
     ros::NodeHandle nh;
     static tf2_ros::TransformBroadcaster br;
     time_pub = nh.advertise<std_msgs::UInt64>("timestep",100);
-    // js_pub = nh.advertise<sensor_msgs::JointState>("red/joint_states",100);
     obs_pub = nh.advertise<visualization_msgs::MarkerArray>("nusim/obstacles",100);
     walls_pub = nh.advertise<visualization_msgs::MarkerArray>("nusim/walls",100);
     wp_pub = nh.advertise<nuturtlebot_msgs::SensorData>("/red/sensor_data",100);
@@ -291,10 +280,7 @@ int main(int argc, char * argv[])
     reset_service = nh.advertiseService("nusim/reset",reset_callback);
     teleport_service = nh.advertiseService("nusim/teleport",teleport_callback);
     ros::Rate loop_rate(rate);
-    // js.name.push_back("red-wheel_left_joint");
-    // js.name.push_back("red-wheel_right_joint");
-    // js.position.push_back(0);
-    // js.position.push_back(0);
+
 
     // set up tf
     trans.child_frame_id = "red-base_footprint";
@@ -317,8 +303,8 @@ int main(int argc, char * argv[])
         set_obs(nh);
         set_walls(nh,x_length,y_length);
         send_transform(br);
-        // publish_js();        
         publish_wheel_position();
+        update_pose();
 
         ros::spinOnce();
         loop_rate.sleep();
