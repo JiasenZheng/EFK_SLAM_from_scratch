@@ -1,20 +1,28 @@
 <launch>
+    <!-- Initialize arguments -->
     <arg name = "use_rviz" default = "true" doc = "whether to launch rviz"/>
     <arg name = "robot" default = "nusim" doc = "ways to launch turtlebot,
     possible options are 'nusim', 'loaclhost', 'turtlebotname', 'none'. "/>
     <arg name = "cmd_src" default = "circle" doc = "ways to control the robot,
     possible options are 'circle', 'teleop', 'none'. "/>
     <arg name = "use_jsp" default = "false" doc = "whether to use joint state publisher"/>
-
+    <!-- load basic world and diff params config -->
+    <rosparam command = "load" file = "$(find nusim)/config/basic_world.yaml"/>
+    <rosparam command="load" file="$(find nuturtle_description)/config/diff_params.yaml" />
+    <!-- include basic remote launch file -->
+    <include file = "$(find nuturtle_control)/launch/basic_remote.launch">
+        <arg name = "robot" value = "localhost"/>
+        <arg name = "color" value = "blue"/>
+    </include>
+    <!-- static tf from world to odom -->
     <node pkg="tf" type="static_transform_publisher" name="world_to_odom" args="0 0 0 0 0 0 1 world odom 100" />
 
-    <rosparam command="load" file="$(find nuturtle_description)/config/diff_params.yaml" />
+    <!-- load blue and red robot descriptions -->
     <include file = "$(find nuturtle_description)/launch/load.launch">
         <arg name = "use_rviz" value = "false"/>
         <arg name = "use_jsp" value = "true"/>
         <arg name = "color" value = "blue"/>
     </include>
-
     <rosparam command="load" file="$(find nuturtle_description)/config/diff_params.yaml" />
     <include file = "$(find nuturtle_description)/launch/load.launch">
         <arg name = "use_rviz" value = "false"/>
@@ -22,11 +30,11 @@
         <arg name = "color" value = "red"/>
     </include>
 
+
     <node name = "turtle_interface" pkg = "nuturtle_control" type = "turtle_interface" output = "screen">
         <remap from="/joint_states" to="red/joint_states"/>
         <remap from="/wheel_cmd" to="red/wheel_cmd"/>
         <remap from="/sensor_data" to="red/sensor_data"/>
-        <!-- <remap from="/cmd_vel" to="red/cmd_vel"/> -->
     </node>
     <node name = "odometry" pkg = "nuturtle_control" type = "odometry" output = "screen">
         <remap from="/joint_states" to="red/joint_states"/>
@@ -36,7 +44,8 @@
     args = "-d $(find nuturtle_control)/config/start_robot.rviz"/>
 
     <node name = "circle" pkg = "nuturtle_control" type = "circle" if = "$(eval cmd_src == 'circle')"/>
-    <node name = "teleop" pkg = "turtlebot3_teleop" type = "teleop" if = "$(eval cmd_src == 'teleop')"/>
+    <node name = "turtlebot3_teleop_key" pkg = "turtlebot3_teleop" type = "turtlebot3_teleop_key" if = "$(eval cmd_src == 'teleop')"
+    output = "screen"/>
 
     <node name = "nusim" pkg = "nusim" type = "nusim" output = "screen" if = "$(eval robot == 'nusim')" />
 

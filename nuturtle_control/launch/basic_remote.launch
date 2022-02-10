@@ -1,21 +1,21 @@
 <launch>
     <arg name = "color" default = "blue" doc = "color of the robot"/>
     <arg name = "robot" default = "localhost" doc = "Specify the host name of the robot"/>
-    <machine name = "local" env-loader = "$(find nuturtle_control)/loader.sh" address = "$(arg robot)" 
+    <machine name = "localhost" env-loader = "$(find nuturtle_control)/loader.sh" address = "leonardo" 
     user = "msr"/>
     <machine name = "turtlebot" env-loader = "/home/msr/install/share/nuturtle_control/loader.sh"
-    address = "$(arg robot)" user = "msr"/>
+    address = "leonardo" user = "msr"/>
 
-    <node machine = "turtlebot" pkg = "rosserial_python" type = "serial_node.py" name = "serial_node">
+    <node machine = "turtlebot" pkg = "rosserial_python" type = "serial_node.py" name = "serial_node" if = "$(eval robot == 'leonardo')">
         <param name = "port" value = "/dev/ttyACM0"/>
         <param name = "baud" value = "115200"/>
     </node>
 
-    <node machine = "turtlebot" pkg = "nuturtle_control" type = "turtle_interface" name = "turtle_interface">
+    <node machine = "turtlebot" pkg = "nuturtle_control" type = "turtle_interface" name = "turtle_interface" if = "$(eval robot == 'leonardo')">
 
     </node>
 
-    <node machine = "turtlebot" pkg = "nuturtle_control" type = "odometry" type = "odometry">
+    <node machine = "turtlebot" pkg = "nuturtle_control" type = "odometry" name = "odometry" if = "$(eval robot == 'leonardo')">
 
     </node>
 

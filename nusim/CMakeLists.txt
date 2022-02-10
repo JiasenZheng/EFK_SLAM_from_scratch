@@ -9,7 +9,7 @@ project(nusim)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
   message_generation
-  nuturtlebot_msgs
+  # nuturtlebot_msgs
   roscpp
   sensor_msgs
   std_msgs
@@ -153,7 +153,7 @@ add_executable(${PROJECT_NAME} src/nusim.cpp)
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(${PROJECT_NAME}
-  ${catkin_LIBRARIES}
+  ${catkin_LIBRARIES} turtlelib
 )
 
 #############

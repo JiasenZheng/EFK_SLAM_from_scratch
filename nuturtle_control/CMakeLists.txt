@@ -9,7 +9,7 @@ project(nuturtle_control)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS 
   message_generation
-  nuturtlebot_msgs
+  # nuturtlebot_msgs
   roscpp
   tf2_ros
   turtlelib
