@@ -110,7 +110,7 @@ void sensor_callback(const nuturtlebot_msgs::SensorDataConstPtr &sensor_data)
     }
     // ROS_INFO("Sensor Data: %d  %d",sensor_data->left_encoder,sensor_data->right_encoder);
     // ROS_INFO("JS_Position: %f  %f ",js.position[0],js.position[1]);
-    ROS_INFO("JS_Velocity: %f  %f ",js.velocity[0],js.velocity[1]);
+    // ROS_INFO("JS_Velocity: %f  %f ",js.velocity[0],js.velocity[1]);
     js_pub.publish(js);
 }
 

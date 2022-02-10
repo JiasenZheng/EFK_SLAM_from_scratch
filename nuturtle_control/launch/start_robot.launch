@@ -2,7 +2,7 @@
     <!-- Initialize arguments -->
     <arg name = "use_rviz" default = "true" doc = "whether to launch rviz"/>
     <arg name = "robot" default = "nusim" doc = "ways to launch turtlebot,
-    possible options are 'nusim', 'loaclhost', 'turtlebotname', 'none'. "/>
+    possible options are 'nusim', 'localhost', 'turtlebotname', 'none'. "/>
     <arg name = "cmd_src" default = "circle" doc = "ways to control the robot,
     possible options are 'circle', 'teleop', 'none'. "/>
     <arg name = "use_jsp" default = "false" doc = "whether to use joint state publisher"/>
@@ -10,7 +10,7 @@
     <rosparam command = "load" file = "$(find nusim)/config/basic_world.yaml"/>
     <rosparam command="load" file="$(find nuturtle_description)/config/diff_params.yaml" />
     <!-- include basic remote launch file -->
-    <include file = "$(find nuturtle_control)/launch/basic_remote.launch">
+    <include file = "$(find nuturtle_control)/launch/basic_remote.launch" if = "$(eval robot != 'nusim')">
         <arg name = "robot" value = "localhost"/>
         <arg name = "color" value = "blue"/>
     </include>
