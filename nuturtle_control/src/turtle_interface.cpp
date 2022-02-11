@@ -21,7 +21,6 @@
 #include <nuturtlebot_msgs/SensorData.h>
 #include <geometry_msgs/Twist.h>
 #include <sensor_msgs/JointState.h>
-#include <algorithm>
 
 static const int rate = 500;
 static ros::Publisher wc_pub;

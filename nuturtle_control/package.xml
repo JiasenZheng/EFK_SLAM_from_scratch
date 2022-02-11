@@ -63,6 +63,12 @@
   <exec_depend>tf</exec_depend>
   <exec_depend>rviz</exec_depend>
   <exec_depend>turtlebot3_teleop</exec_depend>
+  <exec_depend>rosserial_python</exec_depend>
+  <build_depend>nuturtlebot_msgs</build_depend>
+  <build_export_depend>nuturtlebot_msgs</build_export_depend>
+  <build_export_depend>turtlelib</build_export_depend>
+  <exec_depend>nuturtle_description</exec_depend>
+  <exec_depend>nusim</exec_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->

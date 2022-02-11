@@ -1,5 +1,4 @@
 <launch>
-    <arg name = "color" default = "blue" doc = "color of the robot"/>
     <arg name = "robot" default = "localhost" doc = "Specify the host name of the robot"/>
     <machine name = "turtlebot" env-loader = "$(find nuturtle_control)/loader.sh" address = "leonardo" 
     user = "msr" if = "$(eval robot == 'localhost')"/>

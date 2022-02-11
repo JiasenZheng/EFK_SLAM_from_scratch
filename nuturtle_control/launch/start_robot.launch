@@ -11,8 +11,7 @@
     <rosparam command="load" file="$(find nuturtle_description)/config/diff_params.yaml" />
     <!-- include basic remote launch file -->
     <include file = "$(find nuturtle_control)/launch/basic_remote.launch" if = "$(eval robot != 'nusim')">
-        <arg name = "robot" value = "localhost"/>
-        <arg name = "color" value = "blue"/>
+        <arg name = "robot" value = "$(arg robot)"/>
     </include>
     <!-- static tf from world to odom -->
     <node pkg="tf" type="static_transform_publisher" name="world_to_odom" args="0 0 0 0 0 0 1 world odom 100" />

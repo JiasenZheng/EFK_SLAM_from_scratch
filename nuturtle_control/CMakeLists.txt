@@ -9,7 +9,7 @@ project(nuturtle_control)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS 
   message_generation
-  # nuturtlebot_msgs
+  nuturtlebot_msgs
   roscpp
   tf2_ros
   turtlelib
@@ -214,16 +214,32 @@ install(FILES
   loader.sh
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
+install(PROGRAMS
+  loader.sh
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+)
+install(DIRECTORY launch/
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/launch
+)
 
+install(DIRECTORY config/
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/config
+)
 #############
 ## Testing ##
 #############
 
-## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_nuturtle_control.cpp)
-# if(TARGET ${PROJECT_NAME}-test)
-#   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
-# endif()
+# Add gtest based cpp test target and link libraries
+catkin_add_rostest_node(turtle_interface_test 
+  test/turtle_interface_test.cpp
+)
 
-## Add folders to be run by python nosetests
-# catkin_add_nosetests(test)
+
+target_link_libraries(turtle_interface_test 
+  ${catkin_LIBRARIES}
+)
+
+if (CATKIN_ENABLE_TESTING)
+  find_package(rostest REQUIRED)
+  add_rostest(launch/turtle_interface.test)
+endif()
