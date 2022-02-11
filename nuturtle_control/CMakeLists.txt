@@ -229,8 +229,7 @@ install(DIRECTORY config/
 ## Testing ##
 #############
 
-# Add gtest based cpp test target and link libraries
-catkin_add_rostest_node(turtle_interface_test 
+catch_add_rostest_node(turtle_interface_test 
   test/turtle_interface_test.cpp
 )
 
@@ -239,7 +238,6 @@ target_link_libraries(turtle_interface_test
   ${catkin_LIBRARIES}
 )
 
-if (CATKIN_ENABLE_TESTING)
-  find_package(rostest REQUIRED)
-  add_rostest(launch/turtle_interface.test)
-endif()
+
+find_package(rostest REQUIRED)
+add_rostest(launch/turtle_interface.test)

@@ -7,92 +7,35 @@
 #include <geometry_msgs/Twist.h>
 #include <sensor_msgs/JointState.h>
 
+static int rate = 200;
+static int left_velocity;
+static int right_velocity;
 
-void cmd_callback(const nuturtlebot::WheelCommands msg)
+void cmd_callback(const nuturtlebot_msgs::WheelCommands msg)
 {
-    CHECK(msg.left_velocity == 256);
-    CHECK(msg.right_velocity == 256);
+    CHECK(msg.left_velocity == 19);
+    CHECK(msg.right_velocity == 139);
 }
 
 
-TEST_CASE("wheel command pure translation","[pure_translation]")
+TEST_CASE("pure translation","[nuturtle control]")
  {
     //setup
     ros::NodeHandle nh;
-    const ros::Subscriber sub = nh.subscribe("/wheel_cmd",10,cmdCallback);
+    const ros::Subscriber sub = nh.subscribe("/wheel_cmd",10,cmd_callback);
     const ros::Publisher pub = nh.advertise<geometry_msgs::Twist>("/cmd_vel",10,true);
 
     //publish
     geometry_msgs::Twist twis;
-    twis.linear.x = 0.22;
+    twis.linear.x = 0.12;
     pub.publish(twis);
 
     //spin
-    ros::Rate r(100);
+    ros::Rate loop_rate(rate);
     for(int i = 0; ros::ok() && i!=200; i++)
     {
         ros::spinOnce();
-        r.sleep();
+        loop_rate.sleep();
     }
 
-}
-
-
-void cmdCallback2(const nuturtlebot::WheelCommands msg)
-{
-    CHECK(msg.left_velocity == -93);
-    CHECK(msg.right_velocity == 93);
-}
-
-
-TEST_CASE("wheel command pure rotation","[pure_rotation]")
-{
-    //setup
-    ros::NodeHandle nh;
-    const ros::Subscriber sub = nh.subscribe("wheel_cmd",10,cmdCallback2);
-    const ros::Publisher pub = nh.advertise<geometry_msgs::Twist>("cmd_vel",10,true);
-
-    //publish
-    geometry_msgs::Twist twis;
-    twis.angular.z = 1;
-    pub.publish(twis);
-
-    //spin
-    ros::Rate r(100.0);
-    for(int i = 0; ros::ok() && i!=200; i++)
-    {
-        ros::spinOnce();
-        r.sleep();
-    }
-}
-
-
-
-void sensorCallback(const sensor_msgs::JointState::ConstPtr& msg)
-{
-    CHECK(rigid2d::almost_equal(msg->position[0], 2*rigid2d::PI));
-    CHECK(rigid2d::almost_equal(msg->position[1], 2*rigid2d::PI));
-}
-
-
-TEST_CASE("sensor data test","[encoder]") 
-{
-    //setup
-    ros::NodeHandle nh;
-    const ros::Subscriber sub = nh.subscribe("joint_states",10,sensorCallback);
-    const ros::Publisher pub = nh.advertise<nuturtlebot::SensorData>("sensor_data",10,true);
-
-    //publish
-    nuturtlebot::SensorData mydata;
-    mydata.left_encoder = 4096;
-    mydata.right_encoder = 4096;
-    pub.publish(mydata);
-
-    //spin
-    ros::Rate r(100);
-    for(int i = 0; ros::ok() && i!=200; i++)
-    {
-        ros::spinOnce();
-        r.sleep();
-    }
 }

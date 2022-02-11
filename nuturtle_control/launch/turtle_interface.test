@@ -1,0 +1,10 @@
+<launch>
+
+    <!-- load basic world and diff params config -->
+    <rosparam command = "load" file = "$(find nusim)/config/basic_world.yaml"/>
+    <rosparam command="load" file="$(find nuturtle_description)/config/diff_params.yaml" />
+
+    <node name = "turtle_interface" pkg="nuturtle_control" type = "turtle_interface"/>
+    <test test-name = "turtle_interface_test" pkg = "nuturtle_control" type = "turtle_interface_test" time-limit = "10"/>
+
+</launch>
