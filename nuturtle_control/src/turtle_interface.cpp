@@ -74,16 +74,14 @@ void sensor_callback(const nuturtlebot_msgs::SensorDataConstPtr &sensor_data)
     js.header.stamp = ros::Time::now();
     if (first)
     {
-        first_data = *sensor_data;
+        // first_data = *sensor_data;
         previous_data = *sensor_data;
+        current_data = *sensor_data;
         first = false;
     }
     else
     {
         current_data = *sensor_data;
-        // compare to the first data to get positions
-        js.position[0] = current_data.left_encoder*et_to_rad - first_data.left_encoder*et_to_rad;
-        js.position[1] = current_data.right_encoder*et_to_rad - first_data.right_encoder*et_to_rad;
         // compare to the previous data to compute the velocities
         js.velocity[0] = (current_data.left_encoder*et_to_rad - previous_data.left_encoder*et_to_rad);
         js.velocity[1] = (current_data.right_encoder*et_to_rad - previous_data.right_encoder*et_to_rad);
@@ -107,6 +105,8 @@ void sensor_callback(const nuturtlebot_msgs::SensorDataConstPtr &sensor_data)
         }
         
     }
+    js.position[0] = current_data.left_encoder*et_to_rad;
+    js.position[1] = current_data.right_encoder*et_to_rad;
     // ROS_INFO("Sensor Data: %d  %d",sensor_data->left_encoder,sensor_data->right_encoder);
     // ROS_INFO("JS_Position: %f  %f ",js.position[0],js.position[1]);
     // ROS_INFO("JS_Velocity: %f  %f ",js.velocity[0],js.velocity[1]);

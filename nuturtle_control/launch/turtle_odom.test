@@ -1,0 +1,16 @@
+<launch>
+
+    <!-- load basic world and diff params config -->
+    <rosparam command = "load" file = "$(find nusim)/config/basic_world.yaml"/>
+    <rosparam command="load" file="$(find nuturtle_description)/config/diff_params.yaml" />
+    <!-- robot description -->
+    <include file = "$(find nuturtle_description)/launch/load.launch">
+        <arg name = "use_rviz" value = "false"/>
+        <arg name = "use_jsp" value = "true"/>
+        <arg name = "color" value = "blue"/>
+    </include>
+
+    <node name = "turtle_odom" pkg="nuturtle_control" type = "odometry"/>
+    <test test-name = "turtle_odom_test" pkg = "nuturtle_control" type = "turtle_odom_test" time-limit = "10"/>
+
+</launch>

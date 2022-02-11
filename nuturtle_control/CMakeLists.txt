@@ -232,12 +232,20 @@ install(DIRECTORY config/
 catch_add_rostest_node(turtle_interface_test 
   test/turtle_interface_test.cpp
 )
+catch_add_rostest_node(turtle_odom_test 
+  test/turtle_odom_test.cpp
+)
 
 
 target_link_libraries(turtle_interface_test 
+  ${catkin_LIBRARIES}
+)
+target_link_libraries(turtle_odom_test 
   ${catkin_LIBRARIES}
 )
 
 
 find_package(rostest REQUIRED)
 add_rostest(launch/turtle_interface.test)
+add_rostest(launch/turtle_odom.test)
+add_rostest(launch/turtle_circle.test)
