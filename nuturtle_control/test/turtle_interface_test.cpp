@@ -13,8 +13,8 @@ static int right_velocity;
 
 void cmd_callback(const nuturtlebot_msgs::WheelCommands msg)
 {
-    CHECK(msg.left_velocity == 19);
-    CHECK(msg.right_velocity == 139);
+    left_velocity = msg.left_velocity;
+    right_velocity = msg.right_velocity;
 }
 
 
@@ -32,10 +32,15 @@ TEST_CASE("pure translation","[nuturtle control]")
 
     //spin
     ros::Rate loop_rate(rate);
-    for(int i = 0; ros::ok() && i!=200; i++)
+    for(int i = 0; i< rate; i++)
     {
         ros::spinOnce();
         loop_rate.sleep();
+        if (pub.getNumSubscribers()>0)
+        {break;}
     }
+
+    CHECK(left_velocity == 19);
+    CHECK(right_velocity == 139);
 
 }
