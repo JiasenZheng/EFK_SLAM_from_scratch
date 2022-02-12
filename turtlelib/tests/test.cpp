@@ -1,11 +1,19 @@
-// #define CATCH_CONFIG_MAIN
+/**
+ * \file test.cpp
+ * \author Jiasen Zheng (jiasenzheng2020@u.northwestern)
+ * \brief Test file for calculations in turtlelib library
+ * \version 0.1
+ * \date 2022-02-8
+ * 
+ * 
+**/
+
 #include<catch_ros/catch.hpp>
 #include"turtlelib/rigid2d.hpp"
 #include"turtlelib/diff_drive.hpp"
 #include<sstream>
 
 
-/// \brief set up namespaces
 using turtlelib::Transform2D;
 using turtlelib::DiffDrive;
 using turtlelib::Twist2D;
