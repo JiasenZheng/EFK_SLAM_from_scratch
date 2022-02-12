@@ -31,9 +31,9 @@ namespace turtlelib
             
             DiffDrive( const double &wr,  const double &wt, const Transform2D &tf);
  
-            Velocity inverse_kinematics(const Twist2D &t);
+            Velocity calculate_velocity(const Twist2D &t);
 
-            Twist2D forward_kinematics(const Velocity &v);
+            Twist2D calculate_twist(const Velocity &v);
             
             void update_config(const Velocity &vel);
         

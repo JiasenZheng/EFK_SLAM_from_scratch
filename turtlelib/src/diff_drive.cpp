@@ -41,7 +41,7 @@ namespace turtlelib
     }
 
 
-    Velocity DiffDrive::inverse_kinematics(const Twist2D &t)
+    Velocity DiffDrive::calculate_velocity(const Twist2D &t)
     {
         if (!almost_equal(t.y_dot,0.0))
         {
@@ -53,7 +53,7 @@ namespace turtlelib
         return vel;
     }
 
-    Twist2D DiffDrive::forward_kinematics(const Velocity &vel)
+    Twist2D DiffDrive::calculate_twist(const Velocity &vel)
     {
         Twist2D t;
 
@@ -68,7 +68,7 @@ namespace turtlelib
 
     void DiffDrive::update_config(const Velocity &vel)
     {
-        Twist2D t = forward_kinematics(vel);
+        Twist2D t = calculate_twist(vel);
         Transform2D Tbb1 = integrate_twist(t);
         // define dq 
         Twist2D dq;

@@ -59,7 +59,7 @@ void js_callback(const sensor_msgs::JointStateConstPtr &js)
     vel.right = js->velocity[1];
     // ROS_INFO("velocity: %f  %f", vel.left, vel.right);
     // update twists and configurations
-    twist = dd.forward_kinematics(vel);
+    twist = dd.calculate_twist(vel);
     dd.update_config(vel);
 }
 

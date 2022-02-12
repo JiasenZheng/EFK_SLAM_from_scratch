@@ -55,7 +55,7 @@ void cmd_callback(const geometry_msgs::TwistConstPtr &twist)
 
     // convert twist to velocity using inverse kinematics
     turtlelib::Velocity vel;
-    vel = dd.inverse_kinematics(t);
+    vel = dd.calculate_velocity(t);
     // convert to ticks and store velocity in nuturtlebot::WheelCommands
     nuturtlebot_msgs::WheelCommands wc;
     wc.left_velocity =  (vel.left/0.026);

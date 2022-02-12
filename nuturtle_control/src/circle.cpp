@@ -30,12 +30,8 @@ static geometry_msgs::Twist twist;
 
 bool control_callback(nuturtle_control::control::Request &req, nuturtle_control::control::Response &res)
 {
-    twist.linear.x = req.velocity;
-    if (turtlelib::almost_equal(req.radius,0.0))
-    {
-        throw std::logic_error("radius should not be zero.");
-    }
-    twist.angular.z = req.velocity/req.radius;
+    twist.linear.x = req.velocity*req.radius;
+    twist.angular.z = req.velocity;
     return true;
 }
 
