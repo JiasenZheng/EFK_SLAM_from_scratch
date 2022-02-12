@@ -244,8 +244,9 @@ target_link_libraries(turtle_odom_test
   ${catkin_LIBRARIES}
 )
 
-
-find_package(rostest REQUIRED)
-add_rostest(launch/turtle_interface.test)
-add_rostest(launch/turtle_odom.test)
-add_rostest(launch/turtle_circle.test)
+if(CATKIN_ENABLE_TESTING)
+  find_package(rostest REQUIRED)
+  add_rostest(launch/turtle_interface.test)
+  add_rostest(launch/turtle_odom.test)
+  add_rostest(launch/turtle_circle.test)
+endif()

@@ -69,6 +69,7 @@
   <build_export_depend>turtlelib</build_export_depend>
   <exec_depend>nuturtle_description</exec_depend>
   <exec_depend>nusim</exec_depend>
+  <test_depend>rostest</test_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->
