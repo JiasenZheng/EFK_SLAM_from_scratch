@@ -1,3 +1,12 @@
+/**
+ * \file turtle_interface_test.cpp
+ * \author Jiasen Zheng (jiasenzheng2020@u.northwestern)
+ * \brief ROS API test for turtle_interface
+ * \version 0.1
+ * \date 2022-02-08
+ * 
+ * 
+**/
 #include <catch_ros/catch.hpp>
 #include <ros/ros.h>
 #include <turtlelib/rigid2d.hpp>

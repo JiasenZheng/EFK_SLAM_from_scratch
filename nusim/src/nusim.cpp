@@ -84,9 +84,9 @@ bool reset_callback(std_srvs::Trigger::Request &req,
     return true;
 }
 
-/// \brief 
+/// \brief the callback function for wheel command subscriber
 /// 
-/// \param wc 
+/// \param wc wheel commands
 void wc_callback(const nuturtlebot_msgs::WheelCommandsConstPtr &wc)
 {
     // ROS_INFO("WC_Callback");
@@ -114,9 +114,9 @@ bool teleport_callback(nusim::Teleport::Request &req,
 }
 
 
-/// @brief Set the obstacles markers in Rviz 
+/// \brief Set the obstacles markers in Rviz 
 /// 
-/// @param nh node handle
+/// \param nh node handle
 void set_obs(ros::NodeHandle nh)
 {
     visualization_msgs::MarkerArray obs;
@@ -170,7 +170,13 @@ void set_obs(ros::NodeHandle nh)
 
 }
 
-
+/**
+ * \brief Set the wall markers
+ * 
+ * \param nh node handles
+ * \param x_len the x length of the space
+ * \param y_len the y length of the space
+**/
 void set_walls(ros::NodeHandle nh, double x_len, double y_len)
 {
     visualization_msgs::MarkerArray walls;
@@ -222,6 +228,11 @@ void set_walls(ros::NodeHandle nh, double x_len, double y_len)
 
 }
 
+/**
+ * \brief send tranform between world frame and body frame
+ * 
+ * \param br broadcaster
+**/
 void send_transform(tf2_ros::TransformBroadcaster &br)
 {
         
@@ -241,7 +252,10 @@ void send_transform(tf2_ros::TransformBroadcaster &br)
 }
 
 
-
+/**
+ * \brief publish wheel position in encoder ticks
+ * 
+**/
 void publish_wheel_position()
 {
     // compute wheel rotation in tick from wheel velocity
@@ -259,6 +273,10 @@ void publish_wheel_position()
     wp_pub.publish(sd);
 }
 
+/**
+ * \brief update the configuration of the turtlebot
+ * 
+**/
 void update_pose()
 {
     turtlelib::Velocity vel;
