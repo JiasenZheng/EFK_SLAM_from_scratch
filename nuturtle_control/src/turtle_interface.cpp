@@ -115,13 +115,34 @@ int main(int argc, char** argv)
 {
     ros::init(argc,argv,"turtle_interface");
     ros::NodeHandle nh;
-    //define parameters
-    nh.param("/wheel_radius",wr,0.0);
-    ROS_ERROR_STREAM_COND(wr == 0.0, "Wheel radius not defined, default value: "<<wr<<"!");
-    nh.param("/track_width",wt,0.0);
-    ROS_ERROR_STREAM_COND(wt == 0.0, "Wheel track not defined, default value: "<<wt<<"!");
-    nh.param("/encoder_ticks_to_rad",et_to_rad,0.0);
-    ROS_ERROR_STREAM_COND(et_to_rad == 0.0, "Encoder ticks to rad not defined, default value: "<<et_to_rad<<"!");
+    // define parameters
+    if (nh.getParam("/wheel_radius", wr))
+    {
+      ROS_INFO_STREAM("Got param:" << " wheel_radius");
+    }
+    else
+    {
+      ROS_ERROR_STREAM("Failed to get param 'wheel_radius'");
+    }
+
+    if (nh.getParam("/track_width", wt))
+    {
+      ROS_INFO_STREAM("Got param:" << " track_width");
+    }
+    else
+    {
+      ROS_ERROR_STREAM("Failed to get param 'track_width'");
+    }
+
+    if (nh.getParam("/encoder_ticks_to_rad", et_to_rad))
+    {
+      ROS_INFO_STREAM("Got param:" << " encoder_ticks_to_rad");
+    }
+    else
+    {
+      ROS_ERROR_STREAM("Failed to get param 'encoder_ticks_to_rad'");
+    }
+
 
     //initialize publishers and subscribers
     wc_pub = nh.advertise<nuturtlebot_msgs::WheelCommands>("/wheel_cmd",100);

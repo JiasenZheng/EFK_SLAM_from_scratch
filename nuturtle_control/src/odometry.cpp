@@ -51,7 +51,11 @@ static geometry_msgs::Quaternion rot;
 static tf2::Quaternion q;
 static geometry_msgs::TransformStamped trans;
 
-
+/**
+ * \brief the callback function fot joint state subscriber
+ * 
+ * \param js joint states
+**/
 void js_callback(const sensor_msgs::JointStateConstPtr &js)
 {
     turtlelib::Velocity vel;
@@ -63,6 +67,14 @@ void js_callback(const sensor_msgs::JointStateConstPtr &js)
     dd.update_config(vel);
 }
 
+/**
+ * \brief the callback function for pose service
+ * 
+ * \param req set the x, y, and theta for the turtlebot
+ * \param res empty
+ * \return true succeed
+ * \return false failed
+**/
 bool set_pose_callback(nuturtle_control::set_pose::Request &req, nuturtle_control::set_pose::Response &res)
 {
     turtlelib::Transform2D tf;
@@ -72,6 +84,10 @@ bool set_pose_callback(nuturtle_control::set_pose::Request &req, nuturtle_contro
     return true;
 }
 
+/**
+ * \brief Publish odometry
+ * 
+**/
 void publish_odom()
 {
     odom.header.stamp = ros::Time::now();
@@ -86,6 +102,10 @@ void publish_odom()
     odom_pub.publish(odom);
 }
 
+/**
+ * \brief broadcast odometry
+ * 
+**/
 void broadcast_odom()
 {
     static tf2_ros::TransformBroadcaster br;
@@ -107,10 +127,64 @@ int main(int argc, char** argv)
     ros::NodeHandle nh;
 
     // get parameters
-    nh.getParam("/wheel_radius",wr);
-    nh.getParam("/track_width",wt);
-    odom_id = "odom";                   //
-    body_id = "blue-base_footprint";         // 
+
+    if (nh.getParam("/wheel_radius", wr))
+    {
+      ROS_INFO_STREAM("Got param:" << " wheel_radius");
+    }
+    else
+    {
+      ROS_ERROR_STREAM("Failed to get param 'wheel_radius'");
+    }
+
+    if (nh.getParam("/track_width", wt))
+    {
+      ROS_INFO_STREAM("Got param:" << " track_width");
+    }
+    else
+    {
+      ROS_ERROR_STREAM("Failed to get param 'track_width'");
+    }
+
+    if (nh.getParam("/odom", odom_id))
+    {
+      ROS_INFO_STREAM("Got param:" << " odom");
+    }
+    else
+    {
+      ROS_ERROR_STREAM("Failed to get param 'odom'");
+      ros::shutdown();
+    }
+
+    if (nh.getParam("/body", body_id))
+    {
+      ROS_INFO_STREAM("Got param:" << " body");
+    }
+    else
+    {
+      ROS_ERROR_STREAM("Failed to get param 'body'");
+      ros::shutdown();
+    }
+
+    if (nh.getParam("/left_wheel", wheel_left))
+    {
+      ROS_INFO_STREAM("Got param:" << " left_wheel");
+    }
+    else
+    {
+      ROS_ERROR_STREAM("Failed to get param 'left_wheel'");
+      ros::shutdown();
+    }
+
+    if (nh.getParam("/right_wheel", wheel_right))
+    {
+      ROS_INFO_STREAM("Got param:" << " right_wheel");
+    }
+    else
+    {
+      ROS_ERROR_STREAM("Failed to get param 'right_wheel'");
+      ros::shutdown();
+    }
 
     // initialize publishers, subscribers, services and br
     js_sub = nh.subscribe("/joint_states",100,js_callback);
@@ -130,8 +204,8 @@ int main(int argc, char** argv)
     trans.child_frame_id = body_id;
 
     // Initialize joint states
-    js.name.push_back("red-wheel_left_joint");
-    js.name.push_back("red-wheel_right_joint");
+    js.name.push_back(wheel_left);
+    js.name.push_back(wheel_right);
     js.position.push_back(0);
     js.position.push_back(0);
     js.velocity.push_back(0);
