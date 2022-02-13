@@ -9,7 +9,7 @@ The package involves three nodes:
 ### Experiments
 
 1. Drive the robot forward and backward in a straight line 
-  * Initial odometry:
+  * Initial odometry:<br>
     position: 
       x: 0.1141<br>
       y: 0.01047<br>
@@ -19,7 +19,7 @@ The package involves three nodes:
       y: 0.0<br>
       z: 0.0187<br>
       w: -0.999<br>
-  * Final odometry:
+  * Final odometry:<br>
     position: 
       x: 0.0967<br>
       y: 0.01445<br>
@@ -33,7 +33,7 @@ The package involves three nodes:
   * Real: https://youtu.be/4RChpvIqmVU
 
 2. Rotate the robot clockwise and counter clockwise 
-  * Initial odometry:
+  * Initial odometry:<br>
     position: 
       x: 0.0967<br>
       y: 0.01445<br>
@@ -43,7 +43,7 @@ The package involves three nodes:
       y: 0.0<br>
       z: 0.01720<br>
       w: -0.999<br>
-  * Final odometry:
+  * Final odometry:<br>
     position: 
       x: 0.0962<br>
       y: 0.01479<br>
@@ -57,7 +57,7 @@ The package involves three nodes:
   * Real: https://youtu.be/ljfErUOTZg4
 
 3. Drive the robot in a circle, clockwise and counter clockwise
-  * Initial odometry: 
+  * Initial odometry: <br>
     position: 
       x: 0.0<br>
       y: 0.0<br>
@@ -67,7 +67,7 @@ The package involves three nodes:
       y: 0.0<br>
       z: 0.0<br>
       w: 1.0<br>
-  * Final odometry:
+  * Final odometry:<br>
     position: 
       x: 0.0985<br>
       y: 0.0903<br>
@@ -81,7 +81,7 @@ The package involves three nodes:
   * Real: https://youtu.be/Ph9QovCfH0M
 
 4. Try drive the robot in a circle, and get a significantly better result
-  * Initial odometry:
+  * Initial odometry:<br>
     position: 
       x: 0.0<br>
       y: -2.274e-18<br>
@@ -91,7 +91,7 @@ The package involves three nodes:
       y: 0.0<br>
       z: 0.0<br>
       w: 1.0<br>
-  * Final odometry:
+  * Final odometry:<br>
     position: 
       x: 0.0608<br>
       y: 0.0633<br>
