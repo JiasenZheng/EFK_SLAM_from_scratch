@@ -8,7 +8,7 @@
     <arg name = "use_jsp" default = "false" doc = "whether to use joint state publisher"/>
     <!-- load basic world and diff params config -->
     <rosparam command = "load" file = "$(find nusim)/config/basic_world.yaml"/>
-    <rosparam command="load" file="$(find nuturtle_description)/config/diff_params.yaml" />
+    <!-- <rosparam command="load" file="$(find nuturtle_description)/config/diff_params.yaml" /> -->
     <!-- include basic remote launch file -->
     <include file = "$(find nuturtle_control)/launch/basic_remote.launch" if = "$(eval robot != 'nusim')">
         <arg name = "robot" value = "$(arg robot)"/>

@@ -4,3 +4,5 @@ collision_radius: 0.11 # collision radius of base_link
 motor_cmd_to_radsec: 0.024 # rad/s per command interval
 motor_cmd_max: 256 # maximum command speed
 encoder_ticks_to_rad: 0.00153398078 # radians per encoder tick
+odom_id: odom  # the name of the odometry frame
+body_id: blue-base_footprint  # the name of the body frame of the robot

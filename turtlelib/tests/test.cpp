@@ -3,7 +3,7 @@
  * \author Jiasen Zheng (jiasenzheng2020@u.northwestern)
  * \brief Test file for calculations in turtlelib library
  * \version 0.1
- * \date 2022-02-8
+ * \date 2022-02-08
  * 
  * 
 **/

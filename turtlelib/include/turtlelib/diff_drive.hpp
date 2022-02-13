@@ -6,8 +6,7 @@
  * \author Jiasen Zheng (jiasenzheng2020@u.northwestern)
  * \brief Kinematics of the turtlebot
  * \version 0.1
- * \date 2022-02-8
- * 
+ * \date 2022-02-08
  * 
 **/
 
