@@ -28,6 +28,14 @@ static ros::ServiceServer reverse;
 static ros::ServiceServer stop;
 static geometry_msgs::Twist twist;
 
+/**
+ * \brief the callback function for control service
+ * 
+ * \param req set a velocity and a radius for the turtlebot to follow a circle
+ * \param res empty
+ * \return true success
+ * \return false fail
+**/
 bool control_callback(nuturtle_control::control::Request &req, nuturtle_control::control::Response &res)
 {
     twist.linear.x = req.velocity*req.radius;
@@ -35,6 +43,14 @@ bool control_callback(nuturtle_control::control::Request &req, nuturtle_control:
     return true;
 }
 
+/**
+ * \brief the callback function for the reverse service
+ * 
+ * \param req empty
+ * \param res empty
+ * \return true success
+ * \return false sucess
+**/
 bool reverse_callback(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res)
 {
     twist.linear.x = -twist.linear.x;
@@ -42,6 +58,14 @@ bool reverse_callback(std_srvs::Empty::Request &req, std_srvs::Empty::Response &
     return true;
 }
 
+/**
+ * \brief the callback function for the stop service
+ * 
+ * \param req empty
+ * \param res empty
+ * \return true success
+ * \return false fail
+**/
 bool stop_callback(std_srvs::Empty::Request &req, std_srvs::Empty::Response &res)
 {
     twist.linear.x = 0.0;

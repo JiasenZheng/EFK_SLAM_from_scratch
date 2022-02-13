@@ -72,8 +72,8 @@ void js_callback(const sensor_msgs::JointStateConstPtr &js)
  * 
  * \param req set the x, y, and theta for the turtlebot
  * \param res empty
- * \return true succeed
- * \return false failed
+ * \return true success
+ * \return false fail
 **/
 bool set_pose_callback(nuturtle_control::set_pose::Request &req, nuturtle_control::set_pose::Response &res)
 {
