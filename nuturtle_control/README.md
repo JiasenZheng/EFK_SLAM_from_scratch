@@ -1,88 +1,125 @@
-1.  position: 
-      x: 0.11412582465441162
-      y: 0.010475031418904386
-      z: 0.0
-    orientation: 
-      x: -0.0
-      y: 0.0
-      z: 0.01878547885750637
-      w: -0.9998235373225088
+# nuturtle_control ROS package
 
+### Brief overview 
+The package involves three nodes:
+* turtle_interface: provides an interface between command source and wheel control
+* odometry: calculate the transform between odometry frame and body frame, and broadcast it
+* circle: one of the command source to cause the turtlebot to move in a circle
+
+### Experiments
+
+1. Drive the robot forward and backward in a straight line 
+  * Initial odometry:
     position: 
-      x: 0.09674190181361547
-      y: 0.014458440131771656
-      z: 0.0
+      x: 0.1141<br>
+      y: 0.01047<br>
+      z: 0.0<br>
     orientation: 
-      x: -0.0
-      y: 0.0
-      z: 0.017203817482258025
-      w: -0.9998520033805189
-
-2. 
-
+      x: -0.0<br>
+      y: 0.0<br>
+      z: 0.0187<br>
+      w: -0.999<br>
+  * Final odometry:
     position: 
-      x: 0.09674190181361547
-      y: 0.014458440131771656
-      z: 0.0
+      x: 0.0967<br>
+      y: 0.01445<br>
+      z: 0.0<br>
     orientation: 
-      x: -0.0
-      y: 0.0
-      z: 0.017203817482258025
-      w: -0.9998520033805189
+      x: -0.0<br>
+      y: 0.0<br>
+      z: 0.01720<br>
+      w: -0.999<br>
+  * Rviz: https://youtu.be/CyYhnOoOMoc
+  * Real: https://youtu.be/4RChpvIqmVU
 
-  pose: 
+2. Rotate the robot clockwise and counter clockwise 
+  * Initial odometry:
     position: 
-      x: 0.09621892286413097
-      y: 0.014791184032906258
-      z: 0.0
+      x: 0.0967<br>
+      y: 0.01445<br>
+      z: 0.0<br>
     orientation: 
-      x: 0.0
-      y: 0.0
-      z: -0.16118160906632834
-      w: 0.9869247635452204
+      x: -0.0<br>
+      y: 0.0<br>
+      z: 0.01720<br>
+      w: -0.999<br>
+  * Final odometry:
+    position: 
+      x: 0.0962<br>
+      y: 0.01479<br>
+      z: 0.0<br>
+    orientation: 
+      x: 0.0<br>
+      y: 0.0<br>
+      z: -0.1611<br>
+      w: 0.986<br>
+  * Rviz: https://youtu.be/3sMmMYYVfFk
+  * Real: https://youtu.be/ljfErUOTZg4
 
-3. 
-  pose: 
+3. Drive the robot in a circle, clockwise and counter clockwise
+  * Initial odometry: 
     position: 
-      x: 0.0
-      y: 0.0
-      z: 0.0
+      x: 0.0<br>
+      y: 0.0<br>
+      z: 0.0<br>
     orientation: 
-      x: 0.0
-      y: 0.0
-      z: 0.0
-      w: 1.0
+      x: 0.0<br>
+      y: 0.0<br>
+      z: 0.0<br>
+      w: 1.0<br>
+  * Final odometry:
+    position: 
+      x: 0.0985<br>
+      y: 0.0903<br>
+      z: 0.0<br>
+    orientation: 
+      x: 0.0<br>
+      y: 0.0<br>
+      z: 0.661<br>
+      w: 0.749<br>
+  * Rviz: https://youtu.be/bjnNbjgbFXo
+  * Real: https://youtu.be/Ph9QovCfH0M
 
-  pose: 
+4. Try drive the robot in a circle, and get a significantly better result
+  * Initial odometry:
     position: 
-      x: 0.09855000973871457
-      y: 0.09036394268906706
-      z: 0.0
+      x: 0.0<br>
+      y: -2.274e-18<br>
+      z: 0.0<br>
     orientation: 
-      x: 0.0
-      y: 0.0
-      z: 0.6614959233488434
-      w: 0.7499487605115839
+      x: 0.0<br>
+      y: 0.0<br>
+      z: 0.0<br>
+      w: 1.0<br>
+  * Final odometry:
+    position: 
+      x: 0.0608<br>
+      y: 0.0633<br>
+      z: 0.0<br>
+    orientation: 
+      x: 0.0<br>
+      y: 0.0<br>
+      z: 0.558<br>
+      w: 0.829<br>
+  * Rviz: https://youtu.be/VSdJZ1Za5ss
+  * Real: https://youtu.be/xIeY5_YXUVws
+  * The driving did result in a better final pose. I drove the turtlebot with slower speed and shorter distance. This is because the more distance or higher speed I drive the turtlebot, the more odometry error will be accumulated because of wheel slips. 
 
-4. 
-  pose: 
-    position: 
-      x: 0.0
-      y: -2.2744273928043806e-18
-      z: 0.0
-    orientation: 
-      x: 0.0
-      y: 0.0
-      z: 0.0
-      w: 1.0
+### User instructions
+```shell
+roslaunch nuturtle_control start_robot.launch
+```
+* Arguments:
+  * cmd_src: command sources, default to be circle
+    * circle: drive in a circle with given angular velocity and radius
+    * teleop: use turtlebot3_teleop_key node
+    * none: start nothing
+  * robot: robot to be controled, default to be nusim
+    * nusim: start nusim simulator
+    * localhost: run the nodes directly from turtlebot3
+    * <turtlebotname>: the name of any turtlebot, to run the nodes on that turtlebot
+    * none: do not launch any addition nodes
+  * use_rviz: whether to launch rviz
 
-  pose: 
-    position: 
-      x: 0.09088621799777484
-      y: 0.06332453403864913
-      z: 0.0
-    orientation: 
-      x: 0.0
-      y: 0.0
-      z: 0.5587984870135665
-      w: 0.8293034733505877
+
+
