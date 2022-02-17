@@ -10,13 +10,11 @@
         <param name = "baud" value = "115200"/>
     </node>
 
-    <node machine = "turtlebot" pkg = "nuturtle_control" type = "turtle_interface" name = "turtle_interface" >
+    <node machine = "turtlebot" pkg = "nuturtle_control" type = "turtle_interface" name = "turtle_interface" />
 
-    </node>
+    <node machine = "turtlebot" pkg = "nuturtle_control" type = "odometry" name = "odometry" />
 
-    <node machine = "turtlebot" pkg = "nuturtle_control" type = "odometry" name = "odometry" >
-
-    </node>
+    <node machine = "turtlebot" pkg = "hls_lfcd_lds_driver" type = "hlds_laser_publisher" name = "hlds_laser_publisher"/>
 
     
 </launch>
