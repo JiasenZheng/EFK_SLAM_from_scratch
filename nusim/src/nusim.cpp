@@ -49,7 +49,6 @@ static turtlelib::DiffDrive dd = turtlelib::DiffDrive();
 static double cmd_to_radsec;
 static double et_to_rad;
 static geometry_msgs::TransformStamped trans;
-// static turtlelib::Position wheel_position_rad = turtlelib::Position();
 static turtlelib::Position wheel_position_tick = turtlelib::Position();
 static nuturtlebot_msgs::SensorData sd;
 
@@ -149,8 +148,8 @@ void set_obs(ros::NodeHandle nh)
 
         marker.type = marker.CYLINDER;
         marker.color = colour;
-        marker.scale.x = r;
-        marker.scale.y = r;
+        marker.scale.x = 2*r;
+        marker.scale.y = 2*r;
         marker.scale.z = h;
 
         position.x = v_x[i];
@@ -195,8 +194,8 @@ void set_walls(ros::NodeHandle nh, double x_len, double y_len)
 
     std_msgs::ColorRGBA colour;
     colour.r = 1;
-    colour.g = 1;
-    colour.b = 1;
+    colour.g = 0;
+    colour.b = 0;
     colour.a = 1;
 
     
