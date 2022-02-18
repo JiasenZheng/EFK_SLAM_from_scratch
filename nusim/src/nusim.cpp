@@ -13,6 +13,7 @@
 #include "nusim/Teleport.h"
 #include "turtlelib/rigid2d.hpp"
 #include "turtlelib/diff_drive.hpp"
+#include <random>
 
 
 /// \brief to simulate and visualize the turtlebot in Rviz
@@ -39,6 +40,7 @@ static long count = 0;
 static std_msgs::UInt64 timestep;
 static ros::Publisher time_pub;
 static ros::Publisher obs_pub;
+static ros::Publisher fake_obs_pub;
 static ros::Publisher wp_pub;
 static ros::Publisher walls_pub;
 static ros::Subscriber wc_sub;
@@ -48,9 +50,15 @@ static turtlelib::Velocity wheel_vel_cmd = turtlelib::Velocity();
 static turtlelib::DiffDrive dd = turtlelib::DiffDrive();
 static double cmd_to_radsec;
 static double et_to_rad;
+static double var_wheel_velocity;
 static geometry_msgs::TransformStamped trans;
 static turtlelib::Position wheel_position_tick = turtlelib::Position();
 static nuturtlebot_msgs::SensorData sd;
+static double slip_min;
+static double slip_max;
+static std::uniform_real_distribution<double> wheel_position(-0.2,0.2);
+static std::normal_distribution<> fake_obs(0.0,0.01);
+
 
 
 static double x_0;
@@ -63,7 +71,17 @@ static double x_length = 2.0;
 static double y_length = 3.0;
 
 
-
+/// \brief Generate random variables
+///
+std::mt19937 & get_random()
+{
+    // static variables inside a function are created once and persist for the remainder of the program
+    static std::random_device rd{}; 
+    static std::mt19937 mt{rd()};
+    // we return a reference to the pseudo-random number genrator object. This is always the
+    // same object every time get_random is called
+    return mt;
+}
 
 /// \brief The call back function for reset service to rest the timestep and the position of the robot
 /// 
@@ -88,9 +106,9 @@ bool reset_callback(std_srvs::Trigger::Request &req,
 /// \param wc wheel commands
 void wc_callback(const nuturtlebot_msgs::WheelCommandsConstPtr &wc)
 {
-    // ROS_INFO("WC_Callback");
     wheel_vel_cmd.left = wc->left_velocity;
     wheel_vel_cmd.right = wc->right_velocity;
+    
     // ROS_INFO("left wheel vel cmd: %f", wheel_vel_cmd.left);
     // ROS_INFO("right wheel vel cmd: %f", wheel_vel_cmd.right);
 }
@@ -140,7 +158,7 @@ void set_obs(ros::NodeHandle nh)
     nh.getParam("cylinder_ys",v_y);
     nh.getParam("cylinder_r",r);
     nh.getParam("cylinder_h",h);
-    
+
     for (int i=0; i<v_x.size();i++)
     {
         visualization_msgs::Marker marker;
@@ -166,6 +184,62 @@ void set_obs(ros::NodeHandle nh)
         obs.markers.push_back(marker);
     }
     obs_pub.publish(obs);
+
+}
+
+/// \brief Set fake obstacles markers in Rviz 
+/// 
+/// \param nh node handle
+void fake_sensor(ros::NodeHandle nh)
+{
+    visualization_msgs::MarkerArray obs;
+    std::vector<double> v_x;
+    std::vector<double> v_y;
+    double r;
+    double h;
+
+    geometry_msgs::Quaternion rotation;
+    rotation.x = 0;
+    rotation.y = 0;
+    rotation.z = 0;
+    rotation.w = 1;
+
+    std_msgs::ColorRGBA colour;
+    colour.r = 1;
+    colour.g = 0;
+    colour.b = 1;
+    colour.a = 1;
+
+    nh.getParam("cylinder_xs",v_x);
+    nh.getParam("cylinder_ys",v_y);
+    nh.getParam("cylinder_r",r);
+    nh.getParam("cylinder_h",h);
+
+    for (int i=0; i<v_x.size();i++)
+    {
+        visualization_msgs::Marker marker;
+        geometry_msgs::Point position;
+
+        marker.type = marker.CYLINDER;
+        marker.color = colour;
+        marker.scale.x = 2*r;
+        marker.scale.y = 2*r;
+        marker.scale.z = h;
+
+        position.x = v_x[i] + fake_obs(get_random());
+        position.y = v_y[i] + fake_obs(get_random());
+        position.z = h/2;
+
+
+        marker.pose.position = position;
+        marker.pose.orientation = rotation;
+        marker.header.frame_id = "world";
+        marker.header.stamp = ros::Time::now();
+        marker.id = i;
+
+        obs.markers.push_back(marker);
+    }
+    fake_obs_pub.publish(obs);
 
 }
 
@@ -262,10 +336,12 @@ void publish_wheel_position()
     wheel_rotation_tick.left = (wheel_vel_cmd.left*cmd_to_radsec/rate)/et_to_rad;
     // ROS_INFO("left wheel_rotation_tick: %f", wheel_rotation_tick.left);
     wheel_rotation_tick.right=(wheel_vel_cmd.right*cmd_to_radsec/rate)/et_to_rad;
-    // ROS_INFO("right wheel_rotation_tick: %f", wheel_rotation_tick.right);
+    // ROS_INFO("right wheel_rotation_ticwheel_position_tickk: %f", wheel_rotation_tick.right);
     // update the wheel position in tick 
-    wheel_position_tick.left =  remainder((wheel_position_tick.left + wheel_rotation_tick.left),4096);
-    wheel_position_tick.right =  remainder((wheel_position_tick.right + wheel_rotation_tick.right),4096);
+    wheel_position_tick.left =  remainder((wheel_position_tick.left + wheel_rotation_tick.left + 
+    wheel_position(get_random())*wheel_vel_cmd.left/rate),4096);
+    wheel_position_tick.right =  remainder((wheel_position_tick.right + wheel_rotation_tick.right + 
+    wheel_position(get_random())*wheel_vel_cmd.left/rate),4096);
     // publish as SensorData
     sd.left_encoder = wheel_position_tick.left;
     sd.right_encoder = wheel_position_tick.right;
@@ -278,11 +354,22 @@ void publish_wheel_position()
 **/
 void update_pose()
 {
+    std::normal_distribution<> wheel_vel(0.0,var_wheel_velocity);
     turtlelib::Velocity vel;
-    vel.left = (wheel_vel_cmd.left*cmd_to_radsec)/rate;
-    vel.right = (wheel_vel_cmd.right*cmd_to_radsec)/rate;
+    if (wheel_vel_cmd.left == 0 && wheel_vel_cmd.right == 0)
+    {
+        vel.left = 0.0;
+        vel.right = 0.0;
+    }
+    else
+    {
+        vel.left = (wheel_vel_cmd.left*cmd_to_radsec+ wheel_vel(get_random()))/rate;
+        vel.right = (wheel_vel_cmd.right*cmd_to_radsec + wheel_vel(get_random()))/rate;
+    }
     dd.update_config(vel);
 }
+
+
 
 int main(int argc, char * argv[])
 {
@@ -291,6 +378,7 @@ int main(int argc, char * argv[])
     static tf2_ros::TransformBroadcaster br;
     time_pub = nh.advertise<std_msgs::UInt64>("timestep",100);
     obs_pub = nh.advertise<visualization_msgs::MarkerArray>("nusim/obstacles",100);
+    fake_obs_pub = nh.advertise<visualization_msgs::MarkerArray>("nusim/fake_sensor",100);
     walls_pub = nh.advertise<visualization_msgs::MarkerArray>("nusim/walls",100);
     wp_pub = nh.advertise<nuturtlebot_msgs::SensorData>("/red/sensor_data",100);
     wc_sub = nh.subscribe("red/wheel_cmd",100,wc_callback);
@@ -305,9 +393,10 @@ int main(int argc, char * argv[])
 
     nh.getParam("/motor_cmd_to_radsec",cmd_to_radsec);
     nh.getParam("/encoder_ticks_to_rad",et_to_rad);
-    nh.param("x0",x,0.0);
-    nh.param("y0",y,0.0);
-    nh.param("theta0",theta,0.0);
+    nh.getParam("/var_wheel_vel", var_wheel_velocity);
+    nh.param("/x0",x,0.0);
+    nh.param("/y0",y,0.0);
+    nh.param("/theta0",theta,0.0);
 
     x_0 = x;
     y_0 = y;
@@ -318,6 +407,7 @@ int main(int argc, char * argv[])
     {
         count++;
         set_obs(nh);
+        fake_sensor(nh);
         set_walls(nh,x_length,y_length);
         send_transform(br);
         publish_wheel_position();

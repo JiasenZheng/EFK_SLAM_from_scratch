@@ -11,9 +11,9 @@ Panels:
         - /Odometry1/Covariance1
         - /MarkerArray1
         - /MarkerArray2
-        - /RobotModel2
         - /RobotModel3
         - /Path1
+        - /MarkerArray3
       Splitter Ratio: 0.5
     Tree Height: 758
   - Class: rviz/Selection
@@ -354,6 +354,14 @@ Visualization Manager:
       Topic: ""
       Unreliable: false
       Value: true
+    - Class: rviz/MarkerArray
+      Enabled: true
+      Marker Topic: /nusim/fake_sensor
+      Name: MarkerArray
+      Namespaces:
+        {}
+      Queue Size: 100
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -382,7 +390,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 7.145333290100098
+      Distance: 9.951462745666504
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -398,9 +406,9 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.355397343635559
+      Pitch: 0.8153978586196899
       Target Frame: <Fixed Frame>
-      Yaw: 3.8835718631744385
+      Yaw: 4.158575534820557
     Saved: ~
 Window Geometry:
   Displays:
