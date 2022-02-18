@@ -1,5 +1,6 @@
 <launch>
     <arg name = "use_jsp" default = "false" doc = "whether to use joint state publisher"/>
+    <arg name = "config_file" default = "basic_world.yaml" doc = "which configuration file to use"/>
     <include file = "$(find nuturtle_description)/launch/load.launch">
         <arg name = "use_rviz" value = "false"/>
         <arg name = "use_jsp" value = '$(arg use_jsp)'/>
@@ -7,7 +8,7 @@
     </include>
     <node name = "rviz" pkg = "rviz" type = "rviz" args = "-d $(find nusim)/config/nusim.rviz"/>
 
-    <rosparam command = "load" file = "$(find nusim)/config/basic_world.yaml"/>
+    <rosparam command = "load" file = "$(find nusim)/config/$(arg config_file)"/>
     <node name = "nusim" pkg = "nusim" type = "nusim" output = "screen"/>
 
 </launch>
