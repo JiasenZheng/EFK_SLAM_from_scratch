@@ -1,0 +1,14 @@
+Top level CMakeLists.txt does not belong in git.
+nuturtlebot_msgs does not belong in the git repository
+
+catkin_lint -W2
+supress the executable file is not installed to executable destination warning with #ignore_once
+
+catkin_make
+
+Task A.
+Task B
+Task D
+Task E
+Task C
+Task F

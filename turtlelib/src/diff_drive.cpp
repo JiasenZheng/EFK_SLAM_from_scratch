@@ -5,7 +5,7 @@
 
 namespace turtlelib
 {
-    Velocity::Velocity()
+    Velocity::Velocity() // # use constructor initializer lists
     {
         left = 0.0;
         right = 0.0;
@@ -48,7 +48,7 @@ namespace turtlelib
             throw std::logic_error("Y_velocity should be zero.");
         }
         Velocity vel;
-        vel.left = (-(wheel_track/2)*t.omega+t.x_dot)/wheel_radius;
+        vel.left = (-(wheel_track/2)*t.omega+t.x_dot)/wheel_radius; //# divide by 2.0
         vel.right = ((wheel_track/2)*t.omega+t.x_dot)/wheel_radius;
         return vel;
     }
