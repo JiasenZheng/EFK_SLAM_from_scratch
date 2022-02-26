@@ -69,7 +69,10 @@ static double range_max = 3.500;
 static int sample_num = 360;
 static std::string lidar_frame_id = "base_scan";
 static double scan_time = 0.2;
-
+static std::vector<double> v_x;
+static std::vector<double> v_y;
+static double r;
+static double h;
 static double x_0;
 static double y_0;
 static double theta_0;
@@ -148,10 +151,6 @@ bool teleport_callback(nusim::Teleport::Request &req,
 void set_obs(ros::NodeHandle nh)
 {
     visualization_msgs::MarkerArray obs;
-    std::vector<double> v_x;
-    std::vector<double> v_y;
-    double r;
-    double h;
 
     geometry_msgs::Quaternion rotation;
     rotation.x = 0;
@@ -164,11 +163,6 @@ void set_obs(ros::NodeHandle nh)
     colour.g = 0;
     colour.b = 0;
     colour.a = 1;
-
-    nh.getParam("cylinder_xs",v_x);
-    nh.getParam("cylinder_ys",v_y);
-    nh.getParam("cylinder_r",r);
-    nh.getParam("cylinder_h",h);
 
     for (int i=0; i<v_x.size();i++)
     {
@@ -204,10 +198,6 @@ void set_obs(ros::NodeHandle nh)
 void fake_sensor(ros::NodeHandle nh)
 {
     visualization_msgs::MarkerArray obs;
-    std::vector<double> v_x;
-    std::vector<double> v_y;
-    double r;
-    double h;
 
     geometry_msgs::Quaternion rotation;
     rotation.x = 0;
@@ -220,11 +210,6 @@ void fake_sensor(ros::NodeHandle nh)
     colour.g = 1;
     colour.b = 0;
     colour.a = 1;
-
-    nh.getParam("cylinder_xs",v_x);
-    nh.getParam("cylinder_ys",v_y);
-    nh.getParam("cylinder_r",r);
-    nh.getParam("cylinder_h",h);
 
     for (int i=0; i<v_x.size();i++)
     {
@@ -335,12 +320,7 @@ void set_walls(ros::NodeHandle nh, double x_len, double y_len)
 **/
 void send_transform(ros::NodeHandle nh, tf2_ros::TransformBroadcaster &br)
 {
-    std::vector<double> v_x;
-    std::vector<double> v_y;
-    double r,cr;
-    nh.getParam("cylinder_xs",v_x);
-    nh.getParam("cylinder_ys",v_y);
-    nh.getParam("cylinder_r",r);  
+    double cr;
     nh.getParam("collision_radius",cr);
     double x = real_dd.get_trans().get_x();
     double y = real_dd.get_trans().get_y();
@@ -471,14 +451,16 @@ int main(int argc, char * argv[])
     trans.child_frame_id = "red-base_footprint";
     trans.header.frame_id = "world";
     // get parameters
-    nh.getParam("/motor_cmd_to_radsec",cmd_to_radsec);
-    nh.getParam("/encoder_ticks_to_rad",et_to_rad);
-    nh.getParam("/var_wheel_vel", var_wheel_velocity);
-    nh.param("/x0",x,0.0);
-    nh.param("/y0",y,0.0);
-    nh.param("/theta0",theta,0.0);
-    // nh.getParam("cylinder_xs",v_x);
-    // nh.getParam("cylinder_ys",v_y);
+    nh.getParam("motor_cmd_to_radsec",cmd_to_radsec);
+    nh.getParam("encoder_ticks_to_rad",et_to_rad);
+    nh.getParam("var_wheel_vel", var_wheel_velocity);
+    nh.param("x0",x,0.0);
+    nh.param("y0",y,0.0);
+    nh.param("theta0",theta,0.0);
+    nh.getParam("cylinder_xs",v_x);
+    nh.getParam("cylinder_ys",v_y);
+    nh.getParam("cylinder_r",r);
+    nh.getParam("cylinder_h",h);
     x_0 = x;
     y_0 = y;
     theta_0 = theta;
