@@ -423,7 +423,7 @@ void simulate_lidar()
     lidar_data.range_min = range_min;
     lidar_data.range_max = range_max;
     lidar_data.angle_increment = angle_max / sample_num;
-    // lidar_data.scan_time = scan_time;
+    lidar_data.scan_time = scan_time;
     // lidar_data.time_increment = scan_time / sample_num;
     lidar_data.ranges.resize(sample_num);
 
@@ -433,33 +433,40 @@ void simulate_lidar()
     {
         obs_tt.push_back((real_dd.get_trans().inv())(obs_world[i]));
     }
+    ROS_INFO("Len: %li", obs_tt.size());
 
     for (int i = 0; i < sample_num; i++)
     {
         double x_min,x_max,y_min,y_max;
         double theta = turtlelib::deg2rad(i);
 
-        x_min, y_min = range_min*cos(theta), range_min*sin(theta);
-        x_max, y_max = range_max*cos(theta), range_max*sin(theta);
+        x_min = range_min*cos(theta);
+        y_min = range_min*sin(theta);
+        x_max = range_max*cos(theta);
+        y_max = range_max*sin(theta);
 
-        for(int i=0; i<obs_tt.size(); i++)
+
+        for(int j=0; j<obs_tt.size(); j++)
         {
-            double x1 = x_min - obs_tt[i].x;
-            double x2 = x_max - obs_tt[i].x;            
-            double y1 = y_min - obs_tt[i].y;
-            double y2 = y_max - obs_tt[i].y;
+            double x1 = x_min - obs_tt[j].x;
+            double x2 = x_max - obs_tt[j].x;            
+            double y1 = y_min - obs_tt[j].y;
+            double y2 = y_max - obs_tt[j].y;
             double dx = x2 - x1;
             double dy = y2 - y1;
             double dr = sqrt(pow(dx,2)+pow(dy,2));
             double D = x1*y2 - x2*y1;
             double delta = pow(r,2)*pow(dr,2)-pow(D,2);
+            // ROS_INFO("X1: %f, X2: %f, Y1: %f, Y2: %f",x1,x2,y1,y2);
+            // ROS_INFO("Delta: %f",delta);
             if (delta >0)
             {
-                lidar_data.ranges[i] = 1.0;
+                lidar_data.ranges[i] = 0.3;
+                // break;
             }
             else
             {
-                lidar_data.ranges[i] = 2.5;
+                lidar_data.ranges[i] = 2.0;
             }
         }
     }
