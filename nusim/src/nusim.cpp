@@ -43,6 +43,7 @@ static ros::Publisher time_pub;
 static ros::Publisher obs_pub;
 static ros::Publisher fake_obs_pub;
 static ros::Publisher wp_pub;
+static ros::Publisher lidar_pub;
 static ros::Publisher walls_pub;
 static ros::Subscriber wc_sub;
 static ros::ServiceServer reset_service;
@@ -67,10 +68,11 @@ static double angle_max = 6.28319;
 static double range_min = 0.120;
 static double range_max = 3.500;
 static int sample_num = 360;
-static std::string lidar_frame_id = "base_scan";
+static std::string lidar_frame_id = "red-base_scan";
 static double scan_time = 0.2;
 static std::vector<double> v_x;
 static std::vector<double> v_y;
+static std::vector<turtlelib::Vector2D> obs_world;
 static double r;
 static double h;
 static double x_0;
@@ -421,14 +423,51 @@ void simulate_lidar()
     lidar_data.range_min = range_min;
     lidar_data.range_max = range_max;
     lidar_data.angle_increment = angle_max / sample_num;
-    lidar_data.scan_time = scan_time;
-    lidar_data.time_increment = scan_time / sample_num;
+    // lidar_data.scan_time = scan_time;
+    // lidar_data.time_increment = scan_time / sample_num;
     lidar_data.ranges.resize(sample_num);
 
+    // obstacles in turtle frame
+    std::vector<turtlelib::Vector2D> obs_tt;
+    for (int i = 0; i < obs_world.size(); i++)
+    {
+        obs_tt.push_back((real_dd.get_trans().inv())(obs_world[i]));
+    }
+
+    for (int i = 0; i < sample_num; i++)
+    {
+        double x_min,x_max,y_min,y_max;
+        double theta = turtlelib::deg2rad(i);
+
+        x_min, y_min = range_min*cos(theta), range_min*sin(theta);
+        x_max, y_max = range_max*cos(theta), range_max*sin(theta);
+
+        for(int i=0; i<obs_tt.size(); i++)
+        {
+            double x1 = x_min - obs_tt[i].x;
+            double x2 = x_max - obs_tt[i].x;            
+            double y1 = y_min - obs_tt[i].y;
+            double y2 = y_max - obs_tt[i].y;
+            double dx = x2 - x1;
+            double dy = y2 - y1;
+            double dr = sqrt(pow(dx,2)+pow(dy,2))
+            double D = x1*y2 - x2*y1
+            double delta = r**2*dr**2-D**2
+            if (delta >0)
+            {
+                lidar_data.ranges[i] = 1.0;
+            }
+            else
+            {
+                lidar_data.ranges[i] = 2.5;
+            }
+        }
+    }
+
 
     
     
-
+    lidar_pub.publish(lidar_data);
 }
 
 int main(int argc, char * argv[])
@@ -441,6 +480,7 @@ int main(int argc, char * argv[])
     fake_obs_pub = nh.advertise<visualization_msgs::MarkerArray>("nusim/fake_sensor",100);
     walls_pub = nh.advertise<visualization_msgs::MarkerArray>("nusim/walls",100);
     wp_pub = nh.advertise<nuturtlebot_msgs::SensorData>("/red/sensor_data",100);
+    lidar_pub = nh.advertise<sensor_msgs::LaserScan>("/laser",100);
     wc_sub = nh.subscribe("red/wheel_cmd",100,wc_callback);
     reset_service = nh.advertiseService("nusim/reset",reset_callback);
     teleport_service = nh.advertiseService("nusim/teleport",teleport_callback);
@@ -465,7 +505,13 @@ int main(int argc, char * argv[])
     y_0 = y;
     theta_0 = theta;
 
-    // initialize landmark in world frame
+    // initialize obstacle in world frame
+    for (int i = 0; i<v_x.size();i++)
+    {
+        turtlelib::Vector2D ob;
+        ob.x, ob.y = v_x[i], v_y[i];
+        obs_world.push_back(ob);
+    }
 
 
     while (ros::ok())
@@ -477,6 +523,7 @@ int main(int argc, char * argv[])
         send_transform(nh,br);
         publish_wheel_position();
         update_pose();
+        simulate_lidar();
 
         ros::spinOnce();
         loop_rate.sleep();
