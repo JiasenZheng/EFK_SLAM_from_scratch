@@ -450,9 +450,9 @@ void simulate_lidar()
             double y2 = y_max - obs_tt[i].y;
             double dx = x2 - x1;
             double dy = y2 - y1;
-            double dr = sqrt(pow(dx,2)+pow(dy,2))
-            double D = x1*y2 - x2*y1
-            double delta = r**2*dr**2-D**2
+            double dr = sqrt(pow(dx,2)+pow(dy,2));
+            double D = x1*y2 - x2*y1;
+            double delta = r**2*dr**2-D**2;
             if (delta >0)
             {
                 lidar_data.ranges[i] = 1.0;
