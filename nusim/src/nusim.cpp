@@ -2,6 +2,7 @@
 #include <std_msgs/UInt64.h>
 #include <std_srvs/Trigger.h>
 #include <sensor_msgs/JointState.h>
+#include <sensor_msgs/LaserScan.h>
 #include <visualization_msgs/MarkerArray.h>
 #include <ros/console.h>
 #include <tf2/LinearMath/Quaternion.h>
@@ -48,6 +49,7 @@ static ros::ServiceServer reset_service;
 static ros::ServiceServer teleport_service;
 static turtlelib::Velocity wheel_vel_cmd = turtlelib::Velocity();
 static turtlelib::DiffDrive dd = turtlelib::DiffDrive();
+static turtlelib::DiffDrive real_dd = turtlelib::DiffDrive();
 static double cmd_to_radsec;
 static double et_to_rad;
 static double var_wheel_velocity;
@@ -58,8 +60,15 @@ static double slip_min;
 static double slip_max;
 static std::uniform_real_distribution<double> wheel_position(-0.2,0.2);
 static std::normal_distribution<> fake_obs(0.0,0.01);
-
-
+static double lidar_range = 1.5;
+static bool collide = false;
+static double angle_min = 0.0;
+static double angle_max = 6.28319;
+static double range_min = 0.120;
+static double range_max = 3.500;
+static int sample_num = 360;
+static std::string lidar_frame_id = "base_scan";
+static double scan_time = 0.2;
 
 static double x_0;
 static double y_0;
@@ -69,6 +78,8 @@ static double y;
 static double theta;
 static double x_length = 2.0;
 static double y_length = 3.0;
+static double previous_x;
+static double previous_y;
 
 
 /// \brief Generate random variables
@@ -206,8 +217,8 @@ void fake_sensor(ros::NodeHandle nh)
 
     std_msgs::ColorRGBA colour;
     colour.r = 1;
-    colour.g = 0;
-    colour.b = 1;
+    colour.g = 1;
+    colour.b = 0;
     colour.a = 1;
 
     nh.getParam("cylinder_xs",v_x);
@@ -217,6 +228,20 @@ void fake_sensor(ros::NodeHandle nh)
 
     for (int i=0; i<v_x.size();i++)
     {
+        turtlelib::Vector2D Vw_obs;
+        Vw_obs.x = v_x[i];
+        Vw_obs.y = v_y[i];
+        turtlelib::Transform2D Tw_tt = real_dd.get_trans();
+        turtlelib::Transform2D Ttt_w = Tw_tt.inv();
+        turtlelib::Vector2D Vtt_obs;
+        Vtt_obs = Ttt_w(Vw_obs);
+        double dis = sqrt(pow(Vtt_obs.x,2)+pow(Vtt_obs.y,2));
+        if (dis>lidar_range)
+        {
+            continue;
+        }
+
+        
         visualization_msgs::Marker marker;
         geometry_msgs::Point position;
 
@@ -225,15 +250,16 @@ void fake_sensor(ros::NodeHandle nh)
         marker.scale.x = 2*r;
         marker.scale.y = 2*r;
         marker.scale.z = h;
+        marker.lifetime = ros::Duration(0.2);
 
-        position.x = v_x[i] + fake_obs(get_random());
-        position.y = v_y[i] + fake_obs(get_random());
+        position.x = Vtt_obs.x + fake_obs(get_random());
+        position.y = Vtt_obs.y + fake_obs(get_random());
         position.z = h/2;
 
 
         marker.pose.position = position;
         marker.pose.orientation = rotation;
-        marker.header.frame_id = "world";
+        marker.header.frame_id = "red-base_footprint";
         marker.header.stamp = ros::Time::now();
         marker.id = i;
 
@@ -301,27 +327,49 @@ void set_walls(ros::NodeHandle nh, double x_len, double y_len)
 
 }
 
+
 /**
  * \brief send tranform between world frame and body frame
  * 
  * \param br broadcaster
 **/
-void send_transform(tf2_ros::TransformBroadcaster &br)
+void send_transform(ros::NodeHandle nh, tf2_ros::TransformBroadcaster &br)
 {
-        
+    std::vector<double> v_x;
+    std::vector<double> v_y;
+    double r,cr;
+    nh.getParam("cylinder_xs",v_x);
+    nh.getParam("cylinder_ys",v_y);
+    nh.getParam("cylinder_r",r);  
+    nh.getParam("collision_radius",cr);
+    double x = real_dd.get_trans().get_x();
+    double y = real_dd.get_trans().get_y();
     trans.header.stamp = ros::Time::now();
-
-    trans.transform.translation.x = dd.get_trans().get_x();
-    trans.transform.translation.y = dd.get_trans().get_y();
+    
     trans.transform.translation.z = 0;
 
     tf2::Quaternion q;
-    q.setRPY(0,0,dd.get_trans().rotation());
+    q.setRPY(0,0,real_dd.get_trans().rotation());
     trans.transform.rotation.x = q.x();
     trans.transform.rotation.y = q.y();
     trans.transform.rotation.z = q.z();
     trans.transform.rotation.w = q.w();
-    br.sendTransform(trans); 
+
+    for (int i = 0; i < v_x.size(); i++)
+    {
+        double dis = sqrt(pow(v_x[i]-x,2)+pow(v_y[i]-y,2));
+        if (dis<=(r+cr))
+        {
+            collide = true;
+            break;
+        }
+    }
+    trans.transform.translation.x = x;
+    trans.transform.translation.y = y;
+
+
+    br.sendTransform(trans);
+     
 }
 
 
@@ -367,9 +415,41 @@ void update_pose()
         vel.right = (wheel_vel_cmd.right*cmd_to_radsec + wheel_vel(get_random()))/rate;
     }
     dd.update_config(vel);
+    if (collide == false)
+    {
+        real_dd.update_config(vel);
+    }
+    else
+    {
+        turtlelib::Velocity real_vel;
+        real_vel.left = 0.0;
+        real_vel.right = 0.0;
+        real_dd.update_config(real_vel);
+    }
 }
 
+/**
+ * \brief simulate laser data
+**/
+void simulate_lidar()
+{
+    sensor_msgs::LaserScan lidar_data;
+    lidar_data.header.stamp = ros::Time::now();
+    lidar_data.header.frame_id = lidar_frame_id;
+    lidar_data.angle_min = angle_min;
+    lidar_data.angle_max = angle_max;
+    lidar_data.range_min = range_min;
+    lidar_data.range_max = range_max;
+    lidar_data.angle_increment = angle_max / sample_num;
+    lidar_data.scan_time = scan_time;
+    lidar_data.time_increment = scan_time / sample_num;
+    lidar_data.ranges.resize(sample_num);
 
+
+    
+    
+
+}
 
 int main(int argc, char * argv[])
 {
@@ -390,17 +470,20 @@ int main(int argc, char * argv[])
     // set up tf
     trans.child_frame_id = "red-base_footprint";
     trans.header.frame_id = "world";
-
+    // get parameters
     nh.getParam("/motor_cmd_to_radsec",cmd_to_radsec);
     nh.getParam("/encoder_ticks_to_rad",et_to_rad);
     nh.getParam("/var_wheel_vel", var_wheel_velocity);
     nh.param("/x0",x,0.0);
     nh.param("/y0",y,0.0);
     nh.param("/theta0",theta,0.0);
-
+    // nh.getParam("cylinder_xs",v_x);
+    // nh.getParam("cylinder_ys",v_y);
     x_0 = x;
     y_0 = y;
     theta_0 = theta;
+
+    // initialize landmark in world frame
 
 
     while (ros::ok())
@@ -409,7 +492,7 @@ int main(int argc, char * argv[])
         set_obs(nh);
         fake_sensor(nh);
         set_walls(nh,x_length,y_length);
-        send_transform(br);
+        send_transform(nh,br);
         publish_wheel_position();
         update_pose();
 

@@ -6,7 +6,8 @@ cylinder_ys: [-0.8,-0.8,0.8]   # list of y-coordinates of the cylinders
 cylinder_r: 0.038              # radius of the cylinder
 cylinder_h: 0.25               # height of the cylinder
 var_wheel_vel: 0.5             # noise variance of the wheel velocity (rad/sec)
-wheel_min: -0.2                 # noise variance of the wheel position (rad)
-wheel_max: 0.2
+wheel_min: -0.2                # min value for wheel slip 
+wheel_max: 0.2                 # max value for wheel slip 
+max_range: 1.0                 # max range for lidar
 
 
