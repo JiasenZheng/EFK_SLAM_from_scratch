@@ -15,6 +15,7 @@
 #include "turtlelib/rigid2d.hpp"
 #include "turtlelib/diff_drive.hpp"
 #include <random>
+#include <algorithm>
 
 
 /// \brief to simulate and visualize the turtlebot in Rviz
@@ -445,23 +446,59 @@ void simulate_lidar()
     // lidar_data.time_increment = scan_time / sample_num;
     lidar_data.ranges.resize(sample_num);
 
+
     // obstacles in turtle frame
     std::vector<turtlelib::Vector2D> obs_tt;
     for (int i = 0; i < obs_world.size(); i++)
     {
-        obs_tt.push_back((dd.get_trans().inv())(obs_world[i]));
+        obs_tt.push_back((real_dd.get_trans().inv())(obs_world[i]));
         // ROS_INFO("x: %f, y: %f",obs_tt[i].x, obs_tt[i].y);
     }
 
+    // wall corners in turtle frame
+    turtlelib::Vector2D UR_w, UL_w, BR_w, BL_w;
+    turtlelib::Vector2D UR_tt, UL_tt, BR_tt, BL_tt;
+    // angles of each corner relative to turtle frame
+    double UR, UL, BR, BL;
+    // upper-right corner
+    UR_w.x = x_length/2;
+    UR_w.y = y_length/2;
+    UR_tt = (real_dd.get_trans().inv())(UR_w);
+    UR = atan2(UR_tt.y,UR_tt.x);
+    // upper-left corner
+    UL_w.x = -x_length/2;
+    UL_w.y = y_length/2;
+    UL_tt = (real_dd.get_trans().inv())(UL_w);
+    UL = atan2(UL_tt.y,UL_tt.x);
+    // bottom-right corner
+    BR_w.x = x_length/2;
+    BR_w.y = -y_length/2;
+    BR_tt = (real_dd.get_trans().inv())(BR_w);
+    BR = atan2(BR_tt.y,BR_tt.x);
+    // bottom-left corner
+    BL_w.x = -x_length/2;
+    BL_w.y = -y_length/2;
+    BL_tt = (real_dd.get_trans().inv())(BL_w); 
+    BL = atan2(BL_tt.y,BL_tt.x);
+    
+
+
     for (int i = 0; i < sample_num; i++)
     {
+        double range = range_max;
         turtlelib::Vector2D p_min,p_max;
         double theta = turtlelib::deg2rad(i);
+        theta = turtlelib::normalize_angle(theta);
 
         p_min.x = range_min*cos(theta);
         p_min.y = range_min*sin(theta);
         p_max.x = range_max*cos(theta);
         p_max.y = range_max*sin(theta);
+        double line_slope = (p_max.y-p_min.y)/(p_max.x-p_min.x);
+        double line_intercept = p_min.y-line_slope*p_min.x;
+        turtlelib::Vector2D p_max_world = (real_dd.get_trans())(p_max);
+        // ROS_INFO("UR: %f, Theta: %f, BR: %f",UR,theta,BR);
+
 
 
         for(int j=0; j<obs_tt.size(); j++)
@@ -475,42 +512,75 @@ void simulate_lidar()
             double dr = sqrt(pow(dx,2)+pow(dy,2));
             double D = x1*y2 - x2*y1;
             double delta = pow(r,2)*pow(dr,2)-pow(D,2);
-            // ROS_INFO("X1: %f, X2: %f, Y1: %f, Y2: %f",x1,x2,y1,y2);
-            // ROS_INFO("Delta: %f",delta);
-            std::vector<turtlelib::Vector2D> intersections;
+            // std::vector<turtlelib::Vector2D> intersections;
 
             if (delta >0)
             {
                 // calculate 2 intersections
                 turtlelib::Vector2D intersection1, intersection2, intersection;
-                intersection1.x = (D*dy-sgn(dy)*dx*sqrt(delta))/pow(dr,2);
-                intersection2.x = (D*dy+sgn(dy)*dx*sqrt(delta))/pow(dr,2);
-                intersection1.y = (-D*dx-fabs(dy)*sqrt(delta))/pow(dr,2);
-                intersection2.y = (-D*dx+fabs(dy)*sqrt(delta))/pow(dr,2);
+                intersection1.x = (D*dy+sgn(dy)*dx*sqrt(delta))/pow(dr,2);
+                intersection2.x = (D*dy-sgn(dy)*dx*sqrt(delta))/pow(dr,2);
+                intersection1.y = (-D*dx+fabs(dy)*sqrt(delta))/pow(dr,2);
+                intersection2.y = (-D*dx-fabs(dy)*sqrt(delta))/pow(dr,2);
 
                 // find the intersection closer to the turtlebot
                 double dis;
-                double dis1 = sqrt(pow((intersection1.x - x1),2)+pow((intersection1.y - y1),2));
-                double dis2 = sqrt(pow((intersection2.x - x2),2)+pow((intersection2.y - y2),2));
+                double dis1 = sqrt(pow((intersection1.x + obs_tt[j].x),2)+pow((intersection1.y + obs_tt[j].y),2));
+                double dis2 = sqrt(pow((intersection2.x + obs_tt[j].x),2)+pow((intersection2.y + obs_tt[j].y),2));
+
 
                 if (dis1 < dis2)
                 {
-                    intersection = intersection1;
-                    dis = range_min + dis1;
+                    dis = sqrt(pow((intersection1.x - x1),2)+pow((intersection1.y - y1),2));
+                    if (dis < dis1)
+                    {
+                        range = dis1;
+                        
+                    }
                 }
                 else
                 {
-                    intersection = intersection2;
-                    dis = range_min + dis2;
+                    dis = sqrt(pow((intersection2.x - x1),2)+pow((intersection2.y - y1),2));
+                    if (dis < dis2)
+                    {
+                        range = dis2;
+                        
+                    }
                 }
-                lidar_data.ranges[i] = dis;
+      
+            }
+        }
+        if (range == range_max)
+        {
+            if (theta < UR && theta >= BR) 
+            {
+                // double x = UR_tt.x;
+                // double y = x*line_slope+line_intercept;
+                // range = sqrt(pow(x,2)+pow(y,2));
+            
+            }
+            else if (theta < UL && theta >= UR)
+            {
+                double y = y_length/2 - real_dd.get_trans().get_y();
+                // double x = (y-line_intercept)/line_slope;
+                // range = sqrt(pow(x,2)+pow(y,2));
+                double theta2 = theta + real_dd.get_trans().rotation();
+                range = y/sin(theta2);
+            }
+            else if (theta < BR && theta >= BL)
+            {
+                // double y = BR_tt.y;
+                // double x = (y-line_intercept)/line_slope;
+                // range = sqrt(pow(x,2)+pow(y,2));
             }
             else
             {
-                lidar_data.ranges[i] = 2.0;
+                // double x = BL_tt.x;
+                // double y = x*line_slope+line_intercept;
+                // range = sqrt(pow(x,2)+pow(y,2));
             }
-
         }
+        lidar_data.ranges[i] = range;
     }  
     lidar_pub.publish(lidar_data);
 }
