@@ -411,6 +411,24 @@ void update_pose()
 }
 
 /**
+ * \brief helper function to calculate intersections
+ * 
+ * \param x 
+ * \return int 
+**/
+int sgn(double x)
+{
+    if (x<0)
+    {
+        return -1;
+    }
+    else
+    {
+        return 1;
+    }
+}
+
+/**
  * \brief simulate laser data
 **/
 void simulate_lidar()
@@ -431,27 +449,27 @@ void simulate_lidar()
     std::vector<turtlelib::Vector2D> obs_tt;
     for (int i = 0; i < obs_world.size(); i++)
     {
-        obs_tt.push_back((real_dd.get_trans().inv())(obs_world[i]));
+        obs_tt.push_back((dd.get_trans().inv())(obs_world[i]));
+        // ROS_INFO("x: %f, y: %f",obs_tt[i].x, obs_tt[i].y);
     }
-    ROS_INFO("Len: %li", obs_tt.size());
 
     for (int i = 0; i < sample_num; i++)
     {
-        double x_min,x_max,y_min,y_max;
+        turtlelib::Vector2D p_min,p_max;
         double theta = turtlelib::deg2rad(i);
 
-        x_min = range_min*cos(theta);
-        y_min = range_min*sin(theta);
-        x_max = range_max*cos(theta);
-        y_max = range_max*sin(theta);
+        p_min.x = range_min*cos(theta);
+        p_min.y = range_min*sin(theta);
+        p_max.x = range_max*cos(theta);
+        p_max.y = range_max*sin(theta);
 
 
         for(int j=0; j<obs_tt.size(); j++)
         {
-            double x1 = x_min - obs_tt[j].x;
-            double x2 = x_max - obs_tt[j].x;            
-            double y1 = y_min - obs_tt[j].y;
-            double y2 = y_max - obs_tt[j].y;
+            double x1 = p_min.x - obs_tt[j].x;
+            double x2 = p_max.x - obs_tt[j].x;            
+            double y1 = p_min.y - obs_tt[j].y;
+            double y2 = p_max.y - obs_tt[j].y;
             double dx = x2 - x1;
             double dy = y2 - y1;
             double dr = sqrt(pow(dx,2)+pow(dy,2));
@@ -459,21 +477,41 @@ void simulate_lidar()
             double delta = pow(r,2)*pow(dr,2)-pow(D,2);
             // ROS_INFO("X1: %f, X2: %f, Y1: %f, Y2: %f",x1,x2,y1,y2);
             // ROS_INFO("Delta: %f",delta);
+            std::vector<turtlelib::Vector2D> intersections;
+
             if (delta >0)
             {
-                lidar_data.ranges[i] = 0.3;
-                // break;
+                // calculate 2 intersections
+                turtlelib::Vector2D intersection1, intersection2, intersection;
+                intersection1.x = (D*dy-sgn(dy)*dx*sqrt(delta))/pow(dr,2);
+                intersection2.x = (D*dy+sgn(dy)*dx*sqrt(delta))/pow(dr,2);
+                intersection1.y = (-D*dx-fabs(dy)*sqrt(delta))/pow(dr,2);
+                intersection2.y = (-D*dx+fabs(dy)*sqrt(delta))/pow(dr,2);
+
+                // find the intersection closer to the turtlebot
+                double dis;
+                double dis1 = sqrt(pow((intersection1.x - x1),2)+pow((intersection1.y - y1),2));
+                double dis2 = sqrt(pow((intersection2.x - x2),2)+pow((intersection2.y - y2),2));
+
+                if (dis1 < dis2)
+                {
+                    intersection = intersection1;
+                    dis = range_min + dis1;
+                }
+                else
+                {
+                    intersection = intersection2;
+                    dis = range_min + dis2;
+                }
+                lidar_data.ranges[i] = dis;
             }
             else
             {
                 lidar_data.ranges[i] = 2.0;
             }
+
         }
-    }
-
-
-    
-    
+    }  
     lidar_pub.publish(lidar_data);
 }
 
@@ -516,7 +554,8 @@ int main(int argc, char * argv[])
     for (int i = 0; i<v_x.size();i++)
     {
         turtlelib::Vector2D ob;
-        ob.x, ob.y = v_x[i], v_y[i];
+        ob.x= v_x[i];
+        ob.y = v_y[i];
         obs_world.push_back(ob);
     }
 
