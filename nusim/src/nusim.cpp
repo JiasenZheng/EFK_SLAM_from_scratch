@@ -73,7 +73,7 @@ static double angle_max = 6.28319;
 static double range_min = 0.120;
 static double range_max = 3.500;
 static int sample_num = 360;
-static std::string lidar_frame_id = "red-base_scan";
+static std::string lidar_frame_id = "red-base_footprint";
 static double scan_time = 0.2;
 static std::vector<double> v_x;
 static std::vector<double> v_y;
