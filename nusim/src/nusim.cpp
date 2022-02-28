@@ -16,6 +16,8 @@
 #include "turtlelib/diff_drive.hpp"
 #include <random>
 #include <algorithm>
+#include <nav_msgs/Path.h>
+// #include <std_msgs/Header.h>
 
 
 /// \brief to simulate and visualize the turtlebot in Rviz
@@ -25,6 +27,7 @@
 ///      obs_pub (visualization_msgs::MarkerArray; obstacles): add cylindrical obstacles to the environment
 ///      walls_pub (visualization_msgs::MarkerArray; walls): add walls to the environment
 ///      wp_pub (nuturtlebot_msgs::SeneorData; red/sensor_data): update the wheel positions
+///      path_pub (nav_msgs::Path; red_path): path of the real turtlebot
 ///
 /// SUBSCRIBERS:
 ///      wc_sub (nuturtlebot_msgs::WheelCommands; red/wheel_cmd): to receive motion commands for the turtlebot
@@ -46,11 +49,12 @@ static ros::Publisher fake_obs_pub;
 static ros::Publisher wp_pub;
 static ros::Publisher lidar_pub;
 static ros::Publisher walls_pub;
+static ros::Publisher path_pub;
 static ros::Subscriber wc_sub;
 static ros::ServiceServer reset_service;
 static ros::ServiceServer teleport_service;
 static turtlelib::Velocity wheel_vel_cmd = turtlelib::Velocity();
-static turtlelib::DiffDrive dd = turtlelib::DiffDrive();
+// static turtlelib::DiffDrive dd = turtlelib::DiffDrive();
 static turtlelib::DiffDrive real_dd = turtlelib::DiffDrive();
 static double cmd_to_radsec;
 static double et_to_rad;
@@ -74,6 +78,7 @@ static double scan_time = 0.2;
 static std::vector<double> v_x;
 static std::vector<double> v_y;
 static std::vector<turtlelib::Vector2D> obs_world;
+static nav_msgs::Path path;
 static double r;
 static double h;
 static double x_0;
@@ -397,7 +402,7 @@ void update_pose()
         vel.left = (wheel_vel_cmd.left*cmd_to_radsec+ wheel_vel(get_random()))/rate;
         vel.right = (wheel_vel_cmd.right*cmd_to_radsec + wheel_vel(get_random()))/rate;
     }
-    dd.update_config(vel);
+    // dd.update_config(vel);
     if (collide == false)
     {
         real_dd.update_config(vel);
@@ -465,21 +470,26 @@ void simulate_lidar()
     UR_w.y = y_length/2;
     UR_tt = (real_dd.get_trans().inv())(UR_w);
     UR = atan2(UR_tt.y,UR_tt.x);
+    UR = turtlelib::normalize_angle(UR);
     // upper-left corner
     UL_w.x = -x_length/2;
     UL_w.y = y_length/2;
     UL_tt = (real_dd.get_trans().inv())(UL_w);
     UL = atan2(UL_tt.y,UL_tt.x);
+    UL = turtlelib::normalize_angle(UL);
     // bottom-right corner
     BR_w.x = x_length/2;
     BR_w.y = -y_length/2;
     BR_tt = (real_dd.get_trans().inv())(BR_w);
     BR = atan2(BR_tt.y,BR_tt.x);
+    BR = turtlelib::normalize_angle(BR);
     // bottom-left corner
     BL_w.x = -x_length/2;
     BL_w.y = -y_length/2;
     BL_tt = (real_dd.get_trans().inv())(BL_w); 
     BL = atan2(BL_tt.y,BL_tt.x);
+    BL = turtlelib::normalize_angle(BL);
+
     
 
 
@@ -552,38 +562,67 @@ void simulate_lidar()
         }
         if (range == range_max)
         {
-            if (theta < UR && theta >= BR) 
+            // ROS_INFO("UR: %f, BR: %f", UR, BR);
+            bool right_wall = (UR > BR) ? (theta < UR && theta >= BR) : (theta < UR or theta >= BR);
+            bool upper_wall = (UL > UR) ? (theta < UL && theta >= UR) : (theta < UL or theta >= UR);
+            bool left_wall = (BR > BL) ? (theta < BR && theta >= BL) : (theta < BR or theta >= BL);
+            if (right_wall) 
             {
-                // double x = UR_tt.x;
-                // double y = x*line_slope+line_intercept;
-                // range = sqrt(pow(x,2)+pow(y,2));
+                double x = x_length/2 - real_dd.get_trans().get_x();
+                double theta2 = theta + real_dd.get_trans().rotation();
+                theta2 = turtlelib::normalize_angle(theta2);
+                range = x/cos(theta2);
             
             }
-            else if (theta < UL && theta >= UR)
+            else if (upper_wall)
             {
                 double y = y_length/2 - real_dd.get_trans().get_y();
-                // double x = (y-line_intercept)/line_slope;
-                // range = sqrt(pow(x,2)+pow(y,2));
                 double theta2 = theta + real_dd.get_trans().rotation();
+                theta2 = turtlelib::normalize_angle(theta2);
                 range = y/sin(theta2);
             }
-            else if (theta < BR && theta >= BL)
+            else if (left_wall)
             {
-                // double y = BR_tt.y;
-                // double x = (y-line_intercept)/line_slope;
-                // range = sqrt(pow(x,2)+pow(y,2));
+                double y = -y_length/2 - real_dd.get_trans().get_y();
+                double theta2 =  theta + real_dd.get_trans().rotation();
+                theta2 = turtlelib::normalize_angle(theta2);
+                range = y/sin(theta2);
             }
             else
             {
-                // double x = BL_tt.x;
-                // double y = x*line_slope+line_intercept;
-                // range = sqrt(pow(x,2)+pow(y,2));
+                double x = -x_length/2 - real_dd.get_trans().get_x();
+                double theta2 = theta + real_dd.get_trans().rotation();
+                theta2 = turtlelib::normalize_angle(theta2);
+                range = x/cos(theta2);
             }
         }
         lidar_data.ranges[i] = range;
     }  
     lidar_pub.publish(lidar_data);
 }
+
+/// \brief publish path for red robot
+void pub_path()
+{
+    std_msgs::Header h;
+    geometry_msgs::PoseStamped p;
+    tf2::Quaternion rot;
+
+    h.stamp = ros::Time::now();
+    h.frame_id = "world";
+    p.header = h;
+    path.header = h;
+    p.pose.position.x = real_dd.get_trans().get_x();
+    p.pose.position.y = real_dd.get_trans().get_y();
+    p.pose.position.z = 0;
+
+    rot.setRPY(0,0,real_dd.get_trans().rotation());
+    p.pose.orientation = tf2::toMsg(rot);
+
+    path.poses.push_back(p);
+    path_pub.publish(path);
+}
+    
 
 int main(int argc, char * argv[])
 {
@@ -596,6 +635,7 @@ int main(int argc, char * argv[])
     walls_pub = nh.advertise<visualization_msgs::MarkerArray>("nusim/walls",100);
     wp_pub = nh.advertise<nuturtlebot_msgs::SensorData>("/red/sensor_data",100);
     lidar_pub = nh.advertise<sensor_msgs::LaserScan>("/laser",100);
+    path_pub = nh.advertise<nav_msgs::Path>("/red_path",100);
     wc_sub = nh.subscribe("red/wheel_cmd",100,wc_callback);
     reset_service = nh.advertiseService("nusim/reset",reset_callback);
     teleport_service = nh.advertiseService("nusim/teleport",teleport_callback);
@@ -640,6 +680,7 @@ int main(int argc, char * argv[])
         publish_wheel_position();
         update_pose();
         simulate_lidar();
+        pub_path();
 
         ros::spinOnce();
         loop_rate.sleep();

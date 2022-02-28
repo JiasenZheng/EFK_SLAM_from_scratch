@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>nuturtle_control</name>
+  <name>nuslam</name>
   <version>0.0.1</version>
-  <description>to develop some useful nodes in both simulation and real robot</description>
+  <description>Implement feature-based kalman filter SLAM</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
   <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
-  <maintainer email="jiasenzheng2020@u.northwestern.edu">jiasen zheng</maintainer>
+  <maintainer email="jiasenzheng2020@u.northwestern.edu">Jiasen Zheng</maintainer>
 
 
   <!-- One license tag required, multiple allowed, one license per tag -->
@@ -19,7 +19,7 @@
   <!-- Url tags are optional, but multiple are allowed, one per tag -->
   <!-- Optional attribute type can be: website, bugtracker, or repository -->
   <!-- Example: -->
-  <!-- <url type="website">http://wiki.ros.org/nuturtle_control</url> -->
+  <!-- <url type="website">http://wiki.ros.org/nuslam</url> -->
 
 
   <!-- Author tags are optional, multiple are allowed, one per tag -->
@@ -50,27 +50,18 @@
   <!--   <doc_depend>doxygen</doc_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>roscpp</build_depend>
-  <build_depend>message_generation</build_depend>
-  <build_depend>turtlelib</build_depend>
-  <build_depend>tf2_ros</build_depend>
-  <build_depend>nuturtlebot_msgs</build_depend>
   <build_export_depend>roscpp</build_export_depend>
-  <build_export_depend>message_generation</build_export_depend>
   <exec_depend>roscpp</exec_depend>
-  <exec_depend>turtlelib</exec_depend>
-  <exec_depend>nuturtlebot_msgs</exec_depend>
-  <exec_depend>message_runtime</exec_depend>
-  <exec_depend>tf</exec_depend>
-  <exec_depend>rviz</exec_depend>
-  <exec_depend>turtlebot3_teleop</exec_depend>
-  <exec_depend>rosserial_python</exec_depend>
-  <build_depend>nuturtlebot_msgs</build_depend>
-  <build_export_depend>nuturtlebot_msgs</build_export_depend>
-  <build_export_depend>turtlelib</build_export_depend>
-  <exec_depend>nuturtle_description</exec_depend>
+  <depend>turtlelib</depend>
+  <depend>nuturtle_control</depend>
+  <depend>tf2_ros</depend>
   <exec_depend>nusim</exec_depend>
-  <test_depend>rostest</test_depend>
-  <exec_depend>hls_lfcd_lds_driver</exec_depend>
+  <exec_depend>nuturtle_description</exec_depend>
+  <exec_depend>turtlebot3_teleop</exec_depend>
+  <exec_depend>nusim</exec_depend>
+  <exec_depend>rviz</exec_depend>
+  <exec_depend>nuturtle_description</exec_depend>
+  <exec_depend>tf</exec_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->
