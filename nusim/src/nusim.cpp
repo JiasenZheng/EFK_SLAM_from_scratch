@@ -17,7 +17,6 @@
 #include <random>
 #include <algorithm>
 #include <nav_msgs/Path.h>
-// #include <std_msgs/Header.h>
 
 
 /// \brief to simulate and visualize the turtlebot in Rviz
@@ -39,7 +38,15 @@
 ///      reset_service (reset): restores the initial state of the simulation
 ///      teleport_service (teleport): enable moving the robot to a desired (x,y,theta) pose
 
-
+/// settable parameters
+static std::uniform_real_distribution<double> wheel_position(-0.2,0.2);
+static std::normal_distribution<> fake_obs(0.0,0.01);
+static std::normal_distribution<> wheel_control(0.0,0.5);
+static std::normal_distribution<> lidar_noise(0.0,0.005);
+static double lidar_range = 3.5;
+static double x_length = 5.0;
+static double y_length = 5.0;
+///
 static const int rate = 500; 
 static long count = 0;
 static std_msgs::UInt64 timestep;
@@ -54,7 +61,6 @@ static ros::Subscriber wc_sub;
 static ros::ServiceServer reset_service;
 static ros::ServiceServer teleport_service;
 static turtlelib::Velocity wheel_vel_cmd = turtlelib::Velocity();
-// static turtlelib::DiffDrive dd = turtlelib::DiffDrive();
 static turtlelib::DiffDrive real_dd = turtlelib::DiffDrive();
 static double cmd_to_radsec;
 static double et_to_rad;
@@ -64,9 +70,6 @@ static turtlelib::Position wheel_position_tick = turtlelib::Position();
 static nuturtlebot_msgs::SensorData sd;
 static double slip_min;
 static double slip_max;
-static std::uniform_real_distribution<double> wheel_position(-0.2,0.2);
-static std::normal_distribution<> fake_obs(0.0,0.01);
-static double lidar_range = 1.5;
 static bool collide = false;
 static double angle_min = 0.0;
 static double angle_max = 6.28319;
@@ -79,6 +82,8 @@ static std::vector<double> v_x;
 static std::vector<double> v_y;
 static std::vector<turtlelib::Vector2D> obs_world;
 static nav_msgs::Path path;
+static ros::Timer obs_timer;
+static ros::Timer lidar_timer;
 static double r;
 static double h;
 static double x_0;
@@ -87,8 +92,6 @@ static double theta_0;
 static double x;
 static double y;
 static double theta;
-static double x_length = 2.0;
-static double y_length = 3.0;
 static double previous_x;
 static double previous_y;
 
@@ -128,8 +131,17 @@ bool reset_callback(std_srvs::Trigger::Request &req,
 /// \param wc wheel commands
 void wc_callback(const nuturtlebot_msgs::WheelCommandsConstPtr &wc)
 {
-    wheel_vel_cmd.left = wc->left_velocity;
-    wheel_vel_cmd.right = wc->right_velocity;
+    if (wc->left_velocity == 0 && wc->right_velocity == 0)
+    {
+        wheel_vel_cmd.left = 0.0;
+        wheel_vel_cmd.right = 0.0;   
+    }
+    else
+    {
+        wheel_vel_cmd.left = wc->left_velocity + wheel_control(get_random());
+        wheel_vel_cmd.right = wc->right_velocity + wheel_control(get_random());
+    }
+
     
     // ROS_INFO("left wheel vel cmd: %f", wheel_vel_cmd.left);
     // ROS_INFO("right wheel vel cmd: %f", wheel_vel_cmd.right);
@@ -202,8 +214,7 @@ void set_obs(ros::NodeHandle nh)
 
 /// \brief Set fake obstacles markers in Rviz 
 /// 
-/// \param nh node handle
-void fake_sensor(ros::NodeHandle nh)
+void obs_callback(const ros::TimerEvent& event)
 {
     visualization_msgs::MarkerArray obs;
 
@@ -390,19 +401,10 @@ void publish_wheel_position()
 **/
 void update_pose()
 {
-    std::normal_distribution<> wheel_vel(0.0,var_wheel_velocity);
     turtlelib::Velocity vel;
-    if (wheel_vel_cmd.left == 0 && wheel_vel_cmd.right == 0)
-    {
-        vel.left = 0.0;
-        vel.right = 0.0;
-    }
-    else
-    {
-        vel.left = (wheel_vel_cmd.left*cmd_to_radsec+ wheel_vel(get_random()))/rate;
-        vel.right = (wheel_vel_cmd.right*cmd_to_radsec + wheel_vel(get_random()))/rate;
-    }
-    // dd.update_config(vel);
+    vel.left = (wheel_vel_cmd.left*cmd_to_radsec)/rate;
+    vel.right = (wheel_vel_cmd.right*cmd_to_radsec)/rate;
+
     if (collide == false)
     {
         real_dd.update_config(vel);
@@ -437,7 +439,7 @@ int sgn(double x)
 /**
  * \brief simulate laser data
 **/
-void simulate_lidar()
+void lidar_callback(const ros::TimerEvent& event)
 {
     sensor_msgs::LaserScan lidar_data;
     lidar_data.header.stamp = ros::Time::now();
@@ -596,7 +598,7 @@ void simulate_lidar()
                 range = x/cos(theta2);
             }
         }
-        lidar_data.ranges[i] = range;
+        lidar_data.ranges[i] = range *(1 + lidar_noise(get_random()));
     }  
     lidar_pub.publish(lidar_data);
 }
@@ -639,6 +641,8 @@ int main(int argc, char * argv[])
     wc_sub = nh.subscribe("red/wheel_cmd",100,wc_callback);
     reset_service = nh.advertiseService("nusim/reset",reset_callback);
     teleport_service = nh.advertiseService("nusim/teleport",teleport_callback);
+    obs_timer = nh.createTimer(ros::Duration(0.2), obs_callback);
+    lidar_timer = nh.createTimer(ros::Duration(0.2), lidar_callback);
     ros::Rate loop_rate(rate);
 
 
@@ -648,7 +652,7 @@ int main(int argc, char * argv[])
     // get parameters
     nh.getParam("motor_cmd_to_radsec",cmd_to_radsec);
     nh.getParam("encoder_ticks_to_rad",et_to_rad);
-    nh.getParam("var_wheel_vel", var_wheel_velocity);
+    // nh.getParam("var_wheel_vel", var_wheel_velocity);
     nh.param("x0",x,0.0);
     nh.param("y0",y,0.0);
     nh.param("theta0",theta,0.0);
@@ -674,12 +678,10 @@ int main(int argc, char * argv[])
     {
         count++;
         set_obs(nh);
-        fake_sensor(nh);
         set_walls(nh,x_length,y_length);
         send_transform(nh,br);
         publish_wheel_position();
         update_pose();
-        simulate_lidar();
         pub_path();
 
         ros::spinOnce();

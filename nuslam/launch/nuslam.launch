@@ -13,7 +13,7 @@
     </include>
     
     <!-- static tf from world to odom/map -->
-    <node pkg="tf" type="static_transform_publisher" name="world_to_odom" args="0 0 0 0 0 0 1 world odom 100" />
+    <!-- <node pkg="tf" type="static_transform_publisher" name="world_to_odom" args="0 0 0 0 0 0 1 world odom 100" /> -->
     <node pkg="tf" type="static_transform_publisher" name="world_to_map" args="0 0 0 0 0 0 1 world map 100"/>
 
     <!-- load blue and red robot descriptions -->
@@ -42,8 +42,7 @@
     <node name = "rviz" pkg = "rviz" type = "rviz" if = "$(arg use_rviz)"
     args= "-d $(find nuslam)/config/slam.rviz"/>
 
-    <node name = "turtlebot3_teleop_key" pkg = "turtlebot3_teleop" type = "turtlebot3_teleop_key" 
-    output = "screen"/>
+    <node name = "turtlebot3_teleop_key" pkg = "turtlebot3_teleop" type = "turtlebot3_teleop_key"/>
 
     <node name = "nusim" pkg = "nusim" type = "nusim" output = "screen" if = "$(eval robot == 'nusim')" />
 
