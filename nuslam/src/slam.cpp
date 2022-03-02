@@ -280,6 +280,7 @@ void fake_sensor_callback(const visualization_msgs::MarkerArrayPtr &data)
     // turtlelib::Vector2D pos;
     auto state = ekf.get_state();
     Tm_tt = turtlelib::Transform2D(state(1,0),state(2,0),state(0,0));
+    pub_slam_path();
 }
   
 
@@ -406,7 +407,6 @@ int main(int argc, char** argv)
     {
         publish_odom();
         // pub_odom_path();
-        pub_slam_path();
         broadcast_world2blue();
         broadcast_map2odom();
         broadcast_odom2green();
