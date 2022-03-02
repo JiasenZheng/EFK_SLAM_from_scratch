@@ -228,7 +228,7 @@ void pub_slam_path()
 
 void fake_sensor_callback(const visualization_msgs::MarkerArrayPtr &data)
 {
-    static std::unordered_map<int,int> map;   
+    static std::unordered_map<int,bool> map;   
     
     //predict
     ekf.predict(twist,dd.get_trans());
@@ -262,13 +262,8 @@ void fake_sensor_callback(const visualization_msgs::MarkerArrayPtr &data)
         //initialize landmark
         if (map.find(j) == map.end())
         {
-            //mark initialized
-            map[j] = 1;
-
-            //calculate landmark location in map coordinates
+            map[j] = true;
             turtlelib::Vector2D landmark_loc = Tm_tt(location);
-
-            //initialize landmark in state vector
             ekf.add_landmark(j,landmark_loc);
         }
 
@@ -277,9 +272,9 @@ void fake_sensor_callback(const visualization_msgs::MarkerArrayPtr &data)
     }
 
     // find transform from map to robot
-    // turtlelib::Vector2D pos;
     auto state = ekf.get_state();
     Tm_tt = turtlelib::Transform2D(state(1,0),state(2,0),state(0,0));
+    // publish slam path
     pub_slam_path();
 }
   
