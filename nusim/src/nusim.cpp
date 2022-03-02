@@ -236,10 +236,14 @@ void obs_callback(const ros::TimerEvent& event)
         Vw_obs.x = v_x[i];
         Vw_obs.y = v_y[i];
         turtlelib::Transform2D Tw_tt = real_dd.get_trans();
+        // ROS_INFO("W2tt: x: %f, y: %f, theta: %f \n\r",real_dd.get_trans().get_x(),real_dd.get_trans().get_y(),real_dd.get_trans().rotation());
+
         turtlelib::Transform2D Ttt_w = Tw_tt.inv();
         turtlelib::Vector2D Vtt_obs;
         Vtt_obs = Ttt_w(Vw_obs);
         double dis = sqrt(pow(Vtt_obs.x,2)+pow(Vtt_obs.y,2));
+        // ROS_INFO("W2Obs: x: %f, y: %f\r",Vw_obs.x,Vw_obs.y);
+        // ROS_INFO("tt2Obs: x: %f, y: %f\r",Vtt_obs.x,Vtt_obs.y);
         if (dis>lidar_range)
         {
             continue;

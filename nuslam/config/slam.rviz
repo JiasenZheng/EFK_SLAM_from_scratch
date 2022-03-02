@@ -10,6 +10,7 @@ Panels:
         - /RobotModel2
         - /RobotModel3
         - /Path1
+        - /Path3
         - /TF1
         - /TF1/Frames1
       Splitter Ratio: 0.5
@@ -367,7 +368,7 @@ Visualization Manager:
         odom:
           Value: true
         red-base_footprint:
-          Value: false
+          Value: true
         red-base_link:
           Value: false
         red-base_scan:
@@ -434,7 +435,7 @@ Visualization Manager:
   Global Options:
     Background Color: 48; 48; 48
     Default Light: true
-    Fixed Frame: odom
+    Fixed Frame: world
     Frame Rate: 30
   Name: root
   Tools:

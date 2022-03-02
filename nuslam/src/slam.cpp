@@ -232,9 +232,12 @@ void fake_sensor_callback(const visualization_msgs::MarkerArrayPtr &data)
     
     //predict
     ekf.predict(twist,dd.get_trans());
+    // ROS_INFO("x_dot: %f, y_dot: %f, omega: %f \n\r",twist.x_dot,twist.y_dot,twist.omega);
+    // ROS_INFO("x: %f, y: %f, theta: %f \n\r",dd.get_trans().get_x(),dd.get_trans().get_y(),dd.get_trans().rotation());
 
   
     int len = data->markers.size();
+    // ROS_INFO("size: %i\r",len);
     for(int i = 0; i < len; i++)
     {
         visualization_msgs::Marker measurement = data->markers[i];
@@ -242,9 +245,11 @@ void fake_sensor_callback(const visualization_msgs::MarkerArrayPtr &data)
         // convert measurement to polar
         turtlelib::Vector2D location;
         double x = data->markers[i].pose.position.x;
-        double y = data->markers[i].pose.position.x;
+        double y = data->markers[i].pose.position.y;
         location.x = x;
         location.y = y;
+        // ROS_INFO("x: %f, y: %f \r",x,y);
+        // ROS_INFO("%d tt2Obs: x: %f, y: %f\r",i,x,y);
         double r = sqrt(pow(x,2)+pow(y,2));
         double phi = atan2(y,x);
         arma::mat z = arma::mat(2,1,arma::fill::zeros);
@@ -400,7 +405,7 @@ int main(int argc, char** argv)
     while(ros::ok())
     {
         publish_odom();
-        pub_odom_path();
+        // pub_odom_path();
         pub_slam_path();
         broadcast_world2blue();
         broadcast_map2odom();

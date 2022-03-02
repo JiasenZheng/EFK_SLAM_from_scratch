@@ -69,6 +69,7 @@ namespace nuslam
         // propagate the uncertainty
         arma::mat At = this->compute_At(t);
         arma::mat sigma_m = At*sigma*At.t()+Q_bar;
+        sigma = sigma_m;
     }
 
     arma::mat EKF::compute_z(int j)
