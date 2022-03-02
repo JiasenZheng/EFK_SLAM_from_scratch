@@ -65,6 +65,13 @@ namespace nuslam
             **/
             void add_landmark(int j, turtlelib::Vector2D lm);
 
+            /**
+             * \brief Get the state object
+             * 
+             * \return arma::mat state matrix
+            **/
+            arma::mat get_state();
+
 
         private:
             int n;

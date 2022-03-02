@@ -16,13 +16,14 @@ namespace nuslam
 
         state = arma::mat(2*n+3,1,arma::fill::zeros);
 
-        Q = arma::mat(3,3,arma::fill::eye)*0.1;
-        R = arma::mat(2,2,arma::fill::eye)*0.0001;
+        Q = arma::mat(3,3,arma::fill::eye)*1.0;
+        R = arma::mat(2,2,arma::fill::eye)*0.00001;
     }
 
     arma::mat EKF::compute_At(turtlelib::Twist2D t)
     {
         arma::mat At,ul;
+        // arma::mat I = arma::mat(2*n+3,2*n+3,arma::fill::eye);
         arma::mat ur = arma::mat(3,2*n,arma::fill::zeros);
         arma::mat bl = arma::mat(2*n,3,arma::fill::zeros);
         arma::mat br = arma::mat(2*n,2*n,arma::fill::zeros);
@@ -72,7 +73,7 @@ namespace nuslam
 
     arma::mat EKF::compute_z(int j)
     {
-        arma::mat z = arma::mat(2,0,arma::fill::zeros);
+        arma::mat z = arma::mat(2,1,arma::fill::zeros);
         // landmark coordinates
         double xj = state(1+2*j,0);
         double yj = state(2+2*j,0);
@@ -140,6 +141,11 @@ namespace nuslam
     {
         state(2*j+1,0) = lm.x;
         state(2*j+2,0) = lm.y;
+    }
+
+    arma::mat EKF::get_state()
+    {
+        return state;
     }
 
 

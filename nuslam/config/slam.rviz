@@ -8,7 +8,10 @@ Panels:
         - /Status1
         - /RobotModel1
         - /RobotModel2
+        - /RobotModel3
         - /Path1
+        - /TF1
+        - /TF1/Frames1
       Splitter Ratio: 0.5
     Tree Height: 758
   - Class: rviz/Selection
@@ -154,6 +157,55 @@ Visualization Manager:
       Value: true
       Visual Enabled: true
     - Alpha: 1
+      Class: rviz/RobotModel
+      Collision Enabled: false
+      Enabled: true
+      Links:
+        All Links Enabled: true
+        Expand Joint Details: false
+        Expand Link Details: false
+        Expand Tree: false
+        Link Tree Style: Links in Alphabetic Order
+        green-base_footprint:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        green-base_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        green-base_scan:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        green-caster_back_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        green-imu_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        green-wheel_left_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        green-wheel_right_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+      Name: RobotModel
+      Robot Description: green/robot_description
+      TF Prefix: ""
+      Update Interval: 0
+      Value: true
+      Visual Enabled: true
+    - Alpha: 1
       Buffer Length: 1
       Class: rviz/Path
       Color: 170; 0; 0
@@ -253,6 +305,131 @@ Visualization Manager:
         "": true
       Queue Size: 100
       Value: true
+    - Alpha: 1
+      Buffer Length: 1
+      Class: rviz/Path
+      Color: 25; 255; 0
+      Enabled: true
+      Head Diameter: 0.30000001192092896
+      Head Length: 0.20000000298023224
+      Length: 0.30000001192092896
+      Line Style: Lines
+      Line Width: 0.029999999329447746
+      Name: Path
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Pose Color: 255; 85; 255
+      Pose Style: None
+      Queue Size: 10
+      Radius: 0.029999999329447746
+      Shaft Diameter: 0.10000000149011612
+      Shaft Length: 0.10000000149011612
+      Topic: /green_path
+      Unreliable: false
+      Value: true
+    - Class: rviz/TF
+      Enabled: true
+      Frame Timeout: 15
+      Frames:
+        All Enabled: false
+        blue-base_footprint:
+          Value: false
+        blue-base_link:
+          Value: false
+        blue-base_scan:
+          Value: false
+        blue-caster_back_link:
+          Value: false
+        blue-imu_link:
+          Value: false
+        blue-wheel_left_link:
+          Value: false
+        blue-wheel_right_link:
+          Value: false
+        green-base_footprint:
+          Value: false
+        green-base_link:
+          Value: false
+        green-base_scan:
+          Value: false
+        green-caster_back_link:
+          Value: false
+        green-imu_link:
+          Value: false
+        green-wheel_left_link:
+          Value: false
+        green-wheel_right_link:
+          Value: false
+        map:
+          Value: true
+        odom:
+          Value: true
+        red-base_footprint:
+          Value: false
+        red-base_link:
+          Value: false
+        red-base_scan:
+          Value: false
+        red-caster_back_link:
+          Value: false
+        red-imu_link:
+          Value: false
+        red-wheel_left_link:
+          Value: false
+        red-wheel_right_link:
+          Value: false
+        world:
+          Value: true
+      Marker Alpha: 1
+      Marker Scale: 1
+      Name: TF
+      Show Arrows: true
+      Show Axes: true
+      Show Names: true
+      Tree:
+        world:
+          blue-base_footprint:
+            blue-base_link:
+              blue-base_scan:
+                {}
+              blue-caster_back_link:
+                {}
+              blue-imu_link:
+                {}
+              blue-wheel_left_link:
+                {}
+              blue-wheel_right_link:
+                {}
+          map:
+            odom:
+              green-base_footprint:
+                green-base_link:
+                  green-base_scan:
+                    {}
+                  green-caster_back_link:
+                    {}
+                  green-imu_link:
+                    {}
+                  green-wheel_left_link:
+                    {}
+                  green-wheel_right_link:
+                    {}
+          red-base_footprint:
+            red-base_link:
+              red-base_scan:
+                {}
+              red-caster_back_link:
+                {}
+              red-imu_link:
+                {}
+              red-wheel_left_link:
+                {}
+              red-wheel_right_link:
+                {}
+      Update Interval: 0
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -281,7 +458,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 4.510015487670898
+      Distance: 5.039736747741699
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -297,9 +474,9 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.280397891998291
+      Pitch: 0.6853969097137451
       Target Frame: <Fixed Frame>
-      Yaw: 0.6803982257843018
+      Yaw: 0.8653983473777771
     Saved: ~
 Window Geometry:
   Displays:

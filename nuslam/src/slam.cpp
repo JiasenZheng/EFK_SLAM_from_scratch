@@ -38,6 +38,7 @@
 #include <armadillo>
 #include <nuslam/nuslam.hpp>
 #include <visualization_msgs/MarkerArray.h>
+#include <unordered_map>
 
 static const int rate = 500;
 static ros::Publisher odom_pub;
@@ -60,6 +61,7 @@ static geometry_msgs::Quaternion rot;
 static tf2::Quaternion q;
 static geometry_msgs::TransformStamped trans;
 static geometry_msgs::TransformStamped trans2;
+static geometry_msgs::TransformStamped trans3;
 
 static ros::Subscriber fake_lidar_sub;
 static ros::Publisher slam_path_pub;
@@ -122,7 +124,7 @@ void publish_odom()
  * \brief broadcast odometry
  * 
 **/
-void broadcast_odom2body()
+void broadcast_world2blue()
 {
     static tf2_ros::TransformBroadcaster br;
     // define trans
@@ -159,7 +161,24 @@ void broadcast_map2odom()
 
   // broadcast
   br2.sendTransform(trans2);
+}
 
+void broadcast_odom2green()
+{
+  turtlelib::Transform2D To_tt = dd.get_trans();
+
+  static tf2_ros::TransformBroadcaster br3;
+  // define trans
+  trans3.header.stamp = ros::Time::now();
+  trans3.transform.translation.x = To_tt.get_x();
+  trans3.transform.translation.y = To_tt.get_y();
+  trans3.transform.translation.z = 0.0;
+  q.setRPY( 0, 0, To_tt.rotation() );
+  rot = tf2::toMsg(q);
+  trans3.transform.rotation = rot;
+
+  // broadcast
+  br3.sendTransform(trans3);
 }
 
 
@@ -209,45 +228,53 @@ void pub_slam_path()
 
 void fake_sensor_callback(const visualization_msgs::MarkerArrayPtr &data)
 {
-    static std::unordered_map<int,int> hash;    //landmark initialization map
+    static std::unordered_map<int,int> map;   
     
     //predict
-    filter.predict(Vb,dd.getTransform());
+    ekf.predict(twist,dd.get_trans());
 
-    //update loop
+  
     int len = data->markers.size();
     for(int i = 0; i < len; i++)
     {
         visualization_msgs::Marker measurement = data->markers[i];
 
         // convert measurement to polar
-        rigid2d::Vector2D location = rigid2d::Vector2D(measurement.pose.position.x,measurement.pose.position.y);
-        arma::mat z = nuslam::toPolar(location);
+        turtlelib::Vector2D location;
+        double x = data->markers[i].pose.position.x;
+        double y = data->markers[i].pose.position.x;
+        location.x = x;
+        location.y = y;
+        double r = sqrt(pow(x,2)+pow(y,2));
+        double phi = atan2(y,x);
+        arma::mat z = arma::mat(2,1,arma::fill::zeros);
+        z(0,0) = r;
+        z(1,0) = phi;
 
         // get id
-        int j = measurement.id+1;
+        int j = data->markers[i].id+1;
 
         //initialize landmark
-        if (hash.find(j) == hash.end())
+        if (map.find(j) == map.end())
         {
             //mark initialized
-            hash[j] = 1;
+            map[j] = 1;
 
             //calculate landmark location in map coordinates
-            // Tmap_robot = rigid2d::Transform2D(rigid2d::Vector2D(filter.getState()(1,0),filter.getState()(2,0)),filter.getState()(0,0));
-            rigid2d::Vector2D landmark_loc = Tmap_robot(location);
+            turtlelib::Vector2D landmark_loc = Tm_tt(location);
 
             //initialize landmark in state vector
-            filter.initialize_landmark(j,landmark_loc);
+            ekf.add_landmark(j,landmark_loc);
         }
 
         //update
-        filter.update(z,j);
+        ekf.update(j,z);
     }
 
     // find transform from map to robot
-    rigid2d::Vector2D pos = rigid2d::Vector2D(filter.getState()(1,0),filter.getState()(2,0));
-    Tmap_robot = rigid2d::Transform2D(pos,filter.getState()(0,0));
+    // turtlelib::Vector2D pos;
+    auto state = ekf.get_state();
+    Tm_tt = turtlelib::Transform2D(state(1,0),state(2,0),state(0,0));
 }
   
 
@@ -349,14 +376,16 @@ int main(int argc, char** argv)
     dd = turtlelib::DiffDrive(wr,wt,tf);
 
     // set up odom
-    odom.header.frame_id = odom_id;
+    odom.header.frame_id = "world";
     odom.child_frame_id = body_id;
 
     // set up trans
-    trans.header.frame_id = odom_id;
+    trans.header.frame_id = "world";
     trans.child_frame_id = body_id;
     trans2.header.frame_id = "map";
-    trans.child_frame_id = "odom";
+    trans2.child_frame_id = "odom";
+    trans3.header.frame_id = "odom";
+    trans3.child_frame_id = "green-base_footprint";
     
 
     // Initialize joint states
@@ -373,8 +402,9 @@ int main(int argc, char** argv)
         publish_odom();
         pub_odom_path();
         pub_slam_path();
-        broadcast_odom2body();
+        broadcast_world2blue();
         broadcast_map2odom();
+        broadcast_odom2green();
         ros::spinOnce();
         loop_rate.sleep();
     }

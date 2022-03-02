@@ -4,8 +4,11 @@
     <arg name = "robot" default = "nusim" doc = "ways to launch turtlebot,
     possible options are 'nusim', 'localhost', 'turtlebotname', 'none'. "/>
     <arg name = "use_jsp" default = "false" doc = "whether to use joint state publisher"/>
+    <arg name = "debug" default = "false" doc = "whether to use debug mode"/>
+
     <!-- load basic world and diff params config -->
     <rosparam command = "load" file = "$(find nusim)/config/basic_world.yaml"/>
+    <rosparam command="load" file="$(find nuturtle_description)/config/diff_params.yaml" />
 
     <!-- include basic remote launch file -->
     <include file = "$(find nuturtle_control)/launch/basic_remote.launch" if = "$(eval robot != 'nusim')">
@@ -22,7 +25,11 @@
         <arg name = "use_jsp" value = "true"/>
         <arg name = "color" value = "blue"/>
     </include>
-    <rosparam command="load" file="$(find nuturtle_description)/config/diff_params.yaml" />
+    <include file = "$(find nuturtle_description)/launch/load.launch">
+        <arg name = "use_rviz" value = "false"/>
+        <arg name = "use_jsp" value = "true"/>
+        <arg name = "color" value = "green"/>
+    </include>
     <include file = "$(find nuturtle_description)/launch/load.launch">
         <arg name = "use_rviz" value = "false"/>
         <arg name = "use_jsp" value = '$(arg use_jsp)'/>
@@ -35,7 +42,8 @@
         <remap from="/wheel_cmd" to="red/wheel_cmd"/>
         <remap from="/sensor_data" to="red/sensor_data"/>
     </node>
-    <node name = "slam" pkg = "nuslam" type = "slam" output = "screen" if = "$(eval robot == 'nusim')">
+
+    <node name = "slam" pkg = "nuslam" type = "slam" output = "screen" unless = "$(arg debug)">
         <remap from="/joint_states" to="red/joint_states"/>
     </node>
 
@@ -47,3 +55,4 @@
     <node name = "nusim" pkg = "nusim" type = "nusim" output = "screen" if = "$(eval robot == 'nusim')" />
 
 </launch>
+
