@@ -274,8 +274,9 @@ void fake_sensor_callback(const visualization_msgs::MarkerArrayPtr &data)
     // find transform from map to robot
     auto state = ekf.get_state();
     Tm_tt = turtlelib::Transform2D(state(1,0),state(2,0),state(0,0));
-    // publish slam path
+    // publish slam/odom path
     pub_slam_path();
+    pub_odom_path();
 }
   
 
@@ -400,8 +401,7 @@ int main(int argc, char** argv)
     ros::Rate loop_rate(rate);
     while(ros::ok())
     {
-        publish_odom();
-        // pub_odom_path();
+        // publish_odom();
         broadcast_world2blue();
         broadcast_map2odom();
         broadcast_odom2green();
