@@ -39,7 +39,7 @@
 ///      teleport_service (teleport): enable moving the robot to a desired (x,y,theta) pose
 
 /// settable parameters
-static std::uniform_real_distribution<double> wheel_position(-0.2,0.2);
+static std::uniform_real_distribution<double> wheel_position(-10,10);
 static std::normal_distribution<> fake_obs(0.0,0.01);
 static std::normal_distribution<> wheel_control(0.0,0.5);
 static std::normal_distribution<> lidar_noise(0.0,0.005);

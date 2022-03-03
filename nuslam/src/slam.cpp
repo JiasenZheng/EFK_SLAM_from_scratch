@@ -55,7 +55,7 @@ static turtlelib::Transform2D tf = turtlelib::Transform2D();
 static turtlelib::DiffDrive dd;
 static sensor_msgs::JointState js;
 static nav_msgs::Odometry odom;
-static nav_msgs::Path path;
+// static nav_msgs::Path path;
 static turtlelib::Twist2D twist;
 static geometry_msgs::Quaternion rot;
 static tf2::Quaternion q;
@@ -185,6 +185,7 @@ void broadcast_odom2green()
 /// \brief publish path for blue robot
 void pub_odom_path()
 {
+    static nav_msgs::Path odom_path;
     std_msgs::Header h;
     geometry_msgs::PoseStamped p;
     tf2::Quaternion rot;
@@ -192,7 +193,7 @@ void pub_odom_path()
     h.stamp = ros::Time::now();
     h.frame_id = "world";
     p.header = h;
-    path.header = h;
+    odom_path.header = h;
     p.pose.position.x = dd.get_trans().get_x();
     p.pose.position.y = dd.get_trans().get_y();
     p.pose.position.z = 0;
@@ -200,13 +201,14 @@ void pub_odom_path()
     rot.setRPY(0,0,dd.get_trans().rotation());
     p.pose.orientation = tf2::toMsg(rot);
 
-    path.poses.push_back(p);
-    odom_path_pub.publish(path);
+    odom_path.poses.push_back(p);
+    odom_path_pub.publish(odom_path);
 }
 
 /// \brief publish path for green robot
 void pub_slam_path()
 {
+    static nav_msgs::Path slam_path;
     std_msgs::Header h;
     geometry_msgs::PoseStamped p;
     tf2::Quaternion rot;
@@ -214,7 +216,7 @@ void pub_slam_path()
     h.stamp = ros::Time::now();
     h.frame_id = "world";
     p.header = h;
-    path.header = h;
+    slam_path.header = h;
     p.pose.position.x = Tm_tt.get_x();
     p.pose.position.y = Tm_tt.get_y();
     p.pose.position.z = 0;
@@ -222,8 +224,8 @@ void pub_slam_path()
     rot.setRPY(0,0,Tm_tt.rotation());
     p.pose.orientation = tf2::toMsg(rot);
 
-    path.poses.push_back(p);
-    slam_path_pub.publish(path);
+    slam_path.poses.push_back(p);
+    slam_path_pub.publish(slam_path);
 }
 
 void fake_sensor_callback(const visualization_msgs::MarkerArrayPtr &data)
