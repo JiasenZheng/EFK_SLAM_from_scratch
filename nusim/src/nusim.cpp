@@ -241,14 +241,16 @@ void obs_callback(const ros::TimerEvent& event)
         turtlelib::Transform2D Ttt_w = Tw_tt.inv();
         turtlelib::Vector2D Vtt_obs;
         Vtt_obs = Ttt_w(Vw_obs);
-        double dis = sqrt(pow(Vtt_obs.x,2)+pow(Vtt_obs.y,2));
-        // ROS_INFO("W2Obs: x: %f, y: %f\r",Vw_obs.x,Vw_obs.y);
-        // ROS_INFO("tt2Obs: x: %f, y: %f\r",Vtt_obs.x,Vtt_obs.y);
-        if (dis>lidar_range)
+        double l = sqrt(pow(Vtt_obs.x,2)+pow(Vtt_obs.y,2));
+        double phi = atan2(Vtt_obs.y,Vtt_obs.x);
+        if (r>lidar_range)
         {
             continue;
         }
-
+        l+= fake_obs(get_random());
+        phi += fake_obs(get_random());
+        double x = l*cos(phi);
+        double y = l*sin(phi);
         
         visualization_msgs::Marker marker;
         geometry_msgs::Point position;
@@ -260,8 +262,8 @@ void obs_callback(const ros::TimerEvent& event)
         marker.scale.z = h;
         marker.lifetime = ros::Duration(0.2);
 
-        position.x = Vtt_obs.x + fake_obs(get_random());
-        position.y = Vtt_obs.y + fake_obs(get_random());
+        position.x = x;
+        position.y = y;
         position.z = h/2;
 
 
