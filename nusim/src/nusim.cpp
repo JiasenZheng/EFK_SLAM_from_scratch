@@ -243,7 +243,7 @@ void obs_callback(const ros::TimerEvent& event)
         Vtt_obs = Ttt_w(Vw_obs);
         double l = sqrt(pow(Vtt_obs.x,2)+pow(Vtt_obs.y,2));
         double phi = atan2(Vtt_obs.y,Vtt_obs.x);
-        if (r>lidar_range)
+        if (l>lidar_range)
         {
             continue;
         }

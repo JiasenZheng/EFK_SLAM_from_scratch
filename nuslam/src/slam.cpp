@@ -43,6 +43,7 @@
 static const int rate = 500;
 static ros::Publisher odom_pub;
 static ros::Publisher odom_path_pub;
+static ros::Publisher green_obs_pub;
 static ros::Subscriber js_sub;
 static ros::ServiceServer set_pose;
 static std::string body_id;
@@ -55,13 +56,14 @@ static turtlelib::Transform2D tf = turtlelib::Transform2D();
 static turtlelib::DiffDrive dd;
 static sensor_msgs::JointState js;
 static nav_msgs::Odometry odom;
-// static nav_msgs::Path path;
 static turtlelib::Twist2D twist;
 static geometry_msgs::Quaternion rot;
 static tf2::Quaternion q;
 static geometry_msgs::TransformStamped trans;
 static geometry_msgs::TransformStamped trans2;
 static geometry_msgs::TransformStamped trans3;
+static double lidar_range = 3.5;
+static double r,h; 
 
 static ros::Subscriber fake_lidar_sub;
 static ros::Publisher slam_path_pub;
@@ -228,6 +230,69 @@ void pub_slam_path()
     slam_path_pub.publish(slam_path);
 }
 
+/// \brief Set the obstacles markers relative to slam turtlebot in Rviz 
+/// 
+void set_green_obs()
+{
+    visualization_msgs::MarkerArray obs;
+
+    geometry_msgs::Quaternion rotation;
+    rotation.x = 0;
+    rotation.y = 0;
+    rotation.z = 0;
+    rotation.w = 1;
+
+    std_msgs::ColorRGBA colour;
+    colour.r = 0;
+    colour.g = 1;
+    colour.b = 0;
+    colour.a = 1;
+
+    for (int i=0; i<v_x.size();i++)
+    {
+        turtlelib::Vector2D Vm_obs;
+        Vm_obs.x = v_x[i];
+        Vm_obs.y = v_y[i];
+        // turtlelib::Transform2D Tw_tt = real_dd.get_trans();
+        
+
+        turtlelib::Transform2D Ttt_m = Tm_tt.inv();
+        turtlelib::Vector2D Vtt_obs;
+        Vtt_obs = Ttt_m(Vm_obs);
+        double l = sqrt(pow(Vtt_obs.x,2)+pow(Vtt_obs.y,2));
+        // double phi = atan2(Vtt_obs.y,Vtt_obs.x);
+        if (l>lidar_range)
+        {
+            continue;
+        }
+
+        visualization_msgs::Marker marker;
+        geometry_msgs::Point position;
+
+        marker.type = marker.CYLINDER;
+        marker.color = colour;
+        marker.scale.x = 2*r;
+        marker.scale.y = 2*r;
+        marker.scale.z = h;
+        marker.lifetime = ros::Duration(0.2);
+
+        position.x = Vtt_obs.x;
+        position.y = Vtt_obs.y;
+        position.z = h/2;
+
+
+        marker.pose.position = position;
+        marker.pose.orientation = rotation;
+        marker.header.frame_id = "green-base_footprint";
+        marker.header.stamp = ros::Time::now();
+        marker.id = i;
+
+        obs.markers.push_back(marker);
+    }
+    green_obs_pub.publish(obs);
+
+}
+
 void fake_sensor_callback(const visualization_msgs::MarkerArrayPtr &data)
 {
     static std::unordered_map<int,bool> map;   
@@ -279,7 +344,9 @@ void fake_sensor_callback(const visualization_msgs::MarkerArrayPtr &data)
     // publish slam/odom path
     pub_slam_path();
     pub_odom_path();
+    set_green_obs();
 }
+
   
 
 int main(int argc, char** argv)
@@ -357,7 +424,7 @@ int main(int argc, char** argv)
       ros::shutdown();
     }
 
-    if (nh.getParam("/cylinder_ys", v_x))
+    if (nh.getParam("/cylinder_ys", v_y))
     {
       ROS_INFO_STREAM("Got param:" << " cylinder_ys");
     }
@@ -366,6 +433,8 @@ int main(int argc, char** argv)
       ROS_ERROR_STREAM("Failed to get param 'cylinder_ys'");
       ros::shutdown();
     }
+    nh.getParam("cylinder_r",r);
+    nh.getParam("cylinder_h",h);
 
 
     // initialize publishers, subscribers, services and br
@@ -373,6 +442,7 @@ int main(int argc, char** argv)
     odom_pub = nh.advertise<nav_msgs::Odometry>("/odom",100);
     odom_path_pub = nh.advertise<nav_msgs::Path>("/blue_path",100);
     slam_path_pub = nh.advertise<nav_msgs::Path>("/green_path",100);
+    green_obs_pub = nh.advertise<visualization_msgs::MarkerArray>("/slam_sensor",100);
     fake_lidar_sub = nh.subscribe("nusim/fake_sensor",100,fake_sensor_callback);
     set_pose = nh.advertiseService("set_pose",set_pose_callback);
 
