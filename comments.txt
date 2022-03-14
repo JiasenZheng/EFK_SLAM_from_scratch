@@ -1,0 +1,3 @@
+slam appears to work.
+There is a bug in collision detection: essentially after colliding with an object it was impossible to back a way and continue moving.
+There is also an exception that is thrown on shutdown which should be looked into
