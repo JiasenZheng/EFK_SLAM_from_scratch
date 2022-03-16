@@ -22,7 +22,8 @@
 static int frequency = 100;
 static double d_thresh = 0.1;
 static ros::Subscriber laser_sub;
-static ros::Publisher lm_pub;
+static ros::Publisher lms_pub;
+static double r,h;
 
 void remove_non_circles(std::vector<std::vector<turtlelib::Vector2D>> & clusters) 
 {
@@ -47,7 +48,7 @@ void remove_non_circles(std::vector<std::vector<turtlelib::Vector2D>> & clusters
 
         // compute mean
         double mean = sum/angles.size();
-        ROS_INFO("MEAN: %f",mean);
+        // ROS_INFO("MEAN: %f",mean);
 
         // remove cluster with inapproate angle
         if (mean < 90.0 or mean > 135.0)
@@ -63,16 +64,167 @@ void remove_non_circles(std::vector<std::vector<turtlelib::Vector2D>> & clusters
             accum += (d - mean) * (d - mean);
         });
         double stdev = sqrt(accum / (angles.size()-1));
-        ROS_INFO("STDEV: %f",stdev);
-
+        // ROS_INFO("STDEV: %f",stdev);
 
         //remove clusters if standard deviation is too large
-        if (stdev > 0.15)
+        if (stdev > 8.6)
         {
             clusters.erase(clusters.begin()+i);
             i-=1;
         }
     }
+}
+
+std::vector<turtlelib::Vector2D> circle_fitting(std::vector<std::vector<turtlelib::Vector2D>> & clusters) 
+{
+    // Circle vector container
+    std::vector<turtlelib::Vector2D> circles;
+
+    for (int i=0; i<clusters.size(); i++) {
+        std::vector<turtlelib::Vector2D> cluster = clusters[i];
+        int n = cluster.size();
+
+        // compute x y means
+        double x_sum = 0.0;
+        double y_sum = 0.0;
+
+        for (int j=0; j<n; j++)
+        {
+            x_sum+=cluster[j].x;
+            y_sum+=cluster[j].y;
+        }
+
+        double x_mean = x_sum/n;
+        double y_mean = y_sum/n;
+
+        // Shift the coordinates and create 3 lists
+        std::vector<double> x_list, y_list, z_list;
+        double z_sum = 0;
+        for (int j=0; j<n; j++)
+        {
+            double x_val = cluster[j].x - x_mean;
+            double y_val = cluster[j].y - y_mean;
+            double z_val = pow(x_val,2)+pow(y_val,2);
+            x_list.push_back(x_val);
+            y_list.push_back(y_val);
+            z_list.push_back(z_val);
+            z_sum+=z_val;
+        }
+        double z_mean = z_sum/n;
+
+        // construct Z matrix
+        arma::mat z1,z2,z3,z4;
+        z1 = arma::colvec(z_list);
+        z2 = arma::colvec(x_list);
+        z3 = arma::colvec(y_list);
+        z4 = arma::mat(n,1,arma::fill::ones);
+        arma::mat Z = arma::join_horiz(z1,z2,z3,z4);
+        // ROS_INFO("%i:",i);
+        // Z.print("Z: ");
+
+        // construct momemt matrix
+        arma::mat M = (1/n)*arma::trans(Z)*Z;
+
+        // construct constraint matrix
+        arma::mat H= {  {8*z_mean, 0, 0, 2},
+                        {0, 1, 0, 0},
+                        {0, 0, 1, 0},
+                        {2, 0, 0, 0} };
+        arma::mat H_inv={{0, 0, 0, 0.5},
+                         {0, 1, 0, 0},
+                         {0, 0, 1, 0},
+                         {0.5, 0, 0, -2*z_mean}  };
+
+
+        // construct singular value decomposition
+        arma::mat U,V;
+        arma::vec s;
+        arma::svd(U,s,V,Z);
+
+        // solve for A
+        arma::vec A;
+        if (s(3) < 1e-12)
+        {
+            A = V.col(3);
+        }
+        else
+        {
+            arma::mat Y = V*arma::diagmat(s)*arma::trans(V);
+            arma::mat Q = Y*H_inv*Y;
+            // find eigenvalues and vectors of Q
+            arma::vec eigen_vals;
+            arma::mat eigen_vecs;
+            arma::eig_sym(eigen_vals,eigen_vecs,Q);
+
+            // find the smallest positive eigenvalue of Q
+            int idx = 0;
+            double eigen_val = 999.0;
+            for (int j = 0; j<eigen_vals.size(); j++)
+            {
+                if (eigen_vals[j]>0 and eigen_vals[j]<eigen_val)
+                {
+                    eigen_val = eigen_vals[j];
+                    idx = j;
+                }
+            }
+            arma::vec A_star = eigen_vecs.col(idx);
+            A = arma::solve(Y,A_star);
+        }
+
+        // Compute circle center and radius
+        turtlelib::Vector2D circle;
+        circle.x = -A(1)/(2*A(0))+x_mean;
+        // ROS_INFO("X: %f", circle.x);
+        circle.y = -A(2)/(2*A(0))+y_mean;
+        // ROS_INFO("Y: %f", circle.y);
+        circles.push_back(circle);
+
+        double R = sqrt((pow(A(1),2) + pow(A(2),2) -4*A(0)*A(3)) / (4*pow(A(0),2)));
+    }
+    return circles;
+}
+
+void publish_measured_lm(const std::vector<turtlelib::Vector2D> &circles)
+{
+    visualization_msgs::MarkerArray lms;
+
+    geometry_msgs::Quaternion rotation;
+    rotation.x = 0;
+    rotation.y = 0;
+    rotation.z = 0;
+    rotation.w = 1;
+
+    std_msgs::ColorRGBA colour;
+    colour.r = 0;
+    colour.g = 1;
+    colour.b = 1;
+    colour.a = 1;
+
+    for (int i=0; i<circles.size();i++)
+    {
+        visualization_msgs::Marker marker;
+        geometry_msgs::Point position;
+
+        marker.type = marker.CYLINDER;
+        marker.color = colour;
+        marker.scale.x = 2*r;
+        marker.scale.y = 2*r;
+        marker.scale.z = h;
+
+        position.x = circles[i].x;
+        position.y = circles[i].y;
+        position.z = h/2;
+
+
+        marker.pose.position = position;
+        marker.pose.orientation = rotation;
+        marker.header.frame_id = "red-base_footprint";
+        marker.header.stamp = ros::Time::now();
+        marker.id = i;
+
+        lms.markers.push_back(marker);
+    }
+    lms_pub.publish(lms);
 }
 
 void laser_cb(const sensor_msgs::LaserScanConstPtr &laser)
@@ -112,9 +264,12 @@ void laser_cb(const sensor_msgs::LaserScanConstPtr &laser)
             // clean cluster
             cluster.clear();
         }
+        
+        // push back the last cluster
         if (i == num-1)
         {
             clusters.push_back(cluster);
+            cluster.clear();
         }
     }
     // ROS_INFO("THE NUMBER OF CLUSTERS: %ld",clusters.size());
@@ -139,10 +294,12 @@ void laser_cb(const sensor_msgs::LaserScanConstPtr &laser)
             clusters.erase(clusters.begin()+i);
         }
     }
-    ROS_INFO("THE NUMBER OF CLUSTERS: %ld",clusters.size());
     remove_non_circles(clusters);
-    ROS_INFO("THE NUMBER OF CIRCLE CLUSTERS: %ld",clusters.size());
+    std::vector<turtlelib::Vector2D> circles;
+    circles = circle_fitting(clusters);
+    publish_measured_lm(circles);
 }
+
 
 
 int main(int argc, char** argv)
@@ -153,7 +310,11 @@ int main(int argc, char** argv)
 
     // Create pub and sub
     laser_sub = nh.subscribe("/laser",10,laser_cb);
-    lm_pub = nh.advertise<visualization_msgs::MarkerArray>("/measured_landmarks",10);
+    lms_pub = nh.advertise<visualization_msgs::MarkerArray>("/measured_landmarks",10);
+
+    // Get parameters
+    ros::param::get("/cylinder_r",r);
+    ros::param::get("/cylinder_h",h);
 
 
     ros::Rate loop_rate(frequency);

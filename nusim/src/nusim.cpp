@@ -42,7 +42,7 @@
 static std::uniform_real_distribution<double> wheel_position(-10,10);
 static std::normal_distribution<> fake_obs(0.0,0.01);
 static std::normal_distribution<> wheel_control(0.0,0.5);
-static std::normal_distribution<> lidar_noise(0.0,0.00);
+static std::normal_distribution<> lidar_noise(0.0,0.001);
 static double lidar_range = 3.5;
 static double x_length = 3.0;
 static double y_length = 3.0;
@@ -604,7 +604,7 @@ void lidar_callback(const ros::TimerEvent& event)
                 range = x/cos(theta2);
             }
         }
-        lidar_data.ranges[i] = range *(1 + lidar_noise(get_random()));
+        lidar_data.ranges[i] = range + lidar_noise(get_random());
     }  
     lidar_pub.publish(lidar_data);
 }
