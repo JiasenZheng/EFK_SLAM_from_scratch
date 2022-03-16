@@ -473,7 +473,6 @@ int main(int argc, char** argv)
     ros::Rate loop_rate(rate);
     while(ros::ok())
     {
-        // publish_odom();
         broadcast_world2blue();
         broadcast_map2odom();
         broadcast_odom2green();

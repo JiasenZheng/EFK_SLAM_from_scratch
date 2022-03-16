@@ -79,9 +79,17 @@ namespace nuslam
             arma::mat state;
             arma::mat Q;
             arma::mat R;
-
-            
+   
     };
+
+    /**
+     * \brief convert from polar to cartesian
+     * 
+     * \param range range
+     * \param deg bearing
+     * \return turtlelib::Vector2D cartesian coordinates
+    **/
+    turtlelib::Vector2D toXY(double range, double deg);
 }
 
 #endif

@@ -29,7 +29,7 @@ Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: ""
+    SyncSource: LaserScan
 Preferences:
   PromptSaveOnExit: true
 Toolbars:
@@ -119,10 +119,6 @@ Visualization Manager:
           Value: false
         red-imu_link:
           Value: false
-        red-wheel_left_link:
-          Value: false
-        red-wheel_right_link:
-          Value: false
         world:
           Value: true
       Marker Alpha: 1
@@ -140,10 +136,6 @@ Visualization Manager:
               red-caster_back_link:
                 {}
               red-imu_link:
-                {}
-              red-wheel_left_link:
-                {}
-              red-wheel_right_link:
                 {}
       Update Interval: 0
       Value: true
@@ -197,20 +189,20 @@ Visualization Manager:
       Channel Name: intensity
       Class: rviz/LaserScan
       Color: 255; 255; 255
-      Color Transformer: ""
+      Color Transformer: Intensity
       Decay Time: 0
       Enabled: true
       Invert Rainbow: false
       Max Color: 255; 255; 255
       Min Color: 0; 0; 0
       Name: LaserScan
-      Position Transformer: ""
+      Position Transformer: XYZ
       Queue Size: 10
       Selectable: true
       Size (Pixels): 3
       Size (m): 0.009999999776482582
       Style: Flat Squares
-      Topic: ""
+      Topic: /laser
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
@@ -243,7 +235,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 5.474608898162842
+      Distance: 4.8319244384765625
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -259,9 +251,9 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.7153980731964111
+      Pitch: 1.1753976345062256
       Target Frame: <Fixed Frame>
-      Yaw: 0.8603978157043457
+      Yaw: 1.390397310256958
     Saved: ~
 Window Geometry:
   Displays:
@@ -280,4 +272,4 @@ Window Geometry:
     collapsed: false
   Width: 1920
   X: 0
-  Y: 1107
+  Y: 27

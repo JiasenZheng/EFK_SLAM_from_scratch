@@ -148,5 +148,14 @@ namespace nuslam
         return state;
     }
 
+    turtlelib::Vector2D toXY(double range, double deg)
+    {
+        double rad = turtlelib::deg2rad(deg);
+        turtlelib::Vector2D point;
+        point.x = range*cos(rad);
+        point.y = range*sin(rad);
+        return point;
+    }
+
 
 }

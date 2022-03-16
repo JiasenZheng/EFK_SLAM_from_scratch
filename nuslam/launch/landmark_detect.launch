@@ -1,0 +1,6 @@
+<launch>
+    <rosparam command = "load" file="$(find nuslam)/config/landmark.yaml"/>
+    
+    <include file = "$(find nusim)/launch/nusim.launch"/>
+    <node name = "landmarks" pkg = "nuslam" type = "landmarks" output = "screen"/>
+</launch>
