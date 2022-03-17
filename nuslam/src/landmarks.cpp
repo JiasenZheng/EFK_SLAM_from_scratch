@@ -143,7 +143,7 @@ std::vector<turtlelib::Vector2D> circle_fitting(std::vector<std::vector<turtleli
 
         // solve for A
         arma::vec A;
-        if (s(3) < 1e-12)
+        if (arma::min(s) < 1e-12)
         {
             A = V.col(3);
         }
@@ -289,7 +289,7 @@ void laser_cb(const sensor_msgs::LaserScanConstPtr &laser)
     // remove the cluster that smaller than 3
     for (int i = 0; i < clusters.size(); i++)
     {
-        if (clusters[i].size() < 3)
+        if (clusters[i].size() <= 3)
         {
             clusters.erase(clusters.begin()+i);
         }

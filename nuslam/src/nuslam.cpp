@@ -232,7 +232,7 @@ namespace nuslam
             arma::mat d = delta_z.t()*cov.i()*delta_z;
             double distance = d(0);
 
-            if (distance < 0.05)
+            if (distance < 0.5)
             {
                 return i;
             }

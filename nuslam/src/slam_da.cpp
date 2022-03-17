@@ -293,7 +293,7 @@ void set_green_obs()
 
 }
 
-void fake_sensor_callback(const visualization_msgs::MarkerArrayPtr &data)
+void real_sensor_callback(const visualization_msgs::MarkerArrayPtr &data)
 {
     static std::unordered_map<int,bool> map;   
     
@@ -325,6 +325,7 @@ void fake_sensor_callback(const visualization_msgs::MarkerArrayPtr &data)
 
         // get id
         int j = ekf.assoc_data(z)+1;
+        ROS_INFO("ID: %i",j);
 
         //initialize landmark
         if (map.find(j) == map.end())
@@ -442,7 +443,7 @@ int main(int argc, char** argv)
     odom_path_pub = nh.advertise<nav_msgs::Path>("/blue_path",100);
     slam_path_pub = nh.advertise<nav_msgs::Path>("/green_path",100);
     green_obs_pub = nh.advertise<visualization_msgs::MarkerArray>("/slam_sensor",100);
-    real_lidar_sub = nh.subscribe("/measured_landmarks",100,fake_sensor_callback);
+    real_lidar_sub = nh.subscribe("/measured_landmarks",100,real_sensor_callback);
     set_pose = nh.advertiseService("set_pose",set_pose_callback);
 
     // DiffDrive

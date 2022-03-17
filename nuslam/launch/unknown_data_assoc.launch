@@ -42,7 +42,7 @@
         <remap from="/sensor_data" to="red/sensor_data"/>
     </node>
 
-    <node name = "slam_da" pkg = "nuslam" type = "slam_da" output = "screen" unless = "$(arg debug)">
+    <node name = "slam_da" pkg = "nuslam" type = "slam_da" output = "screen">
         <remap from="/joint_states" to="red/joint_states"/>
     </node>
 
@@ -53,7 +53,7 @@
 
     <node name = "nusim" pkg = "nusim" type = "nusim" output = "screen" if = "$(eval robot == 'nusim')" />
 
-    <node name = "landmarks" pkg = "nuslam" type = "landmarks" output = "screen"/>
+    <node name = "landmarks" pkg = "nuslam" type = "landmarks" output = "screen" unless = "$(arg debug)"/>
 
 
 </launch>
