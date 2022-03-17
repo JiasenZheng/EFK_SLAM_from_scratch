@@ -87,6 +87,14 @@ namespace nuslam
             **/
             arma::mat get_state();
 
+            /**
+             * \brief compute mahalanobis distance
+             * 
+             * \param i index of landmark
+             * \param temp temp matrix
+             * \return double mahalanobis distance
+            **/
+            double compute_maha_dis(int i, const arma::mat &temp, const arma::mat &z);
 
             /**
              * \brief associate measurements with landmark number

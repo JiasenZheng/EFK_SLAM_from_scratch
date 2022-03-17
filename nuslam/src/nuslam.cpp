@@ -204,6 +204,20 @@ namespace nuslam
         return point;
     }
 
+    double EKF::compute_maha_dis(int i, const arma::mat &temp, const arma::mat &z)
+    {
+            arma::mat H = compute_H(i+1,temp);
+            arma::mat cov = H*sigma*H.t() + R;
+            arma::mat z_hat = compute_z(i+1);
+
+            // compute mahalanobis distance
+            arma::mat delta_z = z-z_hat;
+            delta_z(1,0) = turtlelib::normalize_angle(delta_z(1,0));
+            arma::mat d = delta_z.t()*cov.i()*delta_z;
+            double distance = d(0);
+            return distance;
+    }
+
     int EKF::assoc_data(arma::mat z) 
     {
         if (N == 0)
@@ -220,6 +234,8 @@ namespace nuslam
         temp(3+2*N) = temp(1) + z(0)*cos(z(1) + temp(0));
         temp(4+2*N) = temp(2) + z(0)*sin(z(1) + temp(0));
 
+        // double dis_thresh = compute_maha_dis(N,temp,z);
+
         for (int i = 0; i<N; i++)
         {
             arma::mat H = compute_H(i+1,temp);
@@ -232,13 +248,18 @@ namespace nuslam
             arma::mat d = delta_z.t()*cov.i()*delta_z;
             double distance = d(0);
 
-            if (distance < 0.5)
+            // double distance = compute_maha_dis(i,temp,z);
+
+            if (distance < 0.1)
             {
                 return i;
             }
         }
-        N++;
-        return N-1;
+        if (N < 6) {
+            N++;
+            return N-1;
+        }
+        else return -1;
     }
 
 
