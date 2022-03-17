@@ -2,7 +2,23 @@
 
 namespace nuslam
 {
-    
+    EKF::EKF()
+    {
+        n = 100;
+        arma::mat q(3,3,arma::fill::zeros);
+        arma::mat ur(3,2*n,arma::fill::zeros);
+        arma::mat bl(2*n,3,arma::fill::zeros);
+        arma::mat m = arma::mat(2*n,2*n,arma::fill::eye)*999999.0;
+        arma::mat left = arma::join_cols(q,bl);
+        arma::mat right = arma::join_cols(ur,m);
+        sigma = arma::join_rows(left,right);
+
+        state = arma::mat(2*n+3,1,arma::fill::zeros);
+
+        Q = arma::mat(3,3,arma::fill::eye)*0.5;
+        R = arma::mat(2,2,arma::fill::eye)*0.0001;
+    }
+
     EKF::EKF(int num)
     {
         n = num;
@@ -122,6 +138,37 @@ namespace nuslam
         return H;
     }
 
+    arma::mat EKF::compute_H(int j,const arma::mat &temp)
+    {
+        // landmark coordinates
+        double xj = temp(1+2*j,0);
+        double yj = temp(2+2*j,0);
+        // robot coordinates
+        double xt = temp(1,0);
+        double yt = temp(2.0);
+        double thetat = temp(0,0);
+        // relative coordinates
+        double dx = xj - xt;
+        double dy = yj - yt;
+        double d = pow(dx,2) + pow(dy,2);
+        // H matrix
+        arma::mat H,m1,m2,m3,m4;
+        m1 = 
+        {
+            {0, -dx/sqrt(d),-dy/sqrt(d)},
+            {-1, dy/d, -dx/d}
+        };
+        m2 = arma::mat(2,2*(j-1),arma::fill::zeros);
+        m3 = 
+        {
+            {dx/sqrt(d),dy/sqrt(d)},
+            {-dy/d,dx/d}
+        };
+        m4 = arma::mat(2,2*n-2*j,arma::fill::zeros);
+        H = arma::join_rows(m1,m2,m3,m4);
+        return H;
+    }
+
     void EKF::update(int j, arma::mat z)
     {
         // calculate kalman gain
@@ -155,6 +202,43 @@ namespace nuslam
         point.x = range*cos(rad);
         point.y = range*sin(rad);
         return point;
+    }
+
+    int EKF::assoc_data(arma::mat z) 
+    {
+        if (N == 0)
+        {
+            N++;
+            return 0;
+        }
+
+        // construct temp matrix
+        arma::mat temp(3+2*(N+1),1);
+        // Save the old measurements
+        temp(arma::span(0,2+2*N),0) = state(arma::span(0,2+2*N),0);
+        // Add the new measurements
+        temp(3+2*N) = temp(1) + z(0)*cos(z(1) + temp(0));
+        temp(4+2*N) = temp(2) + z(0)*sin(z(1) + temp(0));
+
+        for (int i = 0; i<N; i++)
+        {
+            arma::mat H = compute_H(i+1,temp);
+            arma::mat cov = H*sigma*H.t() + R;
+            arma::mat z_hat = compute_z(i+1);
+
+            // compute mahalanobis distance
+            arma::mat delta_z = z-z_hat;
+            delta_z(1,0) = turtlelib::normalize_angle(delta_z(1,0));
+            arma::mat d = delta_z.t()*cov.i()*delta_z;
+            double distance = d(0);
+
+            if (distance < 0.05)
+            {
+                return i;
+            }
+        }
+        N++;
+        return N-1;
     }
 
 

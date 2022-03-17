@@ -65,11 +65,11 @@ static geometry_msgs::TransformStamped trans3;
 static double lidar_range = 3.5;
 static double r,h; 
 
-static ros::Subscriber fake_lidar_sub;
+static ros::Subscriber real_lidar_sub;
 static ros::Publisher slam_path_pub;
 static std::vector<double> v_x, v_y;
 static turtlelib::Transform2D Tm_tt = turtlelib::Transform2D();
-static nuslam::EKF ekf(6);
+static nuslam::EKF ekf;
 
 /**
  * \brief the callback function fot joint state subscriber
@@ -324,7 +324,7 @@ void fake_sensor_callback(const visualization_msgs::MarkerArrayPtr &data)
         z(1,0) = phi;
 
         // get id
-        int j = data->markers[i].id+1;
+        int j = ekf.assoc_data(z)+1;
 
         //initialize landmark
         if (map.find(j) == map.end())
@@ -442,7 +442,7 @@ int main(int argc, char** argv)
     odom_path_pub = nh.advertise<nav_msgs::Path>("/blue_path",100);
     slam_path_pub = nh.advertise<nav_msgs::Path>("/green_path",100);
     green_obs_pub = nh.advertise<visualization_msgs::MarkerArray>("/slam_sensor",100);
-    fake_lidar_sub = nh.subscribe("nusim/fake_sensor",100,fake_sensor_callback);
+    real_lidar_sub = nh.subscribe("/measured_landmarks",100,fake_sensor_callback);
     set_pose = nh.advertiseService("set_pose",set_pose_callback);
 
     // DiffDrive

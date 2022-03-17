@@ -1,11 +1,11 @@
 x0: -0.6                       # initial x-coordinate of the robot
 y0: 0.8                        # initial y-coordinate of the robot
 theta0: 1.57                   # initial theta of the robot
-cylinder_xs: [-0.6,0.6,0.6]    # list of x-coordinates of the cylinders
-cylinder_ys: [-0.8,-0.8,0.8]   # list of y-coordinates of the cylinders
+cylinder_xs: [-0.6,0.6,0.6,-0.6,1.0,0.0]    # list of x-coordinates of the cylinders
+cylinder_ys: [-0.8,-0.8,0.8,0.8, 0.2,-0.8]   # list of y-coordinates of the cylinders
 # cylinder_xs: [0.6]    # list of x-coordinates of the cylinders
 # cylinder_ys: [0.8]   # list of y-coordinates of the cylinders
-cylinder_r: 0.06              # radius of the cylinder
+cylinder_r: 0.038             # radius of the cylinder
 cylinder_h: 0.25               # height of the cylinder
 var_wheel_vel: 0.5             # noise variance of the wheel velocity (rad/sec)
 wheel_min: -0.2                # min value for wheel slip 

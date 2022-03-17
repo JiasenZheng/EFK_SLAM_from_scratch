@@ -11,7 +11,13 @@ namespace nuslam
         public:
 
             /**
-             * \brief Construct a new EKF object
+             * \brief Construct a new EKF object (Unknown Data Association)
+             * 
+            **/
+            EKF();
+
+            /**
+             * \brief Construct a new EKF object (Known Data Association)
              * 
              * \param num 
             **/
@@ -48,6 +54,15 @@ namespace nuslam
              * \return arma::mat H: derivative of the measurement wrt the state
             **/
             arma::mat compute_H(int j);
+            
+            /**
+             * \brief Compute H with temp matrix
+             * 
+             * \param j index of the landmark
+             * \param temp temp matrix
+             * \return arma::mat H: derivative of the measurement wrt the state
+            **/
+            arma::mat compute_H(int j,const arma::mat &temp);
 
             /**
              * \brief update state and uncertainty
@@ -73,8 +88,19 @@ namespace nuslam
             arma::mat get_state();
 
 
+            /**
+             * \brief associate measurements with landmark number
+             * 
+             * \param z measurement
+             * \return int landmark number
+            **/
+            int assoc_data(arma::mat z);
+
+
+            int N = 0;  // The number of landmarks already seen
+
         private:
-            int n;
+            int n;  // The number of landmarks with data associated
             arma::mat sigma;
             arma::mat state;
             arma::mat Q;
