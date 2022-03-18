@@ -37,7 +37,7 @@ TEST_CASE("transform from odom to base_footprint","[nuturtle control]")
         geometry_msgs::TransformStamped transformStamped;
         try
         {
-            transformStamped = tfBuffer.lookupTransform("blue-base_footprint", "odom", ros::Time(0));
+            transformStamped = tfBuffer.lookupTransform("odom", "odom", ros::Time(0));
         }
         catch (tf2::TransformException &ex)
         {

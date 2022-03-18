@@ -235,8 +235,9 @@ namespace nuslam
         temp(4+2*N) = temp(2) + z(0)*sin(z(1) + temp(0));
 
         // double dis_thresh = compute_maha_dis(N,temp,z);
-
-        for (int i = 0; i<N; i++)
+        double d_star = 9999.0;
+        int l;
+        for (int i = 0; i<N+1; i++)
         {
             arma::mat H = compute_H(i+1,temp);
             arma::mat cov = H*sigma*H.t() + R;
@@ -247,19 +248,27 @@ namespace nuslam
             delta_z(1,0) = turtlelib::normalize_angle(delta_z(1,0));
             arma::mat d = delta_z.t()*cov.i()*delta_z;
             double distance = d(0);
+            if (distance < d_star)
+            {
+                d_star = distance;
+                l = i;
+            }
 
             // double distance = compute_maha_dis(i,temp,z);
-
-            if (distance < 0.1)
+            if (distance < 0.001)
             {
                 return i;
             }
         }
-        if (N < 6) {
+        // if (l==N) {
             N++;
             return N-1;
-        }
-        else return -1;
+        // }
+        // else
+        // {
+
+        // }
+        // else return -1;
     }
 
 

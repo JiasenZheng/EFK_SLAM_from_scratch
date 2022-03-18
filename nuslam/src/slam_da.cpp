@@ -325,14 +325,14 @@ void real_sensor_callback(const visualization_msgs::MarkerArrayPtr &data)
 
         // get id
         int j = ekf.assoc_data(z)+1;
-        if (j == 0)
-        {
-          continue;
-        }
-        if (j>6)
-        {
+        // if (j == 0)
+        // {
+        //   continue;
+        // }
+        // if (j>6)
+        // {
           ROS_INFO("ID: %i",j);
-        }
+        // }
 
         //initialize landmark
         if (map.find(j) == map.end())

@@ -143,32 +143,48 @@ std::vector<turtlelib::Vector2D> circle_fitting(std::vector<std::vector<turtleli
 
         // solve for A
         arma::vec A;
-        if (arma::min(s) < 1e-12)
+        // U.print("U: ");
+        // s.print("s: ");
+        // V.print("V: ");
+        // Z.print("Z: ");
+        if (s.size()<4)
+        {
+            continue;
+        }
+        if (s(3) < 1e-12)
         {
             A = V.col(3);
         }
         else
         {
-            arma::mat Y = V*arma::diagmat(s)*arma::trans(V);
-            arma::mat Q = Y*H_inv*Y;
-            // find eigenvalues and vectors of Q
-            arma::vec eigen_vals;
-            arma::mat eigen_vecs;
-            arma::eig_sym(eigen_vals,eigen_vecs,Q);
-
-            // find the smallest positive eigenvalue of Q
-            int idx = 0;
-            double eigen_val = 999.0;
-            for (int j = 0; j<eigen_vals.size(); j++)
+            try
             {
-                if (eigen_vals[j]>0 and eigen_vals[j]<eigen_val)
+                arma::mat Y = V*arma::diagmat(s)*arma::trans(V);
+                arma::mat Q = Y*H_inv*Y;
+                // find eigenvalues and vectors of Q
+                arma::vec eigen_vals;
+                arma::mat eigen_vecs;
+                arma::eig_sym(eigen_vals,eigen_vecs,Q);
+
+                // find the smallest positive eigenvalue of Q
+                int idx = 0;
+                double eigen_val = 999.0;
+                for (int j = 0; j<eigen_vals.size(); j++)
                 {
-                    eigen_val = eigen_vals[j];
-                    idx = j;
+                    if (eigen_vals[j]>0 and eigen_vals[j]<eigen_val)
+                    {
+                        eigen_val = eigen_vals[j];
+                        idx = j;
+                    }
                 }
+                arma::vec A_star = eigen_vecs.col(idx);
+                A = arma::solve(Y,A_star);
             }
-            arma::vec A_star = eigen_vecs.col(idx);
-            A = arma::solve(Y,A_star);
+            catch(const std::exception& e)
+            {
+                ROS_INFO("%s",e.what());
+            }
+            
         }
 
         // Compute circle center and radius

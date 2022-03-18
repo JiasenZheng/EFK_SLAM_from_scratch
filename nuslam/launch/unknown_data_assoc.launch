@@ -47,7 +47,7 @@
     </node>
 
     <node name = "rviz" pkg = "rviz" type = "rviz" if = "$(arg use_rviz)"
-    args= "-d $(find nuslam)/config/slam.rviz"/>
+    args= "-d $(find nuslam)/config/slam_da.rviz"/>
 
     <node name = "turtlebot3_teleop_key" pkg = "turtlebot3_teleop" type = "turtlebot3_teleop_key"/>
 
