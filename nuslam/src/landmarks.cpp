@@ -251,7 +251,7 @@ void publish_measured_lm(const std::vector<turtlelib::Vector2D> &circles)
 
         marker.pose.position = position;
         marker.pose.orientation = rotation;
-        marker.header.frame_id = "blue-base_footprint";
+        marker.header.frame_id = "red-base_footprint";
         marker.header.stamp = ros::Time::now();
         marker.id = i;
 
