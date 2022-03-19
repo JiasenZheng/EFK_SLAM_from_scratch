@@ -17,6 +17,7 @@
         <remap from="/joint_states" to="red/joint_states"/>
         <remap from="/wheel_cmd" to="red/wheel_cmd"/>
         <remap from="/sensor_data" to="red/sensor_data"/>
+        <!-- <remap from="/sensor_data" to="/scan"/> -->
     </node>
 
 </launch>
