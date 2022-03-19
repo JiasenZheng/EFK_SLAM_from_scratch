@@ -29,7 +29,7 @@ void remove_non_circles(std::vector<std::vector<turtlelib::Vector2D>> & clusters
 {
     for (int i=0; i<clusters.size(); i++) {
         std::vector<turtlelib::Vector2D> cluster = clusters[i];
-        turtlelib::Vector2D point_start = cluster[0];                 
+        turtlelib::Vector2D point_start = cluster.front();                 
         turtlelib::Vector2D point_end = cluster.back();    
         std::vector<double> angles; 
         double sum = 0.0;                                                          
@@ -51,7 +51,7 @@ void remove_non_circles(std::vector<std::vector<turtlelib::Vector2D>> & clusters
         // ROS_INFO("MEAN: %f",mean);
 
         // remove cluster with inapproate angle
-        if (mean < 90.0 or mean > 135.0)
+        if (mean < 90.0 or mean > 155.0)
         {
             clusters.erase(clusters.begin()+i);
             i-=1;
@@ -72,13 +72,14 @@ void remove_non_circles(std::vector<std::vector<turtlelib::Vector2D>> & clusters
             clusters.erase(clusters.begin()+i);
             i-=1;
         }
+        cluster.clear();
     }
 }
 
 std::vector<turtlelib::Vector2D> circle_fitting(std::vector<std::vector<turtlelib::Vector2D>> & clusters) 
 {
     // Circle vector container
-    std::vector<turtlelib::Vector2D> circles;
+    std::vector<turtlelib::Vector2D> circles = {};
 
     for (int i=0; i<clusters.size(); i++) {
         std::vector<turtlelib::Vector2D> cluster = clusters[i];
@@ -234,7 +235,7 @@ void publish_measured_lm(const std::vector<turtlelib::Vector2D> &circles)
 
         marker.pose.position = position;
         marker.pose.orientation = rotation;
-        marker.header.frame_id = "red-base_footprint";
+        marker.header.frame_id = "blue-base_footprint";
         marker.header.stamp = ros::Time::now();
         marker.id = i;
 
@@ -311,6 +312,7 @@ void laser_cb(const sensor_msgs::LaserScanConstPtr &laser)
         }
     }
     remove_non_circles(clusters);
+    // ROS_DEBUG("# of circles: %li\r\n",clusters.size());
     std::vector<turtlelib::Vector2D> circles;
     circles = circle_fitting(clusters);
     publish_measured_lm(circles);
@@ -326,6 +328,7 @@ int main(int argc, char** argv)
 
     // Create pub and sub
     laser_sub = nh.subscribe("/laser",10,laser_cb);
+    // laser_sub = nh.subscribe("/scan",10,laser_cb);
     lms_pub = nh.advertise<visualization_msgs::MarkerArray>("/measured_landmarks",10);
 
     // Get parameters
