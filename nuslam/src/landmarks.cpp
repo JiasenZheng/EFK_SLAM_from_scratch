@@ -1,7 +1,7 @@
 /**
  * \file landmarks.cpp
  * \author Jiasen Zheng (jiasenzheng2020@u.northwestern)
- * \brief 
+ * \brief Detect and locate landmarks based on laser scan
  * \version 0.1
  * \date 2022-03-15
  * 
@@ -25,6 +25,11 @@ static ros::Subscriber laser_sub;
 static ros::Publisher lms_pub;
 static double r,h;
 
+/**
+ * \brief classify the clusters of points into circle and non-circle. Then, remove the non-circle ones
+ * 
+ * \param clusters a vector of clusters
+**/
 void remove_non_circles(std::vector<std::vector<turtlelib::Vector2D>> & clusters) 
 {
     for (int i=0; i<clusters.size(); i++) {
@@ -76,6 +81,12 @@ void remove_non_circles(std::vector<std::vector<turtlelib::Vector2D>> & clusters
     }
 }
 
+/**
+ * \brief implement a circle fitting algorithm and find center coordinates of the circle
+ * 
+ * \param clusters a vector of cluster 
+ * \return std::vector<turtlelib::Vector2D> a vector of coordinates of circle wrt turtlebot frame
+**/
 std::vector<turtlelib::Vector2D> circle_fitting(std::vector<std::vector<turtlelib::Vector2D>> & clusters) 
 {
     // Circle vector container
@@ -201,6 +212,11 @@ std::vector<turtlelib::Vector2D> circle_fitting(std::vector<std::vector<turtleli
     return circles;
 }
 
+/**
+ * \brief publish measured landmark
+ * 
+ * \param circles a vector of circle coordinates
+**/
 void publish_measured_lm(const std::vector<turtlelib::Vector2D> &circles)
 {
     visualization_msgs::MarkerArray lms;
@@ -244,6 +260,11 @@ void publish_measured_lm(const std::vector<turtlelib::Vector2D> &circles)
     lms_pub.publish(lms);
 }
 
+/**
+ * \brief callback function for laser subscriber
+ * 
+ * \param laser laser scan data
+**/
 void laser_cb(const sensor_msgs::LaserScanConstPtr &laser)
 {
     // Create clusters containers
