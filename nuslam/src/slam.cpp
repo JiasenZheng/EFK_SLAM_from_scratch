@@ -1,7 +1,7 @@
 /**
  * \file odometry.cpp
  * \author Jiasen Zheng (jiasenzheng2020@u.northwestern)
- * \brief 
+ * \brief Implement EKF SLAM with known data association
  * \version 0.1
  * \date 2022-02-05
  * 
@@ -165,6 +165,10 @@ void broadcast_map2odom()
   br2.sendTransform(trans2);
 }
 
+/**
+ * \brief broadcast transfrom from odometry frame to green turtlebot frame
+ * 
+**/
 void broadcast_odom2green()
 {
   turtlelib::Transform2D To_tt = dd.get_trans();
@@ -184,7 +188,10 @@ void broadcast_odom2green()
 }
 
 
-/// \brief publish path for blue robot
+/**
+ * \brief publish path for blue robot
+ * 
+**/
 void pub_odom_path()
 {
     static nav_msgs::Path odom_path;
@@ -207,7 +214,10 @@ void pub_odom_path()
     odom_path_pub.publish(odom_path);
 }
 
-/// \brief publish path for green robot
+/**
+ * \brief publish path for green robot
+ * 
+**/
 void pub_slam_path()
 {
     static nav_msgs::Path slam_path;
@@ -230,8 +240,11 @@ void pub_slam_path()
     slam_path_pub.publish(slam_path);
 }
 
-/// \brief Set the obstacles markers relative to slam turtlebot in Rviz 
-/// 
+ 
+/**
+ * \brief Set the obstacles markers relative to slam turtlebot in Rviz
+ * 
+**/
 void set_green_obs()
 {
     visualization_msgs::MarkerArray obs;
@@ -293,6 +306,11 @@ void set_green_obs()
 
 }
 
+/**
+ * \brief callback function for fake sensor subscriber
+ * 
+ * \param data noised marker array data
+**/
 void fake_sensor_callback(const visualization_msgs::MarkerArrayPtr &data)
 {
     static std::unordered_map<int,bool> map;   
