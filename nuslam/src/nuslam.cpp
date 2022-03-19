@@ -240,21 +240,21 @@ namespace nuslam
         std::vector<double> dis_list;
         for (int i = 0; i<N; i++)
         {
-            // arma::mat H = compute_H(i+1,temp);
-            // arma::mat cov = H*sigma*H.t() + R;
-            // arma::mat z_hat = compute_z(i+1);
+            arma::mat H = compute_H(i+1,temp);
+            arma::mat cov = H*sigma*H.t() + R;
+            arma::mat z_hat = compute_z(i+1);
 
-            // // compute mahalanobis distance
-            // arma::mat delta_z = z-z_hat;
-            // delta_z(1,0) = turtlelib::normalize_angle(delta_z(1,0));
-            // arma::mat d = delta_z.t()*cov.i()*delta_z;
-            // double distance = d(0);
+            // compute mahalanobis distance
+            arma::mat delta_z = z-z_hat;
+            delta_z(1,0) = turtlelib::normalize_angle(delta_z(1,0));
+            arma::mat d = delta_z.t()*cov.i()*delta_z;
+            double distance = d(0);
 
-            double x_new = temp(3+2*N);
-            double y_new = temp(4+2*N);
-            double x_i = temp(3+2*i);
-            double y_i = temp(4+2*i);
-            double distance = sqrt(pow(x_new-x_i,2)+pow(y_new-y_i,2));
+            // double x_new = temp(3+2*N);
+            // double y_new = temp(4+2*N);
+            // double x_i = temp(3+2*i);
+            // double y_i = temp(4+2*i);
+            // double distance = sqrt(pow(x_new-x_i,2)+pow(y_new-y_i,2));
 
 
             dis_list.push_back(distance);
