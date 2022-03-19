@@ -3,6 +3,9 @@
 
 #include <armadillo>
 #include <turtlelib/rigid2d.hpp>
+#include <algorithm>
+#include <ros/ros.h>
+#include <cmath>
 
 namespace nuslam
 {

@@ -235,40 +235,61 @@ namespace nuslam
         temp(4+2*N) = temp(2) + z(0)*sin(z(1) + temp(0));
 
         // double dis_thresh = compute_maha_dis(N,temp,z);
-        double d_star = 9999.0;
-        int l;
-        for (int i = 0; i<N+1; i++)
+        // double d_star = 9999.0;
+        // int l;
+        std::vector<double> dis_list;
+        for (int i = 0; i<N; i++)
         {
-            arma::mat H = compute_H(i+1,temp);
-            arma::mat cov = H*sigma*H.t() + R;
-            arma::mat z_hat = compute_z(i+1);
+            // arma::mat H = compute_H(i+1,temp);
+            // arma::mat cov = H*sigma*H.t() + R;
+            // arma::mat z_hat = compute_z(i+1);
 
-            // compute mahalanobis distance
-            arma::mat delta_z = z-z_hat;
-            delta_z(1,0) = turtlelib::normalize_angle(delta_z(1,0));
-            arma::mat d = delta_z.t()*cov.i()*delta_z;
-            double distance = d(0);
-            if (distance < d_star)
-            {
-                d_star = distance;
-                l = i;
-            }
+            // // compute mahalanobis distance
+            // arma::mat delta_z = z-z_hat;
+            // delta_z(1,0) = turtlelib::normalize_angle(delta_z(1,0));
+            // arma::mat d = delta_z.t()*cov.i()*delta_z;
+            // double distance = d(0);
 
-            // double distance = compute_maha_dis(i,temp,z);
-            if (distance < 0.001)
+            double x_new = temp(3+2*N);
+            double y_new = temp(4+2*N);
+            double x_i = temp(3+2*i);
+            double y_i = temp(4+2*i);
+            double distance = sqrt(pow(x_new-x_i,2)+pow(y_new-y_i,2));
+
+
+            dis_list.push_back(distance);
+
+        }
+        dis_list.push_back(0.5);
+        double d_star = 999.0;
+        int minIdx;
+        for (int i = 0; i<dis_list.size();i++)
+        {
+            if (dis_list[i] < d_star)
             {
-                return i;
+                d_star = dis_list[i];
+                ROS_INFO("D_star: %f\r\n",d_star);
+                minIdx = i;
+                ROS_INFO("Idx: %i\r\n", i);
             }
         }
-        // if (l==N) {
+        if (d_star == 0.5)
+        {
+            ROS_ERROR("NEW LM!!!!!\r\n");
             N++;
-            return N-1;
-        // }
+        }
         // else
         // {
-
+        //     ROS_ERROR("SOMETHING WRONG!!");
+        //     minIdx = -1;
         // }
-        // else return -1;
+
+
+        // ROS_INFO("MixIDX: %i\r\n",minIdx);
+
+        return minIdx;
+
+
     }
 
 

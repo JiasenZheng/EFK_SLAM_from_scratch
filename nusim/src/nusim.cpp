@@ -40,8 +40,10 @@
 
 /// settable parameters
 static std::uniform_real_distribution<double> wheel_position(-10,10);
+// static std::uniform_real_distribution<double> wheel_position(0,0);
 static std::normal_distribution<> fake_obs(0.0,0.01);
 static std::normal_distribution<> wheel_control(0.0,0.5);
+// static std::normal_distribution<> wheel_control(0.0,0.0);
 static std::normal_distribution<> lidar_noise(0.0,0.00);
 static double lidar_range = 3.5;
 static double x_length = 3.0;
